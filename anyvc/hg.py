@@ -48,24 +48,28 @@ class Mercurial(object):
 
     def __init__(self, path, create=False):
         """
-        Get a repo for a given path
-        if create is true, a new repo is created
+        Get a repo for a given path.
+        If `create` is true, a new repo is created.
         """
-        #XXX: record output, figure create errors
-        self.ui = ui.ui(interactive=True, verbose=True, debug=True)
+        self.ui = ui.ui(interactive=False, verbose=True, debug=True)
         if hg is None: 
             # lazy fail so we can import this one and add it to anyvc.all_known
             raise ImportError(
                 'no module is named mercurial '
                 '(please install mercurial and ensure its in the PYTHONPATH)'
             )
-        if not create:
-            r = _findrepo(os.path.abspath(path))
-            if r is None:
-                raise ValueError('No mercurial repo below %r'%path)
-            self.repo = hg.repository(self.ui, r)
-        else:
-            self.repo = hg.repository(self.ui, path, create=True)
+        try:
+            self.ui.pushbuffer()
+            if not create:
+                r = _findrepo(os.path.abspath(path))
+                if r is None:
+                    raise ValueError('No mercurial repo below %r'%path)
+                self.repo = hg.repository(self.ui, r)
+            else:
+                self.repo = hg.repository(self.ui, path, create=True)
+
+        finally:
+            self.__init_out = self.ui.popbuffer()
 
     def list(self, *k, **kw):
         #XXX: merce conflicts ?!
@@ -82,8 +86,10 @@ class Mercurial(object):
 
     @grab_output
     def add(self, paths=()):
-        self.repo.add(paths)
+        commands.add(self.ui, self.repo, *self.joined(paths))
 
+    def joined(self, paths):
+        return [os.path.join(self.repo.root, path) for path in paths]
 
     @grab_output
     def commit(self, paths=(), message=None, user=None):
@@ -93,7 +99,7 @@ class Mercurial(object):
             logfile=None,
             date=None,
 
-            *[os.path.join(self.repo.root, path) for path in paths]
+            *self.joined(paths)
             )
 
 
