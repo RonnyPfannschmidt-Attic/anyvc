@@ -102,4 +102,10 @@ class Mercurial(object):
             *self.joined(paths)
             )
 
+    @grab_output
+    def remove(self, paths=()): #XXX: support for after ?
+        commands.remove(self.ui, self.repo,
+                *self.joined(paths)
+                )
+
 
