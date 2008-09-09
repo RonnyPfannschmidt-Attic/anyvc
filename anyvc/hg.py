@@ -103,9 +103,25 @@ class Mercurial(object):
             )
 
     @grab_output
-    def remove(self, paths=()): #XXX: support for after ?
+    def remove(self, paths): 
+        #XXX: support for after ?
         commands.remove(self.ui, self.repo,
                 *self.joined(paths)
                 )
+
+    @grab_output
+    def revert(self, paths, rev=None): #XXX: how to pass opts['all']?
+        if rev is None:
+            parents = self.repo.parents()
+            if len(parents)!=1 and rev is None:
+                #XXX: better exception type?
+                raise Exception(
+                        "can't revert on top of a merge without explicit rev")
+            rev = parents[0].rev()
+        commands.revert(self.ui, self.repo,
+                date=None,
+                rev=rev,
+                no_backup=False,
+                *self.joined(paths))
 
 
