@@ -10,7 +10,7 @@ def initial(mgr):
     return wd
 
 @for_all
-def test_repo(mgr):
+def test_repo_add(mgr):
     wd = initial(mgr)
     status = list(wd.list(['test.py']))
     wd.check_states({
@@ -30,11 +30,18 @@ def test_repo(mgr):
         })
 
 @for_all
-def test_repo2(mgr):
+def test_repo_remove(mgr):
     wd = initial(mgr)
     wd.add(paths=['test.py'])
     wd.commit(message='*')
     wd.check_states({
         'test.py': 'clean',
         })
+    wd.remove(paths=['test.py'])
+    wd.check_states({
+        'test.py': 'removed',
+        })
+    wd.commit(message='*')
+    wd.check_states({'test.py': 'clean'})
+
 
