@@ -4,43 +4,37 @@ from nose.tools import assert_equal
 def initial(mgr):
     mgr.make_repo('repo')
     wd = mgr.make_wd('repo', 'wd')
-    wd.put_files(
-            ('test.py', 'print "test"'),
-            )
+    wd.put_files({
+        'test.py':'print "test"',
+        })
     return wd
 
 @for_all
 def test_repo(mgr):
     wd = initial(mgr)
     status = list(wd.list(['test.py']))
-    print status
-
-    assert_equal(len(status), 1)
-    assert_equal(status[0].state, 'unknown')
+    wd.check_states({
+        'test.py': 'unknown',
+        })
 
     wd.add(paths=['test.py'])
 
-    status = list(wd.list(['test.py']))
-    print status
-
-    assert_equal(len(status), 1)
-    assert_equal(status[0].state, 'added')
+    wd.check_states({
+        'test.py': 'added',
+        })
 
     print wd.commit(paths=['test.py'], message='test commit')
 
-    status = list(wd.list(['test.py']))
-    print status
-
-    assert_equal(len(status), 1)
-    assert_equal(status[0].state, 'clean')
-
+    wd.check_states({
+        'test.py': 'clean',
+        })
 
 @for_all
 def test_repo2(mgr):
     wd = initial(mgr)
     wd.add(paths=['test.py'])
     wd.commit(message='*')
-    status = list(wd.list())
-    assert_equal(status[0].state, 'clean')
-
+    wd.check_states({
+        'test.py': 'clean',
+        })
 

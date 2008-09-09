@@ -1,6 +1,5 @@
 from __future__ import with_statement
 
-
 from anyvc import all_known
 from anyvc import Mercurial, Bazaar, SubVersion, Git
 from functools import wraps, partial
@@ -9,6 +8,7 @@ from os.path import join
 from tempfile import mkdtemp
 from subprocess import call
 from shutil import rmtree
+from nose.tools import assert_equal
 
 #XXX: hack
 all_known = Mercurial, Bazaar, SubVersion, # Git
@@ -60,11 +60,22 @@ class WdWrap(object):
     def bpath(self, name):
         return join(self.__path, name)
 
-    def put_files(self, *k):
-        for name, content in k:
+    def put_files(self, mapping):
+        for name, content in mapping.items():
             with open(self.bpath(name), 'w') as f:
                 f.write(content)
 
+    def check_states(self, mapping, exact=False):
+        """takes a mapping of filename-> state
+        if exact is true, additional states are ignored
+        returns true if all supplied files have the asumed state
+        """
+        print mapping
+        infos = list(self.list())
+        for info in infos:
+            print repr(info)
+            if info.relpath in mapping:
+                assert_equal(info.state, mapping[info.relpath], info.path)
 
 
 class VcsMan(object):

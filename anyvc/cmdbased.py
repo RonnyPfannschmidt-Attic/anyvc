@@ -284,6 +284,8 @@ class SubVersion(CommandBased):
             return None
         state = item[0]
         file = item.split()[-1]
+        if file == '.': #ignore '.' as path, its not informative
+            return
         #TODO: handle paths with whitespace if ppl fall in that one
         return Path(file, self.state_map[state], self.base_path)
 
