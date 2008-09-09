@@ -60,3 +60,23 @@ def test_repo_rename(mgr):
     wd.commit(message='*')
     wd.check_states({'test2.py': 'clean'})
 
+@for_all
+def test_repo_revert(mgr):
+    wd = initial(mgr)
+    wd.add(paths=['test.py'])
+    wd.commit(message='*')
+    wd.remove(paths=['test.py'])
+    wd.check_states({'test.py': 'removed'})
+
+    wd.revert(paths=['test.py'])
+    wd.check_states({'test.py': 'clean'})
+
+    wd.put_files({
+        'test.py':'oooo'
+        })
+
+    wd.check_states({'test.py': 'modified'})
+
+    wd.revert(paths=['test.py'])
+    wd.check_states({'test.py':'clean'})
+
