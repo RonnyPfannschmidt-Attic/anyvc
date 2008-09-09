@@ -1,4 +1,4 @@
-from .helpers import for_all
+from .helpers import for_all, disable
 from nose.tools import assert_equal
 
 def initial(mgr):
@@ -44,4 +44,19 @@ def test_repo_remove(mgr):
     wd.commit(message='*')
     wd.check_states({'test.py': 'clean'})
 
+@disable
+@for_all
+def test_repo_rename(mgr):
+    wd = initial(mgr)
+    wd.add(paths=['test.py'])
+    wd.commit(message='*')
+
+    wd.rename(source='test.py', target='test2.py')
+    wd.check_states({
+        'test.py': 'removed',
+        'test2.py': 'added',
+        })
+
+    wd.commit(message='*')
+    wd.check_states({'test2.py': 'clean'})
 

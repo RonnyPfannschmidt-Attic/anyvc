@@ -18,6 +18,9 @@ def do(args, **kw):
     print args
     call(args, **kw)
 
+def disable(func):
+    return None
+
 def for_all(func):
 
     @wraps(func)
