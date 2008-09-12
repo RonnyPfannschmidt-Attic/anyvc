@@ -1,7 +1,7 @@
 from __future__ import with_statement
 
 from anyvc import all_known
-from anyvc import Mercurial, Bazaar, SubVersion, Git
+from anyvc import Mercurial, Bazaar, SubVersion, Git, Darcs
 from functools import wraps, partial
 import os
 from os.path import join
@@ -11,7 +11,7 @@ from shutil import rmtree
 from nose.tools import assert_equal
 
 #XXX: hack
-all_known = Mercurial, Bazaar, SubVersion, # Git
+all_known = Mercurial, Bazaar, SubVersion, Darcs, # Git
 
 
 def do(*args, **kw):
@@ -119,6 +119,11 @@ class VcsMan(object):
     def make_wd_git(self, repo, workdir):
         do('git', 'clone', repo, workdir)
 
+    def make_wd_darcs(self, repo, workdir):
+        do('darcs', 'get', repo, workdir)
+        with open(join(workdir, '_darcs/prefs/author'), 'w') as f:
+            f.write('test')
+
     @generic #XXX:lazy hack, completely missplaced
     def make_repo(self, spec, path):
         spec(self.bpath(path))
@@ -139,3 +144,6 @@ class VcsMan(object):
         #XXX: git doesnt like clone of empty repos
         do('git', 'commit', '--allow-empty' , '-m', 'dummy 1', cwd=path)
 
+    def make_repo_darcs(self, path):
+        os.mkdir(path)
+        do('darcs', 'initialize', '--darcs-2', cwd=path)

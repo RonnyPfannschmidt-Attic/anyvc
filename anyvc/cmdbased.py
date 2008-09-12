@@ -78,6 +78,7 @@ class CommandBased(VCSBase):
     def execute_command(self, args, result_type=str, **kw):
         if not args:
             raise ValueError('need a valid command')
+        print args
         ret = Popen(
                 [self.cmd] + args,
                 stdout=PIPE,
@@ -295,6 +296,12 @@ class Darcs(DCommandBased):
 
     cmd = 'darcs'
     detect_subdir = '_darcs'
+
+    def get_commit_args(self, message, paths=(), **kw):
+        return ['record', '-a', '-m', message] + list(paths)
+
+    def get_revert_args(self, paths=()):
+        return ['revert', '-a'] + list(paths)
 
     def get_list_args(self, **kw):
         return ['whatsnew', '--boring', '--summary']
