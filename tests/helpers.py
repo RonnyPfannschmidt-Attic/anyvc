@@ -14,7 +14,7 @@ from nose.tools import assert_equal
 all_known = Mercurial, Bazaar, SubVersion, # Git
 
 
-def do(args, **kw):
+def do(*args, **kw):
     print args
     call(args, **kw)
 
@@ -108,16 +108,16 @@ class VcsMan(object):
         return WdWrap(self.vc, self.bpath(workdir))
 
     def make_wd_mercurial(self, repo, workdir):
-        do(['hg', 'clone', repo, workdir])
+        do('hg', 'clone', repo, workdir)
 
     def make_wd_bazaar(self, repo, workdir):
-        do(['bzr', 'branch', repo, workdir])
+        do('bzr', 'branch', repo, workdir)
 
     def make_wd_subversion(self, repo, workdir):
-        do(['svn', 'co', 'file://'+repo, workdir])
+        do('svn', 'co', 'file://'+repo, workdir)
 
     def make_wd_git(self, repo, workdir):
-        do(['git', 'clone', repo, workdir])
+        do('git', 'clone', repo, workdir)
 
     @generic #XXX:lazy hack, completely missplaced
     def make_repo(self, spec, path):
@@ -128,14 +128,14 @@ class VcsMan(object):
         self.vc.make_repo(path)
 
     def make_repo_subversion(self, path):
-        do(['svnadmin', 'create', path])
+        do('svnadmin', 'create', path)
 
     def make_repo_bazaar(self, path):
-        do(['bzr', 'init', path])
+        do('bzr', 'init', path)
 
     def make_repo_git(self, path):
         os.mkdir(path)
-        do(['git','init'], cwd=path)
+        do('git','init', cwd=path)
         #XXX: git doesnt like clone of empty repos
-        do(['git', 'commit', '--allow-empty' , '-m', 'dummy 1'], cwd=path)
+        do('git', 'commit', '--allow-empty' , '-m', 'dummy 1', cwd=path)
 
