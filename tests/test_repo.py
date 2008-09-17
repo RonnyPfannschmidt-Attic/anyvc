@@ -1,3 +1,5 @@
+# copyright 2008 by Ronny Pfannschmidt
+# license lgpl3 or later
 from .helpers import for_all, disable
 from nose.tools import assert_equal
 

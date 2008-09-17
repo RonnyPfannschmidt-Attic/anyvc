@@ -4,9 +4,9 @@
     anyvcs file helpers
     ~~~~~~~~~~~~~~~~~~~
 
-    :copyright: 2006 by Ronny Pfannschmidt
+    :copyright: 2006-2008 by Ronny Pfannschmidt
 
-    :license: LGPL2 or later
+    :license: LGPL3 or later
 """
 
 from os.path import dirname, basename, join

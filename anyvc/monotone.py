@@ -1,3 +1,11 @@
+"""
+    monotone backend
+    ----------------
+
+    :copyright: 2007-2008 Ronny Pfannschmidt
+    :license: LGPL3 or later
+"""
+
 from cmdbased import DCommandBased, relative_to, Path
 import os.path
 

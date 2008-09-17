@@ -1,3 +1,6 @@
+# copyright 2008 by Ronny Pfannschmidt
+# license lgpl3 or later
+
 from __future__ import with_statement
 
 from anyvc import all_known

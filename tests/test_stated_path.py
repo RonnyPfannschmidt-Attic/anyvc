@@ -1,3 +1,5 @@
+# copyright 2008 by Ronny Pfannschmidt
+# license lgpl3 or later
 """
 >>> StatedPath('a').abspath
 >>> StatedPath('a', base='b').abspath

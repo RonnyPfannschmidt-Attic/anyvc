@@ -2,6 +2,9 @@
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 """
     weird base classes
+
+    :copyright: 2008 Ronny Pfannschmidt
+    :license: LGPL3 or later
 """
 __all__ = ["VCSBase","DVCSMixin"]
 

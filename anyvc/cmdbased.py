@@ -8,7 +8,7 @@
         * 2007-2008 Ronny Pfannschmidt
         * 2007 Ali Afshar
 
-    :license: LGPL2 or later
+    :license: LGPL3 or later
 """
 
 from subprocess import Popen, PIPE, STDOUT
