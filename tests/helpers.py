@@ -2,14 +2,15 @@
 # license lgpl3 or later
 
 from __future__ import with_statement
+import os
+import sys
 
 from anyvc import all_known
 from anyvc import Mercurial, Bazaar, SubVersion, Git, Darcs
 from functools import wraps, partial
-import os
 from os.path import join
 from tempfile import mkdtemp
-from subprocess import call
+from subprocess import Popen, PIPE
 from shutil import rmtree
 from nose.tools import assert_equal
 
@@ -19,7 +20,10 @@ all_known = Mercurial, Bazaar, SubVersion, Darcs, # Git
 
 def do(*args, **kw):
     print args
-    call(args, **kw)
+    p = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE, **kw)
+    sys.stdout.write(p.stdout.read())
+    sys.stdout.write(p.stderr.read())
+
 
 def disable(func):
     return None
