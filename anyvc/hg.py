@@ -124,4 +124,9 @@ class Mercurial(object):
                 no_backup=False,
                 *self.joined(paths))
 
+    @grab_output
+    def move(self, source, target):
+        commands.rename(self.ui, self.repo,
+                *self.joined([source, target])
+                )
 
