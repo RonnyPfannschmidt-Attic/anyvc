@@ -10,6 +10,7 @@
 
     :license: LGPL3 or later
 """
+import re
 
 from subprocess import Popen, PIPE, STDOUT
 import os.path 
@@ -150,6 +151,10 @@ class CommandBased(VCSBase):
         args = self.get_remove_args(**kw)
         return self.execute_command(args, **kw)
 
+    def move(self, **kw):
+        args = self.get_move_args(**kw)
+        return self.execute_command(args, **kw)
+
     def revert(self, **kw):
         args = self.get_revert_args(**kw)
         return self.execute_command(args, **kw)
@@ -219,6 +224,10 @@ class Bazaar(DCommandBased):
     def get_cache_args(self, **kw):
         return ["st"]
 
+    def get_move_args(self, source, target):
+
+        return ['move'] + self.process_paths([source, target])
+
     statemap  = {
             "unknown:": 'unknown',
             "added:": 'added',
@@ -228,6 +237,8 @@ class Bazaar(DCommandBased):
             "modified:": 'modified',
             "conflicts:": 'conflict',
             "pending merges:": 'conflict',
+            "renamed:": "placeholder", # special cased, needs parsing 
+            #XXX: figure why None didn't work
             }
 
     def parse_cache_items(self, items):
@@ -236,7 +247,13 @@ class Bazaar(DCommandBased):
             item = item.rstrip()
             state = self.statemap.get(item.rstrip(), state)
             if item.startswith("  ") and state:
-                yield item.strip(), state
+                if state == "placeholder":
+                    old, new = item.split(" => ")
+                    old, new = old.strip(), new.strip()
+                    yield old, 'removed'
+                    yield new, 'added'
+                else:
+                    yield item.strip(), state
 
     def parse_list_items(self, items, cache):
         for item in items:
@@ -279,6 +296,9 @@ class SubVersion(CommandBased):
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--diff-cmd', 'diff'] + paths
 
+    def get_move_args(self, source, target):
+        return ['move', source, target]
+
     def parse_list_item(self, item, cache):
         if item[0:4] == 'svn:':
             # ignore all svn error messages
@@ -314,13 +334,25 @@ class Darcs(DCommandBased):
         "R": 'removed'
     }
 
-    def parse_list_item(self, item, cache):
-        if item.startswith('What') or item.startswith('No') or not item.strip():
-            return None
-        elements = item.split(None, 2)[:2] #TODO: handle filenames with spaces
-        state = self.state_map[elements[0]]
-        file = os.path.normpath(elements[1])
-        return Path(file, state, self.base_path)
+    move_regex = re.compile(" (?P<removed>.*?) -> (?P<added>.*?)$")
+
+
+    def parse_list_items(self, items, cache):
+        for item in items:
+            if item.startswith('What') or item.startswith('No') or not item.strip():
+                continue
+            match = self.move_regex.match(item)
+            if match:
+                for state, file in match.groupdict().items():
+                    yield Path(file, state, self.base_path)
+                continue
+            elements = item.split(None, 2)[:2] #TODO: handle filenames with spaces
+            state = self.state_map[elements[0]]
+            file = os.path.normpath(elements[1])
+            yield Path(file, state, self.base_path)
+    
+    def get_move_args(self, source, target):
+        return ['mv', source, target]
 
 
 class Git(CommandBased):

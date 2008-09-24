@@ -96,6 +96,9 @@ class VCSBase (object):
     def remove(self, paths=None, execute=False, recursive=False):
         raise NotImplementedError
 
+    def rename(self, paths=None, path=None, target=None):
+        raise NotImplementedError
+
 class DVCSMixin(object):
 
     def pull(self, locations=None):
