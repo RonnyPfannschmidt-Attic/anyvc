@@ -130,3 +130,11 @@ class Mercurial(object):
                 *self.joined([source, target])
                 )
 
+    @grab_output
+    def diff(self, paths, rev=None):
+        commands.diff(
+                self.ui,
+                self.repo,
+                rev=rev,
+                *self.joined(paths))
+
