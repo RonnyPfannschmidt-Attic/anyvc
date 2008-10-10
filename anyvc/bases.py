@@ -4,7 +4,7 @@
     weird base classes
 
     :copyright: 2008 Ronny Pfannschmidt
-    :license: LGPL3 or later
+    :license: LGPL2 or later
 """
 __all__ = ["VCSBase","DVCSMixin"]
 

@@ -8,7 +8,7 @@
         * 2007-2008 Ronny Pfannschmidt
         * 2007 Ali Afshar
 
-    :license: LGPL3 or later
+    :license: LGPL2 or later
 """
 import re
 

@@ -6,7 +6,7 @@
 
     :copyright: 2006-2008 by Ronny Pfannschmidt
 
-    :license: LGPL3 or later
+    :license: LGPL2 or later
 """
 
 from os.path import dirname, basename, join

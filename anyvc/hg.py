@@ -6,7 +6,7 @@
 
     Mercurial support
 
-    :license: LGPL3 or later
+    :license: LGPL2 or later
     :copyright: 2008 Ronny Pfannschmidt
 """
 

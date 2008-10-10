@@ -6,7 +6,7 @@
 
     Simple vcs abstraction.
 
-    :license: LGPL3 or later
+    :license: LGPL2 or later
     :copyright:
         * 2006 Ali Afshar aafshar@gmail.com
         * 2008 Ronny Pfannschmidt Ronny.Pfannschmidt@gmx.de

@@ -3,7 +3,7 @@
     ----------------
 
     :copyright: 2007-2008 Ronny Pfannschmidt
-    :license: LGPL3 or later
+    :license: LGPL2 or later
 """
 
 from cmdbased import DCommandBased, relative_to, Path
