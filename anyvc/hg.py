@@ -77,7 +77,9 @@ class Mercurial(object):
                 'modified', 'added', 'removed',
                 'deleted', 'unknown', 'ignored', 'clean',
                 )
-        state_files = self.repo.status(ignored=True, unknown=True, clean=True)
+        state_files = self.repo.status(list_ignored=True,
+                                       list_unknown=True,
+                                       list_clean=True)
         for state, files in zip(names, state_files):
             for file in files:
                 yield StatedPath(file, state, base=self.repo.root)
