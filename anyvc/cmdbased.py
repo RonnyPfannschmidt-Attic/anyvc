@@ -13,7 +13,7 @@
 import re
 
 from subprocess import Popen, PIPE, STDOUT
-import os.path 
+import os, os.path 
 
 #TODO: more reviews
 
@@ -61,8 +61,11 @@ class CommandBased(VCSBase):
         detected_path = None
         detected_sd = None
         op = None
+        ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
         while act_path != op:
             if os.path.exists( os.path.join(act_path, cls.detect_subdir)):
+                if act_path in ignored_path:
+                    return None
                 detected_path = act_path
                 # continue cause some vcs's 
                 # got the subdir in every path
