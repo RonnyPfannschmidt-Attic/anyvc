@@ -257,6 +257,8 @@ class Bazaar(DCommandBased):
 
     def parse_list_items(self, items, cache):
         for item in items:
+            if not item:
+                continue
             if item.startswith('I'):
                 yield Path(item[1:].strip(), 'ignored', self.base_path)
             else:

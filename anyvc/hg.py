@@ -15,13 +15,17 @@ __all__ = 'Mercurial',
 import os
 from functools import wraps
 from .file import StatedPath
+from .bases import VCSBase
 
 try:
-        from mercurial import ui, hg
-        from mercurial.dispatch import _findrepo
-        from mercurial import commands
+    from mercurial.__version__ import version as hgversion
+    from mercurial import ui, hg
+    from mercurial.dispatch import _findrepo
+    from mercurial import commands
+    import mercurial.util
 except ImportError:
-    ui, hg, _findrepo = None
+    ui, hg, _findrepo = None, None, None
+    hgversion = ''
 
 def grab_output(func):
     """
@@ -40,7 +44,9 @@ def grab_output(func):
 
     return grabber
 
-class Mercurial(object):
+
+
+class NativeMercurial(VCSBase):
 
     @staticmethod
     def make_repo(path):
@@ -51,6 +57,7 @@ class Mercurial(object):
         Get a repo for a given path.
         If `create` is true, a new repo is created.
         """
+        self.path = os.path.normpath( os.path.abspath(path) )
         self.ui = ui.ui(interactive=False, verbose=True, debug=True)
         if hg is None: 
             # lazy fail so we can import this one and add it to anyvc.all_known
@@ -58,28 +65,50 @@ class Mercurial(object):
                 'no module is named mercurial '
                 '(please install mercurial and ensure its in the PYTHONPATH)'
             )
+        ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.sep)
         try:
             self.ui.pushbuffer()
             if not create:
-                r = _findrepo(os.path.abspath(path))
-                if r is None:
+                r = _findrepo(os.path.abspath(self.path))
+                print "found repo", r
+                if r is None or r in ignored_path:
                     raise ValueError('No mercurial repo below %r'%path)
+                self.base_path = r
                 self.repo = hg.repository(self.ui, r)
             else:
-                self.repo = hg.repository(self.ui, path, create=True)
+                self.base_path = self.path
+                self.repo = hg.repository(self.ui, self.path, create=True)
 
         finally:
             self.__init_out = self.ui.popbuffer()
 
     def list(self, *k, **kw):
         #XXX: merce conflicts ?!
+        print "list", k, kw, self.path
         names = (
                 'modified', 'added', 'removed',
                 'deleted', 'unknown', 'ignored', 'clean',
                 )
-        state_files = self.repo.status(list_ignored=True,
+        # create a list of files that we are interessted in
+        if not kw.get('recursive', True):
+            subdir = self.path[len(self.base_path)+1:]
+            files = [os.path.join(subdir, x) for x in os.listdir(self.path)]
+        else:
+            files = ()
+        
+        if not kw.get('recursive', True):
+            def matcher(fn):
+                if fn not in files:
+                    return False
+                return True
+        else:
+            matcher = mercurial.util.always
+        
+        state_files = self.repo.status(match=matcher,
+                                       list_ignored=True,
                                        list_unknown=True,
                                        list_clean=True)
+        #print state_files, names
         for state, files in zip(names, state_files):
             for file in files:
                 yield StatedPath(file, state, base=self.repo.root)
@@ -140,3 +169,12 @@ class Mercurial(object):
                 rev=rev,
                 *self.joined(paths))
 
+
+
+# mercurial internal api changes a lot, so we have a explicit check
+if hgversion in ('1.0.0', '1.0.1',):
+    Mercurial = NativeMercurial
+else:
+    Mercurial = NativeMercurial
+    # fallback based on command line
+    #Mercurial 
