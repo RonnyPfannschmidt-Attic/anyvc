@@ -13,8 +13,9 @@
 """
 __all__ = ["all_known"]
 
-from .cmdbased import Bazaar, SubVersion, Darcs, Git
+from .cmdbased import Bazaar, SubVersion, Darcs
 from .monotone import Monotone
 from .hg import Mercurial
+from .git import Git
 
 all_known = [ Monotone, Bazaar, SubVersion, Mercurial, Darcs, Git]
