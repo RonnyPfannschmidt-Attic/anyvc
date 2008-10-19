@@ -117,6 +117,9 @@ class VcsMan(object):
     def make_wd_mercurial(self, repo, workdir):
         do('hg', 'clone', repo, workdir)
 
+    make_wd_nativemercurial = make_wd_mercurial
+
+
     def make_wd_bazaar(self, repo, workdir):
         do('bzr', 'branch', repo, workdir)
 
