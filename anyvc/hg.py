@@ -39,7 +39,6 @@ def grab_output(func):
             return self.ui.popbuffer()
         except Exception, e:
             e.hg_output = self.ui.popbuffer()
-            print e.hg_output
             raise
 
     return grabber
@@ -70,7 +69,6 @@ class NativeMercurial(VCSBase):
             self.ui.pushbuffer()
             if not create:
                 r = _findrepo(os.path.abspath(self.path))
-                print "found repo", r
                 if r is None or r in ignored_path:
                     raise ValueError('No mercurial repo below %r'%path)
                 self.base_path = r
@@ -84,7 +82,6 @@ class NativeMercurial(VCSBase):
 
     def list(self, *k, **kw):
         #XXX: merce conflicts ?!
-        print "list", k, kw, self.path
         names = (
                 'modified', 'added', 'removed',
                 'deleted', 'unknown', 'ignored', 'clean',
@@ -108,7 +105,7 @@ class NativeMercurial(VCSBase):
                                        list_ignored=True,
                                        list_unknown=True,
                                        list_clean=True)
-        #print state_files, names
+
         for state, files in zip(names, state_files):
             for file in files:
                 yield StatedPath(file, state, base=self.repo.root)
