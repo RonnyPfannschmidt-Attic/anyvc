@@ -64,7 +64,7 @@ class NativeMercurial(VCSBase):
                 'no module is named mercurial '
                 '(please install mercurial and ensure its in the PYTHONPATH)'
             )
-        ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.sep)
+        ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
         try:
             self.ui.pushbuffer()
             if not create:
