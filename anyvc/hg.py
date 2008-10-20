@@ -159,7 +159,7 @@ class NativeMercurial(VCSBase):
 
 # mercurial internal api changes a lot, so we have a explicit check
 #XXX: what about pre 1.0
-if hgversion in ('1.0.0', '1.0.1', '1.0.2'):
+if hgversion in ('1.0', '1.0.1', '1.0.2'):
     Mercurial = NativeMercurial
     def _status(repo, files):
         if files:
