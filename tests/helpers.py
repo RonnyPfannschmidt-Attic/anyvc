@@ -15,7 +15,7 @@ from shutil import rmtree
 from nose.tools import assert_equal
 
 #XXX: hack
-all_known = Mercurial, Bazaar, SubVersion, Darcs, # Git
+all_known = Mercurial, Bazaar, SubVersion, Darcs, Git
 
 
 def do(*args, **kw):

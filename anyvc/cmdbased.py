@@ -82,7 +82,6 @@ class CommandBased(VCSBase):
     def execute_command(self, args, result_type=str, **kw):
         if not args:
             raise ValueError('need a valid command')
-        print args
         ret = Popen(
                 [self.cmd] + args,
                 stdout=PIPE,
@@ -360,51 +359,4 @@ class Darcs(DCommandBased):
         return ['mv', source, target]
 
 
-class Git(CommandBased):
-    """
-    experimental
-    copyed processing from http://www.geekfire.com/~alex/pida-git.py by alex
-    """
-    cmd = 'git'
-    detect_subdir = '.git'
-
-    state_map = {
-        #XXX: sane mapping?!
-        'H': 'added', #git calls it cached (ie added to the index,
-        'M': 'unmerged',
-        'R': 'removed/deleted', #XXX: figure a way to decide
-        'C': 'modified/changed',
-        'K': 'to be killed',
-        '?': 'unknown',
-        }
-
-    def get_diff_args(self, paths=(), **kw):
-        return ['diff', '--no-color'] + self.process_paths(paths)
-
-    def process_paths(self, paths):
-        return map(relative_to(self.base_path), paths)
-
-    def get_commit_args(self, message, paths=(), **kw):
-        #XXX handle authors
-        if paths:
-            # commit only for the supplied paths
-            return ['commit', '-m', message, '--'] + list(paths)
-        else:
-            # commit all found changes
-            # this also commits deletes ?!
-            return ['commit', '-a', '-m', message]
-
-    def get_revert_args(self, paths=(), recursive=False, **kw):
-        return ['checkout'] + self.process_paths(paths)
-
-    def get_list_args(self, **kw):
-        return ['ls-files',
-                '--cached', '--deleted', '--others',
-                '--killed', '--modified', '-t',
-                ]
-
-    def parse_list_item(self, item, cache):
-        print item
-        state , name = item[0], item[2:].rstrip()
-        return Path(name, self.state_map[state], self.base_path)
 
