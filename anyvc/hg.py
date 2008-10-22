@@ -20,13 +20,13 @@ from .bases import VCSBase
 try:
     from mercurial.__version__ import version as hgversion
     from mercurial import ui, hg
-    from mercurial.dispatch import _findrepo
     from mercurial import commands
     import mercurial.util
 except ImportError:
     ui, hg, _findrepo = None, None, None
     hgversion = ''
- 
+
+
 def grab_output(func):
     """
     wraps a call to hg and grabs the output
@@ -44,8 +44,16 @@ def grab_output(func):
     return grabber
 
 
+def _find_repo(path):
+    last = None
+    cur = path
+    while cur!=last:
+        if os.path.exists(os.path.join(cur, '.hg')):
+            return cur
+        last = cur
+        cur = os.path.dirname(cur)
 
-class NativeMercurial(VCSBase):
+class Mercurial(VCSBase):
 
     @staticmethod
     def make_repo(path):
@@ -68,7 +76,7 @@ class NativeMercurial(VCSBase):
         try:
             self.ui.pushbuffer()
             if not create:
-                r = _findrepo(os.path.abspath(self.path))
+                r = _find_repo(self.path)
                 if r is None or r in ignored_path:
                     raise ValueError('No mercurial repo below %r'%path)
                 self.base_path = r
@@ -115,6 +123,7 @@ class NativeMercurial(VCSBase):
             message=message,
             logfile=None,
             date=None,
+            addremove=False, # only hg 0.9.5 needs that explicit
 
             *self.joined(paths)
             )
@@ -123,6 +132,8 @@ class NativeMercurial(VCSBase):
     def remove(self, paths): 
         #XXX: support for after ?
         commands.remove(self.ui, self.repo,
+                after=False, # only hg 0.9.5 needs that explicit
+                force=False,
                 *self.joined(paths)
                 )
 
@@ -144,6 +155,7 @@ class NativeMercurial(VCSBase):
     @grab_output
     def move(self, source, target):
         commands.rename(self.ui, self.repo,
+                after=False, # hg 0.9.5
                 *self.joined([source, target])
                 )
 
@@ -158,24 +170,36 @@ class NativeMercurial(VCSBase):
 
 
 # mercurial internal api changes a lot, so we have a explicit check
-#XXX: what about pre 1.0
-if hgversion in ('1.0', '1.0.1', '1.0.2'):
-    Mercurial = NativeMercurial
+
+# status for releases prior to 1.0.1
+# no support for pre 0.9.5 
+if hgversion in ('0.9.5','1.0', '1.0.1', '1.0.2'):
     def _status(repo, files):
-        if files:
-            matcher = lambda x:x in files
-        else:
-            matcher = mercurial.util.always
-        return repo.status(
-            match=matcher,
-            list_ignored=True,
-            list_unknown=True,
-            list_clean=True,
-        )
+            if files:
+                matcher = lambda x:x in files
+            else:
+                matcher = mercurial.util.always
+            return _status_detail(repo, matcher)
+
+    if hgversion=='0.9.5':
+        # 0.95 doesn't know list_unknoen
+        def _status_detail(repo, matcher):
+                return repo.status(
+                    match=matcher,
+                    list_ignored=True,
+                    list_clean=True,
+                )
+    else:
+        def _status_detail(repo, matcher):
+                return repo.status(
+                    match=matcher,
+                    list_ignored=True,
+                    list_unknown=True,
+                    list_clean=True,
+                )
 
 else:
     # hopefully works in crew
-    Mercurial = NativeMercurial
     from mercurial.match import always, exact
     def _status(repo, files):
         if files:
@@ -189,5 +213,3 @@ else:
             unknown=True,
             clean=True,
         )
-    # fallback based on command line
-    #Mercurial 
