@@ -131,7 +131,7 @@ def do_diff(vc, opts, args, **kw):
     if not paths:
         paths = [vc.path]
 
-    diff = vc.diff(paths).strip()
+    diff = vc.diff(paths=paths).strip()
 
     if not opts.no_color and has_pygments and sys.stdout.isatty():
         diff = highlight(diff, get_lexer_by_name('diff'), TerminalFormatter())
