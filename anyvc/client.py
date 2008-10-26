@@ -80,7 +80,7 @@ list_colors = {
 }
 
 
-def do_list(vc, args, opts, **kw):
+def do_list(vc, opts, args, **kw):
 
     try:
         from pygments import console
@@ -117,9 +117,35 @@ def do_list(vc, args, opts, **kw):
     return 0
 
 
+def do_diff(vc, opts, args, **kw):
+    try:
+        from pygments import highlight
+        from pygments.lexers import get_lexer_by_name
+        from pygments.formatters import TerminalFormatter
+        has_pygments = True
+    except:
+        has_pygments = False
+        logging.debug('Pygments is not available.')
+
+    paths = args
+    if not paths:
+        paths = [vc.path]
+
+    diff = vc.diff(paths).strip()
+
+    if not opts.no_color and has_pygments and sys.stdout.isatty():
+        diff = highlight(diff, get_lexer_by_name('diff'), TerminalFormatter())
+
+    sys.stdout.write(diff)
+    sys.stdout.flush()
+
+
+
+
 # The available commands
 commands = {
     'list': do_list,
+    'diff': do_diff,
 }
 
 
@@ -149,7 +175,7 @@ def main():
     called = pargs.pop(0)
 
     try:
-        command = pargs[0]
+        command = pargs.pop(0)
     except IndexError:
         logging.error(_('You must provide a command.'))
         logging.info(_('The available commands are: %(commands)s' %
@@ -168,5 +194,5 @@ def main():
 
     logging.debug('Calling %s' % command)
 
-    return action(vc, args, opts)
+    return action(vc, opts, pargs)
 
