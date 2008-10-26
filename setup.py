@@ -6,6 +6,7 @@ setup(
     version = '0.1',
     name = 'anyvc',
     packages = ['anyvc'],
+    scripts = ['bin/vc'],
 
     description='Library to access any version control system.',
     url='http://www.bitbucket.org/RonnyPfannschmidt/anyvc/',
