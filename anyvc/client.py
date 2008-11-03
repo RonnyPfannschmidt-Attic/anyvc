@@ -17,7 +17,7 @@ from optparse import OptionParser
 # XXX Translations
 _ = lambda s: s
 
-from . import get_workdir_manager_for_path
+from .workdir import get_workdir_manager_for_path
 
 
 def create_option_parser():

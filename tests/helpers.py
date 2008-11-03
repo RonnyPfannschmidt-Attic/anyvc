@@ -5,8 +5,7 @@ from __future__ import with_statement
 import os
 import sys
 
-from anyvc import all_known
-from anyvc import Mercurial, Bazaar, SubVersion, Git, Darcs
+from anyvc.workdir import Mercurial, Bazaar, SubVersion, Git, Darcs
 from functools import wraps, partial
 from os.path import join
 from tempfile import mkdtemp

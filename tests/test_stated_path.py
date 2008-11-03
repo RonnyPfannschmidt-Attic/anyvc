@@ -7,5 +7,5 @@
 >>> StatedPath('a')
 <normal 'a'>
 """
-from anyvc.file import StatedPath
+from anyvc.workdir.file import StatedPath
 
