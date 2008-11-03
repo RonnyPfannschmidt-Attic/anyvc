@@ -32,6 +32,8 @@ def create_option_parser():
     # List options
     parser.add_option('-a', '--list-all', dest='list_all',
                       action='store_true', help='List all files.')
+    parser.add_option('-m', '--message', dest='commit_message',
+                     action='store', help='The commit message')
     parser.add_option('-U', '--hide-unknown', dest='hide_unknown',
                       action='store_true', help='Hide unknown files')
     parser.add_option('-u', '--list-unchanged', dest='list_unchanged',
@@ -139,6 +141,12 @@ def do_diff(vc, opts, args, **kw):
     sys.stdout.write(diff)
     sys.stdout.flush()
 
+def do_commit(vc, opts, args, **kw):
+    out = vc.commit(
+        message=opts.commit_message,
+        paths=args)
+    sys.stdout.write(out)
+    sys.stdout.flush()
 
 
 
@@ -147,6 +155,7 @@ commands = {
     'status': do_status,
     'st': do_status,
     'diff': do_diff,
+    'commit': do_commit,
 }
 
 
