@@ -80,7 +80,7 @@ list_colors = {
 }
 
 
-def do_list(vc, opts, args, **kw):
+def do_status(vc, opts, args, **kw):
 
     try:
         from pygments import console
@@ -144,7 +144,8 @@ def do_diff(vc, opts, args, **kw):
 
 # The available commands
 commands = {
-    'list': do_list,
+    'status': do_status,
+    'st': do_status,
     'diff': do_diff,
 }
 
