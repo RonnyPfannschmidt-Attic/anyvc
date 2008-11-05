@@ -63,7 +63,6 @@ class Git(CommandBased):
                 ]
 
     def parse_list_item(self, item, cache):
-        print item
         state , name = item[0], item[2:].rstrip()
         return Path(name, self.state_map[state], self.base_path)
 
@@ -89,7 +88,6 @@ class Git(CommandBased):
         return ["status"]
 
     def parse_cache_items(self, items):
-        print items
         untracked = re.search("include in what will be committed\)\n#\n(#\t[\w\.\-/]*\n)+",items)        
         index = re.search("to unstage\)\n#\n(#\t[\w\.\- :>/]*\n)+",items)        
         changed = re.search("update what will be committed\)\n#\n(#\t[\w\.\-: /]*\n)+",items)
@@ -124,7 +122,6 @@ class Git(CommandBased):
                 elif state != 'C':               
                     yield Path(name, cache[name], self.base_path)
             else:
-                print repr(Path(name, self.state_map[state], self.base_path))
                 yield Path(name, self.state_map[state], self.base_path)
 
 
