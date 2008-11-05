@@ -113,11 +113,9 @@ class Git(CommandBased):
     def parse_list_items(self, items, cache):
         for item in items:
             state , name = item[0], item[2:].rstrip()
-            if cache.has_key(name):
+            if name in cache:
                 if cache[name][0] == "renamed":
-                    print repr(Path(name ,"added", self.base_path))
                     yield Path(name ,"added", self.base_path)
-                    print repr(Path(cache[name][1], "removed", self.base_path)) 
                     yield Path(cache[name][1], "removed", self.base_path)
                 elif state != 'C':               
                     yield Path(name, cache[name], self.base_path)
