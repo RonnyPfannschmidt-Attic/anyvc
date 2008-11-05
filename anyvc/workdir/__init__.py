@@ -18,7 +18,11 @@ from .monotone import Monotone
 from .hg import Mercurial
 from .git import Git
 
-all_known = [ Monotone, Bazaar, SubVersion, Mercurial, Darcs, Git]
+all_known = [ Bazaar, SubVersion, Mercurial, Darcs, Git]
+unsupported = [ Monotone, ]
+
+def enable_unsupported():
+    all_known.extend(unsupported)
 
 def get_workdir_manager_for_path(path):
     found_vcm = None
