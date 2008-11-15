@@ -18,6 +18,35 @@ class VCSWorkDir (object):
         self.setup()
         self.path = path
 
+    def list(self, paths=(), recursive=False):
+        """
+        yield a list of Path instances tagged with status informations
+        """
+        raise NotImplementedError
+
+    def diff(self, paths=()):
+        raise NotImplementedError
+
+    def update(self, revision=None):
+        raise NotImplementedError
+
+    def commit(self, paths=None, message=None, user=None):
+        raise NotImplementedError
+
+    def revert(self, paths=None, missing=False):
+        raise NotImplementedError
+
+    def add(self, paths=None, recursive=False):
+        raise NotImplementedError
+
+    def remove(self, paths=None, execute=False, recursive=False):
+        raise NotImplementedError
+
+    def rename(self, paths=None, path=None, target=None):
+        raise NotImplementedError
+
+class VCSWorkDir_WithParser(VCSWorkDir):
+
     def parse_list_items(self, items, cache):
         """
         redirect to parse_list_item
@@ -77,25 +106,3 @@ class VCSWorkDir (object):
                     paths = paths, 
                     recursive=recursive, 
                     ), cache)
-
-    def diff(self, paths=()):
-        raise NotImplementedError
-
-    def update(self, revision=None):
-        raise NotImplementedError
-
-    def commit(self, paths=None, message=None, user=None):
-        raise NotImplementedError
-
-    def revert(self, paths=None, missing=False):
-        raise NotImplementedError
-
-    def add(self, paths=None, recursive=False):
-        raise NotImplementedError
-
-    def remove(self, paths=None, execute=False, recursive=False):
-        raise NotImplementedError
-
-    def rename(self, paths=None, path=None, target=None):
-        raise NotImplementedError
-
