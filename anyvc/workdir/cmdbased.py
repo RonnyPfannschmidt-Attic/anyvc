@@ -17,7 +17,7 @@ import os, os.path
 
 #TODO: more reviews
 
-from bases import VCSBase, DVCSMixin
+from bases import VCSBase
 from file import StatedPath as Path
 
 def relative_to(base_path):
@@ -186,25 +186,7 @@ class CommandBased(VCSBase):
         return None
 
 
-class DCommandBased(CommandBased,DVCSMixin):
-    """
-    base class for all distributed command based rcs's
-    """
-    def sync(self, **kw):
-        args = self.get_sync_args(**kw)
-        return self._execute_command(args, **kw)
-
-    def pull(self, **kw):
-        args = self.get_pull_args(**kw)
-        return self._execute_command(args, **kw)
-
-    def push(self, **kw):
-        args = self.get_push_args(**kw)
-        return self._execute_command(args, **kw)
-
-
-
-class Bazaar(DCommandBased):
+class Bazaar(CommandBased):
     """
     .. warning:
         badly broken
@@ -315,7 +297,7 @@ class SubVersion(CommandBased):
         return Path(file, self.state_map[state], self.base_path)
 
 
-class Darcs(DCommandBased):
+class Darcs(CommandBased):
     #TODO: ensure this really works in most cases
 
     cmd = 'darcs'

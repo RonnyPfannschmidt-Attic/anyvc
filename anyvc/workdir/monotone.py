@@ -6,16 +6,16 @@
     :license: LGPL2 or later
 """
 
-from cmdbased import DCommandBased, relative_to, Path
+from cmdbased import CommandBased, relative_to, Path
 import os.path
 
-class Monotone(DCommandBased):
+class Monotone(CommandBased):
 
     cmd = 'mtn'
     detect_subdir = '_MTN'
 
     def __init__(self, versioned_path):
-        DCommandBased.__init__(self, versioned_path)
+        CommandBased.__init__(self, versioned_path)
         self.interface_version = float(
                 self.execute_command(['au','interface_version']))
 

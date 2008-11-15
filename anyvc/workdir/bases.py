@@ -6,7 +6,7 @@
     :copyright: 2008 Ronny Pfannschmidt
     :license: LGPL2 or later
 """
-__all__ = ["VCSBase","DVCSMixin"]
+__all__ = ["VCSBase",]
 
 class VCSBase (object):
     """
@@ -97,16 +97,5 @@ class VCSBase (object):
         raise NotImplementedError
 
     def rename(self, paths=None, path=None, target=None):
-        raise NotImplementedError
-
-class DVCSMixin(object):
-
-    def pull(self, locations=None):
-        raise NotImplementedError
-
-    def sync(self, locations=None):
-        raise NotImplementedError
-
-    def push(self, locations=None):
         raise NotImplementedError
 
