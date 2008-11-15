@@ -17,7 +17,7 @@ import os, os.path
 
 #TODO: more reviews
 
-from bases import VCSBase
+from bases import VCSWorkDir
 from file import StatedPath as Path
 
 def relative_to(base_path):
@@ -39,7 +39,7 @@ def relative_to(base_path):
     return process_path
 
 
-class CommandBased(VCSBase):
+class CommandBased(VCSWorkDir):
     """
     Base class for all command based rcs's
     """

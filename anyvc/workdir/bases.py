@@ -6,9 +6,9 @@
     :copyright: 2008 Ronny Pfannschmidt
     :license: LGPL2 or later
 """
-__all__ = ["VCSBase",]
+__all__ = ["VCSWorkDir",]
 
-class VCSBase (object):
+class VCSWorkDir (object):
     """
     Base class for all vcs's
     remember not to use super in subclasses

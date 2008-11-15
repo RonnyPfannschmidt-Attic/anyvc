@@ -15,7 +15,7 @@ __all__ = 'Mercurial',
 import os
 from functools import wraps
 from .file import StatedPath
-from .bases import VCSBase
+from .bases import VCSWorkDir
 
 try:
     from mercurial.__version__ import version as hgversion
@@ -53,7 +53,7 @@ def _find_repo(path):
         last = cur
         cur = os.path.dirname(cur)
 
-class Mercurial(VCSBase):
+class Mercurial(VCSWorkDir):
 
     @staticmethod
     def make_repo(path):
