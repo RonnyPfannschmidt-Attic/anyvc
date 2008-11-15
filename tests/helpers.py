@@ -5,16 +5,13 @@ from __future__ import with_statement
 import os
 import sys 
 
-from anyvc.workdir import Mercurial, Bazaar, SubVersion, Git, Darcs
+from anyvc.workdir import all_known
 from functools import wraps, partial
 from os.path import join
 from tempfile import mkdtemp
 from subprocess import Popen, PIPE
 from shutil import rmtree
 from nose.tools import assert_equal
-
-#XXX: hack
-all_known = Mercurial, Bazaar, SubVersion, Darcs, Git
 
 
 def do(*args, **kw):
