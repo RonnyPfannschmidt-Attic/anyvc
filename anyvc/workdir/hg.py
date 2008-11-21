@@ -200,16 +200,20 @@ if hgversion in ('0.9.5','1.0', '1.0.1', '1.0.2'):
 
 else:
     # hopefully works in crew
-    from mercurial.match import always, exact
-    def _status(repo, files):
-        if files:
-            #XXX: investigate cwd arg
-            matcher = exact(repo.root, repo.root, files)
-        else:
-            matcher = always(repo.root, repo.root)
-        return repo.status(
-            match=matcher,
-            ignored=True,
-            unknown=True,
-            clean=True,
-        )
+    try:
+        from mercurial.match import always, exact
+        def _status(repo, files):
+            if files:
+                #XXX: investigate cwd arg
+                matcher = exact(repo.root, repo.root, files)
+            else:
+                matcher = always(repo.root, repo.root)
+            return repo.status(
+                match=matcher,
+                ignored=True,
+                unknown=True,
+                clean=True,
+            )
+    except ImportError:
+        # ops, probably a hg < 0.9.5 - darn
+        _status = None
