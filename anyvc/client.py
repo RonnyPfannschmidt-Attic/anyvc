@@ -92,7 +92,11 @@ def do_status(vc, opts, args, **kw):
     def output_state(st):
         output = list_letters.get(st.state, '*').ljust(2)
         color = list_colors.get(st.state)
-        if sys.stdout.isatty() and console and color and not opts.no_color:
+        if (sys.stdout.isatty() 
+            and console 
+            and color 
+            and not opts.no_color
+            and os.environ.get('TERM') != "dumb"):
             output = console.ansiformat(color, output)
         sys.stdout.write(output)
         sys.stdout.write(st.relpath)
@@ -135,7 +139,10 @@ def do_diff(vc, opts, args, **kw):
 
     diff = vc.diff(paths=paths).strip()
 
-    if not opts.no_color and has_pygments and sys.stdout.isatty():
+    if (not opts.no_color 
+        and has_pygments 
+        and sys.stdout.isatty() 
+        and os.environ.get('TERM') != 'dumb'):
         diff = highlight(diff, get_lexer_by_name('diff'), TerminalFormatter())
 
     sys.stdout.write(diff)
