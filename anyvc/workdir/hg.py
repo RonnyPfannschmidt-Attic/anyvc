@@ -26,7 +26,8 @@ except ImportError:
     ui, hg, _findrepo = None, None, None
     hgversion = ''
 
-
+#XXX: this shouldn't work if used by the vc client
+#     console output should be responsive
 def grab_output(func):
     """
     wraps a call to hg and grabs the output
@@ -56,8 +57,12 @@ def _find_repo(path):
 class Mercurial(VCSWorkDir):
 
     @staticmethod
-    def make_repo(path):
+    def make_repo(path): #XXX: bullshit here
         return Mercurial(path, create=True)
+
+    def get_repository(self):
+        from ..repository.hg import MercurialRepository
+        return MercurialRepository(self)
 
     def __init__(self, path, create=False):
         """

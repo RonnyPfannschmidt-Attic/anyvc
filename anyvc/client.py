@@ -28,6 +28,8 @@ def create_option_parser():
     # General options
     parser.add_option('-d', '--working-directory', dest='working_directory',
                       help='The working directory')
+    parser.add_option('-r', '--revision', dest='revision',
+                      help='The revision id')
 
     # List options
     parser.add_option('-a', '--list-all', dest='list_all',
@@ -146,7 +148,7 @@ def do_diff(vc, opts, args, **kw):
         diff = highlight(diff, get_lexer_by_name('diff'), TerminalFormatter())
 
     sys.stdout.write(diff)
-    sys.stdout.flush()
+    sys.tdout.flush()
 
 def do_commit(vc, opts, args, **kw):
     out = vc.commit(
@@ -154,6 +156,18 @@ def do_commit(vc, opts, args, **kw):
         paths=args)
     sys.stdout.write(out)
     sys.stdout.flush()
+
+def do_push(vc, opts, args, **kw):
+    repo = vc.get_repository()
+    if repo is None:
+        print >>sys.stderr, ""
+
+    if not repo.local:
+        #XXX: better handling
+        print >>sys.stderr, "can't push from a non-local", repo.__class__.__name__
+        exit(1)
+    location = args[0] if args else None
+    print repo.push(location, opts.revision)
 
 
 
@@ -163,6 +177,7 @@ commands = {
     'st': do_status,
     'diff': do_diff,
     'commit': do_commit,
+    'push': do_push,
 }
 
 
