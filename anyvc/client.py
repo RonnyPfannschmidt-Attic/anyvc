@@ -148,7 +148,7 @@ def do_diff(vc, opts, args, **kw):
         diff = highlight(diff, get_lexer_by_name('diff'), TerminalFormatter())
 
     sys.stdout.write(diff)
-    sys.tdout.flush()
+    sys.stdout.flush()
 
 def do_commit(vc, opts, args, **kw):
     out = vc.commit(
