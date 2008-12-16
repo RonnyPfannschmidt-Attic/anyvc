@@ -7,7 +7,6 @@ setup(
     name = 'anyvc',
     packages = [
         'anyvc',
-        'anyvc.history',
         'anyvc.repository',
         'anyvc.workdir',
     ],
