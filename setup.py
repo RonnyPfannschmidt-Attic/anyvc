@@ -5,7 +5,12 @@ from distutils.core import setup
 setup(
     version = '0.1',
     name = 'anyvc',
-    packages = ['anyvc'],
+    packages = [
+        'anyvc',
+        'anyvc.history',
+        'anyvc.repository',
+        'anyvc.workdir',
+    ],
     scripts = ['bin/vc'],
 
     description='Library to access any version control system.',
