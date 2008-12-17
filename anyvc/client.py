@@ -157,6 +157,12 @@ def do_commit(vc, opts, args, **kw):
     sys.stdout.write(out)
     sys.stdout.flush()
 
+def do_add(vc, opts, args, **kw):
+    out = vc.add(paths=args)
+    sys.stdout.write(out)
+    sys.stdout.flush()
+
+
 def do_push(vc, opts, args, **kw):
     repo = vc.get_repository()
     if repo is None:
@@ -173,6 +179,7 @@ def do_push(vc, opts, args, **kw):
 
 # The available commands
 commands = {
+    'add': do_add,
     'status': do_status,
     'st': do_status,
     'diff': do_diff,
