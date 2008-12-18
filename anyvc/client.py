@@ -188,9 +188,9 @@ commands = {
 }
 
 
-def main():
+def main(argv=sys.argv):
     parser = create_option_parser()
-    opts, args = parser.parse_args(sys.argv)
+    opts, args = parser.parse_args(argv)
 
     setup_logger(opts.verbose)
 
