@@ -4,7 +4,7 @@ from .helpers import for_all, disable
 from nose.tools import assert_equal
 
 def initial(mgr):
-    mgr.make_repo('repo')
+    print mgr.make_repo('repo')
     wd = mgr.make_wd('repo', 'wd')
     wd.put_files({
         'test.py':'print "test"',
@@ -18,7 +18,7 @@ def test_repo_add(mgr):
         'test.py': 'unknown',
         })
 
-    wd.add(paths=['test.py'])
+    print wd.add(paths=['test.py'])
 
     wd.check_states({
         'test.py': 'added',
@@ -30,7 +30,6 @@ def test_repo_add(mgr):
         'test.py': 'clean',
         })
 
-@disable
 @for_all
 def test_subdir_state_add(mgr):
     mgr.make_repo('repo')
@@ -39,7 +38,7 @@ def test_subdir_state_add(mgr):
         'subdir/test.py':'test',
     })
 
-    wd.add(paths=['subdir/test.py'])
+    print wd.add(paths=['subdir/test.py'])
     wd.check_states({'subdir/test.py': 'added'}, exact=True)
 
 
