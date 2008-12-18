@@ -14,7 +14,6 @@ def initial(mgr):
 @for_all
 def test_repo_add(mgr):
     wd = initial(mgr)
-    status = list(wd.list(['test.py']))
     wd.check_states({
         'test.py': 'unknown',
         })
@@ -30,6 +29,20 @@ def test_repo_add(mgr):
     wd.check_states({
         'test.py': 'clean',
         })
+
+@disable
+@for_all
+def test_subdir_state_add(mgr):
+    mgr.make_repo('repo')
+    wd = mgr.make_wd('repo', 'wd')
+    wd.put_files({
+        'subdir/test.py':'test',
+    })
+
+    wd.add(paths=['subdir/test.py'])
+    wd.check_states({'subdir/test.py': 'added'}, exact=True)
+
+
 
 @for_all
 def test_repo_remove(mgr):

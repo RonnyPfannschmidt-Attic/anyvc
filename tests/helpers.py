@@ -7,7 +7,7 @@ import sys
 
 from anyvc.workdir import all_known
 from functools import wraps, partial
-from os.path import join
+from os.path import join, dirname, exists
 from tempfile import mkdtemp
 from subprocess import Popen, PIPE
 from shutil import rmtree
@@ -68,7 +68,11 @@ class WdWrap(object):
 
     def put_files(self, mapping):
         for name, content in mapping.items():
-            with open(self.bpath(name), 'w') as f:
+            path = self.bpath(name)
+            dir = dirname(path)
+            if not exists(dir):
+                os.makedirs(dir)
+            with open(path, 'w') as f:
                 f.write(content)
 
     def check_states(self, mapping, exact=False):
@@ -77,11 +81,18 @@ class WdWrap(object):
         returns true if all supplied files have the asumed state
         """
         print mapping
+        used = set()
         infos = list(self.list())
         for info in infos:
             print repr(info)
             if info.relpath in mapping:
                 assert_equal(info.state, mapping[info.relpath], info.path)
+                used.add(info.relpath)
+
+        if exact:
+            assert_equal(len(mapping), len(used), 'not all excepted stated occured')
+
+
 
 
 class VcsMan(object):
