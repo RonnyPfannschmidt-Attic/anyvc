@@ -18,7 +18,7 @@ class VCSWorkDir (object):
         self.setup()
         self.path = path
 
-    def list(self, paths=(), recursive=False):
+    def list(self, paths=(), recursive=True):
         """
         yield a list of Path instances tagged with status informations
         """
@@ -96,7 +96,7 @@ class VCSWorkDir_WithParser(VCSWorkDir):
                     recursive=recursive
                     )))
 
-    def list(self, paths=(), recursive=False):
+    def list(self, paths=(), recursive=True):
         """
         yield a list of Path instances tagged with status informations
         """

@@ -199,7 +199,7 @@ class Bazaar(CommandBased):
     def process_paths(self, paths):
         return map(relative_to(self.base_path), paths)
 
-    def get_list_args(self, recursive=True, paths=(),**kw):
+    def get_list_args(self, recursive, paths,**kw):
         ret = ["ls","-v"]
         if not recursive:
             ret.append("--non-recursive")
@@ -257,7 +257,7 @@ class SubVersion(CommandBased):
     cmd = "svn"
     detect_subdir = ".svn"
 
-    def get_list_args(self, recursive=True, paths=(), **kw):
+    def get_list_args(self, recursive, paths, **kw):
         #TODO: figure a good way to deal with changes in external
         # (maybe use the svn python api to do that)
         ret = ["st", "--no-ignore", "--ignore-externals", "--verbose"]
