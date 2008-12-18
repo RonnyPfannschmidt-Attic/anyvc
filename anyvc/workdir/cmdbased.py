@@ -279,6 +279,10 @@ class SubVersion(CommandBased):
             '~': 'clean',
             }
 
+    def get_add_args(self, paths=(), **kw):
+        # svn add doesnt add parent dirs by default
+        return ['add', '--parents'] + paths
+
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--diff-cmd', 'diff'] + paths
 
