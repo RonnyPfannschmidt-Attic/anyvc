@@ -170,6 +170,7 @@ class Mercurial(VCSWorkDir):
                 self.ui,
                 self.repo,
                 rev=rev,
+                git=True,
                 *self.joined(paths))
 
 
