@@ -12,7 +12,7 @@ def initial(mgr):
     return wd
 
 @for_all
-def test_repo_add(mgr):
+def test_workdir_add(mgr):
     wd = initial(mgr)
     wd.check_states({
         'test.py': 'unknown',
@@ -44,7 +44,7 @@ def test_subdir_state_add(mgr):
 
 
 @for_all
-def test_repo_remove(mgr):
+def test_workdir_remove(mgr):
     wd = initial(mgr)
     wd.add(paths=['test.py'])
     wd.commit(message='*')
@@ -59,7 +59,7 @@ def test_repo_remove(mgr):
     wd.check_states({'test.py': 'clean'})
 
 @for_all
-def test_repo_rename(mgr):
+def test_workdir_rename(mgr):
     wd = initial(mgr)
     wd.add(paths=['test.py'])
     wd.commit(message='*')
@@ -74,7 +74,7 @@ def test_repo_rename(mgr):
     wd.check_states({'test2.py': 'clean'})
 
 @for_all
-def test_repo_revert(mgr):
+def test_workdir_revert(mgr):
     wd = initial(mgr)
     wd.add(paths=['test.py'])
     wd.commit(message='*')
