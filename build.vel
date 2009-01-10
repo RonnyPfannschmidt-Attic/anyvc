@@ -1,9 +1,0 @@
-options(
-    name 'Anyvc'
-    version '0.1'
-    default 'tests'
-)
-depends()
-targets(
-    tests $ nosetests --with-doctest --doctest-tests
-)
