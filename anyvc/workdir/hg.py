@@ -93,7 +93,7 @@ class Mercurial(VCSWorkDir):
         finally:
             self.__init_out = self.ui.popbuffer()
 
-    def list(self, *k, **kw):
+    def list(self, paths=(), *k, **kw):
         recursive = kw.get('recursive')
         #XXX: merce conflicts ?!
         names = (
@@ -106,6 +106,8 @@ class Mercurial(VCSWorkDir):
             files = [os.path.join(subdir, x) for x in os.listdir(self.path)]
         else:
             files = ()
+
+        files = () #XXX kill all preselection till i get the matcher interface
         
         state_files = _status(self.repo, files)
         for state, files in zip(names, state_files):
