@@ -1,3 +1,4 @@
 .*\.swp
 .*\.pyc
 \.rope.*
+docs/build
