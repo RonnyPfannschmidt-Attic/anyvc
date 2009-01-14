@@ -124,10 +124,7 @@ class CommandBased(VCSWorkDir_WithParser):
         return ['revert'] + self.process_paths(paths)
 
     def get_status_args(self,**kw):
-        return ['status']
-
-    def get_list_args(self, **kw):
-        raise NotImplementedError("%s doesnt implement list"%self.__class__.__name__)
+        raise NotImplementedError("%s doesn't implement status"%self.__class__.__name__)
 
     def commit(self, **kw):
         args = self.get_commit_args(**kw)
@@ -139,10 +136,6 @@ class CommandBased(VCSWorkDir_WithParser):
 
     def update(self, **kw):
         args = self.get_update_args(**kw)
-        return self.execute_command(args, **kw)
-
-    def status(self, **kw):
-        args = self.get_status_args(**kw)
         return self.execute_command(args, **kw)
 
     def add(self, **kw):
@@ -161,7 +154,7 @@ class CommandBased(VCSWorkDir_WithParser):
         args = self.get_revert_args(**kw)
         return self.execute_command(args, **kw)
 
-    def list_impl(self, **kw):
+    def status_impl(self, **kw):
         """
         the default implementation is only cappable of 
         recursive operation on the complete workdir
@@ -169,7 +162,7 @@ class CommandBased(VCSWorkDir_WithParser):
         rcs-specific implementations might support 
         non-recursive and path-specific listing
         """
-        args = self.get_list_args(**kw)
+        args = self.get_status_args(**kw)
         return self.execute_command(args, result_type=iter, **kw)
 
     def cache_impl(self, recursive, **kw):
@@ -199,7 +192,7 @@ class Bazaar(CommandBased):
     def process_paths(self, paths):
         return map(relative_to(self.base_path), paths)
 
-    def get_list_args(self, recursive, paths,**kw):
+    def get_status_args(self, recursive, paths,**kw):
         ret = ["ls","-v"]
         if not recursive:
             ret.append("--non-recursive")
@@ -239,7 +232,7 @@ class Bazaar(CommandBased):
                 else:
                     yield item.strip(), state
 
-    def parse_list_items(self, items, cache):
+    def parse_status_items(self, items, cache):
         for item in items:
             if not item:
                 continue
@@ -257,7 +250,7 @@ class SubVersion(CommandBased):
     cmd = "svn"
     detect_subdir = ".svn"
 
-    def get_list_args(self, recursive, paths, **kw):
+    def get_status_args(self, recursive, paths, **kw):
         #TODO: figure a good way to deal with changes in external
         # (maybe use the svn python api to do that)
         ret = ["st", "--no-ignore", "--ignore-externals", "--verbose"]
@@ -289,7 +282,7 @@ class SubVersion(CommandBased):
     def get_move_args(self, source, target):
         return ['move', source, target]
 
-    def parse_list_item(self, item, cache):
+    def parse_status_item(self, item, cache):
         if item[0:4] == 'svn:':
             # ignore all svn error messages
             return None
@@ -303,6 +296,7 @@ class SubVersion(CommandBased):
 
 class Darcs(CommandBased):
     #TODO: ensure this really works in most cases
+    #XXX: path processing?
 
     cmd = 'darcs'
     detect_subdir = '_darcs'
@@ -313,7 +307,7 @@ class Darcs(CommandBased):
     def get_revert_args(self, paths=()):
         return ['revert', '-a'] + list(paths)
 
-    def get_list_args(self, **kw):
+    def get_status_args(self, **kw):
         return ['whatsnew', '--boring', '--summary']
 
     state_map = {
@@ -327,7 +321,7 @@ class Darcs(CommandBased):
     move_regex = re.compile(" (?P<removed>.*?) -> (?P<added>.*?)$")
 
 
-    def parse_list_items(self, items, cache):
+    def parse_status_items(self, items, cache):
         for item in items:
             if item.startswith('What') or item.startswith('No') or not item.strip():
                 continue

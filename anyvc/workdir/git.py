@@ -56,13 +56,13 @@ class Git(CommandBased):
     def get_revert_args(self, paths=(), recursive=False, **kw):
         return ['checkout','HEAD'] + self.process_paths(paths)
 
-    def get_list_args(self, **kw):
+    def get_status_args(self, **kw):
         return ['ls-files',
                 '-c', '-d', '-o',
                 '-k', '-m', '-t',
                 ]
 
-    def parse_list_item(self, item, cache):
+    def parse_status_item(self, item, cache):
         state , name = item[0], item[2:].rstrip()
         return Path(name, self.state_map[state], self.base_path)
 
@@ -110,7 +110,7 @@ class Git(CommandBased):
 
 #        if not index and not untracked and not changed:
             
-    def parse_list_items(self, items, cache):
+    def parse_status_items(self, items, cache):
         for item in items:
             state , name = item[0], item[2:].rstrip()
             if name in cache:

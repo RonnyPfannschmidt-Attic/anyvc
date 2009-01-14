@@ -18,7 +18,7 @@ class VCSWorkDir (object):
         self.setup()
         self.path = path
 
-    def list(self, paths=(), recursive=True):
+    def status(self, paths=(), recursive=True):
         """
         yield a list of Path instances tagged with status informations
         """
@@ -47,19 +47,19 @@ class VCSWorkDir (object):
 
 class VCSWorkDir_WithParser(VCSWorkDir):
 
-    def parse_list_items(self, items, cache):
+    def parse_status_items(self, items, cache):
         """
-        redirect to parse_list_item
+        redirect to parse_status_item
         a more complex parser might need to overwrite
         """
         for item in items: 
-            rv = self.parse_list_item(item, cache)
+            rv = self.parse_status_item(item, cache)
             if rv:
                 yield rv
 
-    def parse_list_item(self, item, cache):
+    def parse_status_item(self, item, cache):
         """
-        parse a single listing item
+        parse a single status item
         """
         raise NotImplementedError
 
@@ -78,7 +78,7 @@ class VCSWorkDir_WithParser(VCSWorkDir):
         """
         return []
 
-    def list_impl(self, paths=False, recursive=False):
+    def status_impl(self, paths=False, recursive=False):
         """
         yield a list of vcs specific listing items
         """
@@ -96,13 +96,13 @@ class VCSWorkDir_WithParser(VCSWorkDir):
                     recursive=recursive
                     )))
 
-    def list(self, paths=(), recursive=True):
+    def status(self, paths=(), recursive=True):
         """
         yield a list of Path instances tagged with status informations
         """
         cache = self.cache(paths = paths,recursive=recursive)
-        return self.parse_list_items(
-                self.list_impl(
+        return self.parse_status_items(
+                self.status_impl(
                     paths = paths, 
                     recursive=recursive, 
                     ), cache)

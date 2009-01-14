@@ -93,7 +93,7 @@ class Mercurial(VCSWorkDir):
         finally:
             self.__init_out = self.ui.popbuffer()
 
-    def list(self, paths=(), *k, **kw):
+    def status(self, paths=(), *k, **kw):
         recursive = kw.get('recursive')
         #XXX: merce conflicts ?!
         names = (

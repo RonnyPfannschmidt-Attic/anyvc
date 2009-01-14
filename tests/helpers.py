@@ -82,7 +82,7 @@ class WdWrap(object):
         """
         print mapping
         used = set()
-        infos = list(self.list())
+        infos = list(self.status())
         for info in infos:
             print repr(info)
             if info.relpath in mapping:
@@ -90,7 +90,7 @@ class WdWrap(object):
                 used.add(info.relpath)
 
         if exact:
-            assert_equal(len(mapping), len(used), 'not all excepted stated occured')
+            assert len(mapping) == len(used), 'not all excepted stated occured'
 
 
 
