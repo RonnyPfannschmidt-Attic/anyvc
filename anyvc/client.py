@@ -118,7 +118,7 @@ def do_status(vc, opts, args, **kw):
         if opts.hide_unknown:
             hidden_states.append('unknown')
 
-    for st in vc.list(recursive=not opts.list_nonrecursive):
+    for st in vc.status(recursive=not opts.list_nonrecursive):
         if st.state not in hidden_states:
             output_state(st)
 
