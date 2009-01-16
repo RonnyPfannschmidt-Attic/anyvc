@@ -96,7 +96,7 @@ class Bazaar(VCSWorkDir_WithParser):
 
         return fulllist
 
-    def parse_list_items(self, items, cache):
+    def parse_status_items(self, items, cache):
         if self.base_path != None:
             relpath =  self.path[len(self.base_path):]
 
