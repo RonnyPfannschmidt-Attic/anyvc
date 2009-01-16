@@ -33,20 +33,13 @@ class Bazaar(VCSWorkDir_WithParser):
             }
 
     def __init__(self,path):
-        self.setup() # really?
         self.path = path
         try:
             self.wt = workingtree.WorkingTree.open_containing(self.path)[0]
             self.base_path = self.wt.basedir
-        except:
+        except: #XXX: real error handling
             self.base_path = ""
 
-
-
-    def setup(self):
-        #print "setup. nothing to do here now"
-        pass
-    
     def cache_impl(self, paths=False, recursive=False):
         if self.wt == None:
             return []
@@ -72,7 +65,7 @@ class Bazaar(VCSWorkDir_WithParser):
                 else:
                     yield item.strip(), state
 
-    def list_impl(self, paths=None, recursive=False):
+    def status_impl(self, paths=None, recursive=False):
         if self.wt == None:
             return []
         fulllist = []
@@ -188,7 +181,7 @@ class Bazaar(VCSWorkDir_WithParser):
             self.wt.update()
 
     def _get_relative_path(self,paths):
-        if paths is str:
+        if isinstance(paths, basestring):
             return self.wt.relpath(paths)
         else:
             relpaths = []
