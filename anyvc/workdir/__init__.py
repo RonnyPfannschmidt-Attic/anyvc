@@ -13,10 +13,11 @@
 """
 __all__ = ["all_known", "get_workdir_manager_for_path"]
 
-from .cmdbased import Bazaar, SubVersion, Darcs
+from .cmdbased import SubVersion, Darcs
 from .monotone import Monotone
 from .hg import Mercurial
 from .git import Git
+from .bzr import Bazaar
 
 all_known = [ Bazaar, SubVersion, Mercurial, Darcs, Git]
 unsupported = [ Monotone, ]
