@@ -84,7 +84,7 @@ list_colors = {
 }
 
 
-def do_status(vc, opts, args, **kw):
+def do_status(vc, opts, args):
 
     try:
         from pygments import console
@@ -125,7 +125,7 @@ def do_status(vc, opts, args, **kw):
     return 0
 
 
-def do_diff(vc, opts, args, **kw):
+def do_diff(vc, opts, args):
     try:
         from pygments import highlight
         from pygments.lexers import get_lexer_by_name
@@ -150,20 +150,20 @@ def do_diff(vc, opts, args, **kw):
     sys.stdout.write(diff)
     sys.stdout.flush()
 
-def do_commit(vc, opts, args, **kw):
+def do_commit(vc, opts, args):
     out = vc.commit(
         message=opts.commit_message,
         paths=args)
     sys.stdout.write(out)
     sys.stdout.flush()
 
-def do_add(vc, opts, args, **kw):
+def do_add(vc, opts, args):
     out = vc.add(paths=args)
     sys.stdout.write(out)
     sys.stdout.flush()
 
 
-def do_push(vc, opts, args, **kw):
+def do_push(vc, opts, args):
     repo = vc.get_repository()
     if repo is None:
         print >>sys.stderr, ""
@@ -178,12 +178,14 @@ def do_push(vc, opts, args, **kw):
 
 
 # The available commands
+#XXX: needs a better abstraction
 commands = {
     'add': do_add,
     'status': do_status,
     'st': do_status,
     'diff': do_diff,
     'commit': do_commit,
+    'ci': do_commit,
     'push': do_push,
 }
 
@@ -226,9 +228,9 @@ def main(argv=sys.argv):
         action = commands[command]
     except KeyError:
         logging.error(_('The command "%(command)s" is not available.' %
-                        {'command':command}))
+                        {'command': command}))
         logging.info(_('The available commands are: %(commands)s' %
-                        {'commands': '%s' % ', '.join(commands.keys())}))
+                        {'commands': ', '.join(sorted(commands.keys()))}))
         return -1
 
     logging.debug('Calling %s' % command)
