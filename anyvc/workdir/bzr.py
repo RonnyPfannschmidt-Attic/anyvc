@@ -19,8 +19,6 @@ from bzrlib import revisionspec
 
 
 class Bazaar(VCSWorkDir_WithParser):
-    wt = None
-    base_path = None
     statemap  = {
             "unknown:": 'unknown',
             "added:": 'added',
