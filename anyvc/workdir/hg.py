@@ -17,14 +17,10 @@ from functools import wraps
 from .file import StatedPath
 from .bases import VCSWorkDir
 
-try:
-    from mercurial.__version__ import version as hgversion
-    from mercurial import ui, hg
-    from mercurial import commands
-    import mercurial.util
-except ImportError:
-    ui, hg, _findrepo = None, None, None
-    hgversion = ''
+from mercurial.__version__ import version as hgversion
+from mercurial import ui, hg
+from mercurial import commands
+import mercurial.util
 
 #XXX: this shouldn't work if used by the vc client
 #     console output should be responsive
@@ -70,12 +66,6 @@ class Mercurial(VCSWorkDir):
         If `create` is true, a new repo is created.
         """
         self.path = os.path.normpath( os.path.abspath(path) )
-        if hg is None: 
-            # lazy fail so we can import this one and add it to anyvc.all_known
-            raise ImportError(
-                'no module is named mercurial '
-                '(please install mercurial and ensure its in the PYTHONPATH)'
-            )
         self.ui = ui.ui(interactive=False, verbose=True, debug=True)
         ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
         try:
