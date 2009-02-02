@@ -32,7 +32,7 @@ class Bazaar(VCSWorkDir_WithParser):
             #XXX: figure why None didn't work
             }
 
-    def __init__(self,path):
+    def __init__(self,path): 
         self.path = path
         try:
             self.wt, self._rest = WorkingTree.open_containing(self.path)
@@ -121,7 +121,7 @@ class Bazaar(VCSWorkDir_WithParser):
                     yield x
     
     def add(self, paths=None, recursive=False):
-        paths = [os.path.join(self.base_path, p) for p in paths]
+        paths = self._abspaths(paths)
         try:
             added, ignored = self.wt.smart_add(paths,recursive)
             #XXX: more info?
@@ -133,69 +133,56 @@ class Bazaar(VCSWorkDir_WithParser):
             return "Ok"
 
     def commit(self, paths=None, message=None, user=None):
-        if self.wt != None:
-            try:
-                relpaths = []
-                for p in paths:
-                    relpaths.append(self.wt.relpath(p))
-                self.wt.commit(message,author=user,specific_files=relpaths)
-            except:
-                return "Error commiting %s.\n%s" % (paths, sys.exc_value)
-            else:
-                return "Ok"
+        try:
+            paths = self._abspaths(paths)
+            self.wt.commit(message,author=user,specific_files=paths)
+        except:
+            #XXX: better handling
+            return "Error commiting %s.\n%s" % (paths, sys.exc_value)
+        else:
+            #XXX: better output
+            return "Ok"
 
-    def diff(self, paths=()):
-        if self.wt != None:
-            strdiff = StringIO()
+    def diff(self, paths=None):
+        strdiff = StringIO()
 
-            new_tree = self.wt
-            old_revid = new_tree.branch.revision_history()[-2]
-            old_tree = new_tree.branch.repository.revision_tree(old_revid)
-            from bzrlib.diff import _get_trees_to_diff, show_diff_trees
-              
-            relpaths = self._get_relative_path(paths)
-              
-            show_diff_trees(old_tree, new_tree, strdiff,
-                               specific_files=relpaths)
-            return strdiff.getvalue()
-                 
+        from bzrlib.diff import show_diff_trees
+        if paths is not None:
+            paths = self._abspaths(paths)
+            #XXX: this is weird
+            paths = map(self.wt.relpath, paths)
+        if paths is not None:
+            show_diff_trees(self.wt.basis_tree(), self.wt, strdiff,
+                            specific_files=paths)
+        else:
+            show_diff_trees(self.wt.basis_tree(), self.wt, strdiff)
+        return strdiff.getvalue()
+
     def remove(self, paths=None, execute=False, recursive=False):
-        if self.wt != None:
-            relpaths = self._get_relative_path(paths)
-            for p in paths:
-                self.wt.remove(p)
+        assert paths is not None, 'uh wtf, dont do that till there is a sane ui'
+        self.wt.remove(self._abspaths(paths))
 
     def revert(self, paths=None, missing=False):
-        if self.wt != None:
-            revisionid = self.wt.branch.last_revision()
-            ret = self.wt.revert(old_tree=self.wt.branch.repository.revision_tree(revisionid))
+
+        revisionid = self.wt.branch.last_revision()
+        ret = self.wt.revert(old_tree=self.wt.branch.repository.revision_tree(revisionid))
 
     def update(self, revision=None, paths=None):
-        if self.wt != None:
-            self.wt.update()
+        assert not revision and not paths
+        #XXX fail
+        self.wt.update()
 
-    def _get_relative_path(self,paths):
-        if isinstance(paths, basestring):
-            return self.wt.relpath(paths)
-        else:
-            relpaths = []
-            for p in paths: 
-                relpaths.append(self.wt.relpath(p))
-            return relpaths
-             
+    def _abspaths(self, paths):
+        if paths is not None:
+            return [ os.path.join(self.base_path, path) for path in paths]
 """
 To-Do
-*'add'
 *'commit'
 *'diff'
-'move'?
-'pull'?
-'push'?
 *'remove'
 'rename'?
 *'revert'
 'status'?
-'sync'?
 *'update'
 """
 
