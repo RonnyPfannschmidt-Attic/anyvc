@@ -8,7 +8,8 @@ import sys
 from StringIO import StringIO
 
 #bzr imports
-from bzrlib import workingtree
+from bzrlib.workingtree import WorkingTree
+from bzrlib.errors import NotBranchError
 from bzrlib import bzrdir
 from bzrlib import osutils
 from bzrlib.status import show_tree_status
@@ -35,10 +36,10 @@ class Bazaar(VCSWorkDir_WithParser):
     def __init__(self,path):
         self.path = path
         try:
-            self.wt = workingtree.WorkingTree.open_containing(self.path)[0]
+            self.wt, self._rest = WorkingTree.open_containing(self.path)
             self.base_path = self.wt.basedir
-        except: #XXX: real error handling
-            self.base_path = ""
+        except NotBranchError:
+            raise ValueError("no Bazaar repo below "+path)
 
     def cache_impl(self, paths=False, recursive=False):
         if self.wt == None:
