@@ -8,6 +8,7 @@ import sys
 from StringIO import StringIO
 
 #bzr imports
+import os
 from bzrlib.workingtree import WorkingTree
 from bzrlib.errors import NotBranchError
 from bzrlib import bzrdir
@@ -122,22 +123,16 @@ class Bazaar(VCSWorkDir_WithParser):
                     yield x
     
     def add(self, paths=None, recursive=False):
-        if self.wt != None:
-            try:
-                added, ignored = self.wt.smart_add(paths,recursive)
-                outputdata =  ("Added:\n")
-                for item in added:                
-                    outputdata += "  " + item + "\n"
-                outputdata += ("Ignored:\n")
-                for item in ignored:
-                    outputdata +="  " + item + "\n"
-                #should i do something with outputdata?
-            except:
-                print "err"
-                return "Error adding %s.\n%s" % (paths, sys.exc_value)
-                #dialogs._bzrErrorDialog(_("Bazaar error adding file %s") % file,sys.exc_value)
-            else:
-                return "Ok"
+        paths = [os.path.join(self.base_path, p) for p in paths]
+        try:
+            added, ignored = self.wt.smart_add(paths,recursive)
+            #XXX: more info?
+        except:
+            print "err"
+            return "Error adding %s.\n%s" % (paths, sys.exc_value)
+            #dialogs._bzrErrorDialog(_("Bazaar error adding file %s") % file,sys.exc_value)
+        else:
+            return "Ok"
 
     def commit(self, paths=None, message=None, user=None):
         if self.wt != None:
