@@ -111,6 +111,8 @@ class Mercurial(VCSWorkDir):
         commands.add(self.ui, self.repo, *self.joined(paths))
 
     def joined(self, paths):
+        if paths is None:
+            return []
         return [os.path.join(self.repo.root, path) for path in paths]
 
     @grab_output

@@ -137,7 +137,7 @@ def do_diff(vc, opts, args):
 
     paths = args
     if not paths:
-        paths = [vc.path]
+        paths = None
 
     diff = vc.diff(paths=paths).strip()
 
