@@ -15,12 +15,22 @@ __all__ = ["all_known", "get_workdir_manager_for_path"]
 
 from .cmdbased import SubVersion, Darcs
 from .monotone import Monotone
-from .hg import Mercurial
 from .git import Git
-from .bzr import Bazaar
 
-all_known = [ Bazaar, SubVersion, Mercurial, Darcs, Git]
+all_known = [ SubVersion, Darcs, Git]
 unsupported = [ Monotone, ]
+
+try:
+    from .hg import Mercurial
+    all_known.append(Mercurial)
+except ImportError:
+    pass
+
+try:
+    from .bzr import Bazaar
+    all_known.append(Bazaar)
+except ImportError:
+    pass
 
 def enable_unsupported():
     all_known.extend(unsupported)
