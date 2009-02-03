@@ -134,6 +134,12 @@ class Bazaar(VCSWorkDir_WithParser):
         assert paths is not None, 'uh wtf, dont do that till there is a sane ui'
         self.wt.remove(self._abspaths(paths))
 
+    def move(self, source, target):
+        #XXX: again the relpath weird :(
+        self.wt.rename_one(
+            self.wt.relpath(os.path.join(self.base_path, source)),
+            self.wt.relpath(os.path.join(self.base_path, target)))
+
     def revert(self, paths=None, missing=False):
 
         revisionid = self.wt.branch.last_revision()
