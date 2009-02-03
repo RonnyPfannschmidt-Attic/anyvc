@@ -8,6 +8,9 @@
 """
 __all__ = ["VCSWorkDir",]
 
+from .file import StatedPath
+from os.path import join
+
 class VCSWorkDir (object):
     """
     Base class for all vcs's
@@ -54,8 +57,17 @@ class VCSWorkDir_WithParser(VCSWorkDir):
         """
         for item in items: 
             rv = self.parse_status_item(item, cache)
-            if rv:
-                yield rv
+
+            if rv is not None:
+                state, name = rv
+                #XXX: here renames get turned into ugly add/remove pairs
+                if state is None:
+                    old, new = name
+                    yield StatedPath(old, 'removed', self.base_path)
+                    yield StatedPath(new, 'added', self.base_path)
+                else:
+                    yield StatedPath(name, state, self.base_path)
+
 
     def parse_status_item(self, item, cache):
         """

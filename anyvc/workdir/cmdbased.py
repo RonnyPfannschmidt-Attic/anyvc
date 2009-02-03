@@ -179,73 +179,6 @@ class CommandBased(VCSWorkDir_WithParser):
         return None
 
 
-class Bazaar(CommandBased):
-    """
-    .. warning:
-        badly broken
-    """
-    #TODO: fix caching
-    cmd = "bzr"
-
-    detect_subdir = ".bzr"
-
-    def process_paths(self, paths):
-        return map(relative_to(self.base_path), paths)
-
-    def get_status_args(self, recursive, paths,**kw):
-        ret = ["ls","-v"]
-        if not recursive:
-            ret.append("--non-recursive")
-        return ret
-
-    def get_cache_args(self, **kw):
-        return ["st"]
-
-    def get_move_args(self, source, target):
-
-        return ['move'] + self.process_paths([source, target])
-
-    statemap  = {
-            "unknown:": 'unknown',
-            "added:": 'added',
-            "unchanged:": 'clean',
-            "removed:": 'removed',
-            "ignored:": 'ignored',
-            "modified:": 'modified',
-            "conflicts:": 'conflict',
-            "pending merges:": 'conflict',
-            "renamed:": "placeholder", # special cased, needs parsing 
-            #XXX: figure why None didn't work
-            }
-
-    def parse_cache_items(self, items):
-        state = 'none'
-        for item in items:
-            item = item.rstrip()
-            state = self.statemap.get(item.rstrip(), state)
-            if item.startswith("  ") and state:
-                if state == "placeholder":
-                    old, new = item.split(" => ")
-                    old, new = old.strip(), new.strip()
-                    yield old, 'removed'
-                    yield new, 'added'
-                else:
-                    yield item.strip(), state
-
-    def parse_status_items(self, items, cache):
-        for item in items:
-            if not item:
-                continue
-            if item.startswith('I'):
-                yield Path(item[1:].strip(), 'ignored', self.base_path)
-            else:
-                fn = item[1:].strip()
-                yield Path(
-                        fn,
-                        cache.get(fn, 'clean'),
-                        self.base_path)
-
-
 class SubVersion(CommandBased):
     cmd = "svn"
     detect_subdir = ".svn"
@@ -291,7 +224,7 @@ class SubVersion(CommandBased):
         if file == '.': #ignore '.' as path, its not informative
             return
         #TODO: handle paths with whitespace if ppl fall in that one
-        return Path(file, self.state_map[state], self.base_path)
+        return self.state_map[state], file
 
 
 class Darcs(CommandBased):
@@ -321,19 +254,18 @@ class Darcs(CommandBased):
     move_regex = re.compile(" (?P<removed>.*?) -> (?P<added>.*?)$")
 
 
-    def parse_status_items(self, items, cache):
-        for item in items:
-            if item.startswith('What') or item.startswith('No') or not item.strip():
-                continue
-            match = self.move_regex.match(item)
-            if match:
-                for state, file in match.groupdict().items():
-                    yield Path(file, state, self.base_path)
-                continue
-            elements = item.split(None, 2)[:2] #TODO: handle filenames with spaces
-            state = self.state_map[elements[0]]
-            file = os.path.normpath(elements[1])
-            yield Path(file, state, self.base_path)
+    def parse_status_item(self, item, cache):
+        if item.startswith('What') or item.startswith('No') or not item.strip():
+            return
+        match = self.move_regex.match(item)
+        if match:
+            print match.groups()
+            return None, (match.group('removed'),  match.group('added'))
+
+        elements = item.split(None, 2)[:2] #TODO: handle filenames with spaces
+        state = self.state_map[elements[0]]
+        file = os.path.normpath(elements[1])
+        return state, file
     
     def get_move_args(self, source, target):
         return ['mv', source, target]
