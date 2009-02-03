@@ -86,7 +86,7 @@ class WdWrap(object):
         for info in infos:
             print repr(info)
             if info.relpath in mapping:
-                assert_equal(info.state, mapping[info.relpath], info.path)
+                assert info.state==mapping[info.relpath], info.path
                 used.add(info.relpath)
 
         if exact:

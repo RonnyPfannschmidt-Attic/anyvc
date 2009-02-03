@@ -5,10 +5,15 @@ from file import StatedPath as Path
 
 #python imports
 import sys
-from StringIO import StringIO
+import os
+
+try:
+    from cStringIO import StringIO
+except:
+    from StringIO import StringIO
+
 
 #bzr imports
-import os
 from bzrlib.workingtree import WorkingTree
 from bzrlib.errors import NotBranchError
 from bzrlib import bzrdir
@@ -40,86 +45,71 @@ class Bazaar(VCSWorkDir_WithParser):
         except NotBranchError:
             raise ValueError("no Bazaar repo below "+path)
 
-    def cache_impl(self, paths=False, recursive=False):
-        if self.wt == None:
-            return []
-        tree = self.wt
-        outf = StringIO()
-        show_tree_status(tree, show_ids=False,
-                         specific_files=None, revision=None,
-                         to_file=outf, short=False, versioned=False,
-                         show_pending=True)
-        return outf.getvalue().split("\n")
 
-    def parse_cache_items(self, items):
-        state = 'none'
-        for item in items:
-            item = item.rstrip()
-            state = self.statemap.get(item.rstrip(), state)
-            if item.startswith("  ") and state:
-                if state == "placeholder":
-                    old, new = item.split(" => ")
-                    old, new = old.strip(), new.strip()
-                    yield old, 'removed'
-                    yield new, 'added'
-                else:
-                    yield item.strip(), state
+    def status_impl(self, *k, **kw):
+        #XXX: paths, recursion
+        self.wt.lock_read()
+        try:
+            for change in self.wt.iter_changes(self.wt.basis_tree(),
+                                               include_unchanged=True,
+                                               want_unversioned=True,
+                                               ):
+                yield change
+        finally:
+            self.wt.unlock()
 
-    def status_impl(self, paths=None, recursive=False):
-        if self.wt == None:
-            return []
-        fulllist = []
-        for path in paths:
-            try:
-                tree, branch, relpath = bzrdir.BzrDir.open_containing_tree_or_branch(
-                path)
-            except:
-                continue
-            tree.lock_read()
-            prefix = relpath 
-            try:
-                for fp, fc, fkind, fid, entry in tree.list_files():
+    def parse_status_item(self, change, cache):
 
-                    if fp.startswith(relpath):
-                        fp = osutils.pathjoin(prefix, fp[len(relpath):])
-                        if fp[0] == "/":
-                            fp = fp[1:]
-                        if not recursive and '/' in fp:
-                            continue
-                        kindch = entry.kind_character()
-                        outstring = '%-8s %s%s' % (fc, fp, kindch)
-                        fulllist.append(outstring)
-            except:
-                print "anyvc-bzr:err?"
-            finally:
-                tree.unlock()
+        print change
+        (file_id,
+            paths, changed, versioned,
+            parent, name, kind,
+            executable) = change
 
-        return fulllist
+        if file_id=='TREE_ROOT':
+            return None
 
-    def parse_status_items(self, items, cache):
-        if self.base_path != None:
-            relpath =  self.path[len(self.base_path):]
+        #XXX: propperly handle removed vs deleted vs made untracked
+        if file_id==None:
+            return None
 
-            if relpath != '' and relpath[0] == '/':
-                relpath = relpath[1:]
-            for item in items:
-                if not item:
-                    continue
-                fn = item[1:].strip()
-                if relpath != '':
-                    fullfn = relpath+"/"+fn
-                else:
-                    fullfn = fn
+        # paths -> renamed
+        source, target = paths
+        result_path = target or source
+        print result_path
 
-                if item.startswith('I'):
-                    yield Path(fullfn, 'ignored', self.base_path)
-                else:
-                    x = Path(
-                            fullfn,
-                            cache.get(fullfn, 'clean'),
-                            self.base_path)
-                    yield x
-    
+        # versioned add/remove
+        old, new = versioned
+        if new and not old:
+            return 'added', result_path
+        elif old and not new:
+            # deleted ?!
+            return 'removed', result_path
+        elif source!=target:
+            print paths
+            return None, paths
+        elif changed:
+            return 'modified', result_path
+        elif all(versioned):
+            return 'clean', result_path
+        elif not any(versioned):
+            return 'unknown', result_path
+
+        #XXX more tricky things ?!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def add(self, paths=None, recursive=False):
         paths = self._abspaths(paths)
         try:
@@ -177,8 +167,6 @@ class Bazaar(VCSWorkDir_WithParser):
             return [ os.path.join(self.base_path, path) for path in paths]
 """
 To-Do
-*'commit'
-*'diff'
 *'remove'
 'rename'?
 *'revert'
