@@ -45,7 +45,6 @@ class Bazaar(VCSWorkDir_WithParser):
         except NotBranchError:
             raise ValueError("no Bazaar repo below "+path)
 
-
     def status_impl(self, *k, **kw):
         #XXX: paths, recursion
         self.wt.lock_read()
@@ -96,19 +95,6 @@ class Bazaar(VCSWorkDir_WithParser):
             return 'unknown', result_path
 
         #XXX more tricky things ?!
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     def add(self, paths=None, recursive=False):
         paths = self._abspaths(paths)
