@@ -109,18 +109,11 @@ class Bazaar(VCSWorkDir_WithParser):
             return "Ok"
 
     def commit(self, paths=None, message=None, user=None):
-        try:
-            paths = self._abspaths(paths)
-            #XXX: this is weird
-            if paths is not None:
-                paths = map(self.wt.relpath, paths)
-            self.wt.commit(message,author=user,specific_files=paths)
-        except:
-            #XXX: better handling
-            return "Error commiting %s.\n%s" % (paths, sys.exc_value)
-        else:
-            #XXX: better output
-            return "Ok"
+        paths = self._abspaths(paths)
+        #XXX: this is weird
+        if paths is not None:
+            paths = map(self.wt.relpath, paths)
+        self.wt.commit(message,author=user,specific_files=paths)
 
     def diff(self, paths=None):
         strdiff = StringIO()
