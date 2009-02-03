@@ -85,7 +85,6 @@ class Bazaar(VCSWorkDir_WithParser):
             # deleted ?!
             return 'removed', result_path
         elif source!=target:
-            print paths
             return None, paths
         elif changed:
             return 'modified', result_path
