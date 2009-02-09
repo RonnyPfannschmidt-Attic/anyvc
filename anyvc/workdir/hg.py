@@ -152,7 +152,7 @@ class Mercurial(VCSWorkDir):
                 *self.joined(paths))
 
     @grab_output
-    def move(self, source, target):
+    def rename(self, source, target):
         commands.rename(self.ui, self.repo,
                 after=False, # hg 0.9.5
                 *self.joined([source, target])

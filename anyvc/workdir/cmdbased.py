@@ -146,8 +146,8 @@ class CommandBased(VCSWorkDir_WithParser):
         args = self.get_remove_args(**kw)
         return self.execute_command(args, **kw)
 
-    def move(self, **kw):
-        args = self.get_move_args(**kw)
+    def rename(self, source, target, **kw):
+        args = self.get_rename_args(source, target)
         return self.execute_command(args, **kw)
 
     def revert(self, **kw):
@@ -212,7 +212,7 @@ class SubVersion(CommandBased):
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--diff-cmd', 'diff'] + paths
 
-    def get_move_args(self, source, target):
+    def get_rename_args(self, source, target):
         return ['move', source, target]
 
     def parse_status_item(self, item, cache):
@@ -267,7 +267,7 @@ class Darcs(CommandBased):
         file = os.path.normpath(elements[1])
         return state, file
     
-    def get_move_args(self, source, target):
+    def get_rename_args(self, source, target):
         return ['mv', source, target]
 
 

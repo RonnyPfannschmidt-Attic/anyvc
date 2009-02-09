@@ -75,7 +75,6 @@ class Bazaar(VCSWorkDir_WithParser):
         # paths -> renamed
         source, target = paths
         result_path = target or source
-        print result_path
 
         # versioned add/remove
         old, new = versioned
@@ -133,7 +132,7 @@ class Bazaar(VCSWorkDir_WithParser):
         assert paths is not None, 'uh wtf, dont do that till there is a sane ui'
         self.wt.remove(self._abspaths(paths))
 
-    def move(self, source, target):
+    def rename(self, source, target):
         #XXX: again the relpath weird :(
         self.wt.rename_one(
             self.wt.relpath(os.path.join(self.base_path, source)),

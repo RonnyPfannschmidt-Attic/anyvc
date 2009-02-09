@@ -70,7 +70,7 @@ class Git(CommandBased):
     def get_remove_args(self, paths=(), recursive=False, execute=False, **kw):
         return ['rm'] +  self.process_paths(paths)
 
-    def get_move_args(self, source, target):
+    def get_rename_args(self, source, target):
         return ['mv', source, target]
 
     def cache_impl(self, recursive, **kw):

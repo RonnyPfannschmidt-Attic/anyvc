@@ -64,7 +64,7 @@ def test_workdir_rename(mgr):
     wd.add(paths=['test.py'])
     wd.commit(message='*')
 
-    wd.move(source='test.py', target='test2.py')
+    wd.rename(source='test.py', target='test2.py')
     wd.check_states({
         'test.py': 'removed',
         'test2.py': 'added',

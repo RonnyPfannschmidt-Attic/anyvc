@@ -45,7 +45,7 @@ class VCSWorkDir (object):
     def remove(self, paths=None, execute=False, recursive=False):
         raise NotImplementedError
 
-    def rename(self, paths=None, path=None, target=None):
+    def rename(self, source=None, target=None):
         raise NotImplementedError
 
 class VCSWorkDir_WithParser(VCSWorkDir):
