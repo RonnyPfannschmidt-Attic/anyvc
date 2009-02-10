@@ -11,29 +11,53 @@ __all__ = ["VCSWorkDir",]
 from .file import StatedPath
 from os.path import join
 
-class VCSWorkDir (object):
+class WorkDir(object):
     """
-    Base class for all vcs's
-    remember not to use super in subclasses
+    Basic Workdir API
+
+    :param path: base path
+    :raises ValueError: missing the correct vcs control dir
     """
 
     def __init__(self, path): 
-        self.setup()
         self.path = path
 
     def status(self, paths=(), recursive=True):
         """
+        :param path: the filenames
+        :type path: sequence of string
+        :param recursive: proceed recursive for directories
+        :type recursive: bool
+
         yield a list of Path instances tagged with status informations
         """
         raise NotImplementedError
 
     def diff(self, paths=()):
+        """
+        given a list of paths it will return a diff
+        """
         raise NotImplementedError
 
     def update(self, revision=None):
+        """
+        :param revision: the target revision
+                         may not actually work for
+                         vcs's with tricky workdir revision setups
+
+        updates the workdir to either the closest head or or the given revision
+        """
         raise NotImplementedError
 
     def commit(self, paths=None, message=None, user=None):
+        """
+        :param path: the paths
+        :param message: the commit message
+        :param user: optional author name
+        
+        commits the given paths/files with the given commit message and author
+        """
+
         raise NotImplementedError
 
     def revert(self, paths=None, missing=False):
@@ -47,6 +71,8 @@ class VCSWorkDir (object):
 
     def rename(self, source=None, target=None):
         raise NotImplementedError
+
+VCSWorkDir = WorkDir
 
 class VCSWorkDir_WithParser(VCSWorkDir):
 
