@@ -205,12 +205,12 @@ class SubVersion(CommandBased):
             '~': 'clean',
             }
 
-    def get_add_args(self, paths=(), **kw):
+    def get_add_args(self, paths, **kw):
         # svn add doesnt add parent dirs by default
         return ['add', '--parents'] + paths
 
     def get_diff_args(self, paths=(), **kw):
-        return ['diff', '--diff-cmd', 'diff'] + paths
+        return ['diff', '--diff-cmd', 'diff'] + list(paths)
 
     def get_rename_args(self, source, target):
         return ['move', source, target]
