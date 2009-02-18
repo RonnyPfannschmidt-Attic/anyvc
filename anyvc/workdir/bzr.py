@@ -20,6 +20,7 @@ from bzrlib import bzrdir
 from bzrlib import osutils
 from bzrlib.status import show_tree_status
 from bzrlib.diff import DiffTree, _get_trees_to_diff
+from bzrlib.diff import show_diff_trees
 from bzrlib import revisionspec
 
 
@@ -116,7 +117,6 @@ class Bazaar(VCSWorkDir_WithParser):
     def diff(self, paths=None):
         strdiff = StringIO()
 
-        from bzrlib.diff import show_diff_trees
         if paths is not None:
             paths = self._abspaths(paths)
             #XXX: this is weird
