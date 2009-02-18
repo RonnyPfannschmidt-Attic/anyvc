@@ -1,5 +1,5 @@
 # copyright 2008 by Ronny Pfannschmidt
-# license lgpl3 or later
+# license lgpl2 or later
 from .helpers import for_all, disable
 from nose.tools import assert_equal
 
@@ -93,3 +93,16 @@ def test_workdir_revert(mgr):
     wd.revert(paths=['test.py'])
     wd.check_states({'test.py':'clean'})
 
+@for_all
+def test_diff_all(mgr):
+    wd = initial(mgr)
+    wd.add(paths=['test.py'])
+    wd.commit(message='*')
+    wd.put_files({
+        'test.py':'ooo'
+    })
+
+    diff = wd.diff()
+    print diff
+    assert 'ooo' in diff
+    assert 'print "test"' in diff
