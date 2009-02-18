@@ -159,7 +159,7 @@ class Mercurial(VCSWorkDir):
                 )
 
     @grab_output
-    def diff(self, paths, rev=None):
+    def diff(self, paths=(), rev=None):
         commands.diff(
                 self.ui,
                 self.repo,
