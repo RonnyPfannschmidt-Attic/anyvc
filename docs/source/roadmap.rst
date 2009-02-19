@@ -10,11 +10,13 @@ Status
   * complete
 
     * bzr
-    * darcs
     * hg
     * svn
 
-  * git **messy**
+  * messy
+
+    * darcs
+    * git
 
 * repository access **in progress**
 

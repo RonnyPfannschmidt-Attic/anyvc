@@ -8,6 +8,7 @@ Contents:
 
    workdir/index.rst
    roadmap.rst
+   about.rst
 
 Anyvc is supposed to abstract differences betwen various VCS's.
 
