@@ -15,8 +15,13 @@ from functools import wraps
 from .file import StatedPath
 from .base import WorkDir
 
-from mercurial import ui, hg, commands, util
 from mercurial.__version__ import version as hgversion
+# no support for hg <= 1.0.2
+if hgversion in ('1.0', '1.0.1', '1.0.2') or hgversion[0]=='0':
+    raise ImportError('HG version too old, please update to a release >= 1.1')
+
+from mercurial import ui, hg, commands, util
+from mercurial.match import always, exact
 
 __all__ = 'Mercurial',
 
@@ -99,7 +104,17 @@ class Mercurial(WorkDir):
 
         files = () #XXX kill all preselection till i get the matcher interface
         
-        state_files = _status(self.repo, files)
+        if files:
+        #XXX: investigate cwd arg
+            matcher = exact(self.repo.root, self.repo.root, files)
+        else:
+            matcher = always(self.repo.root, self.repo.root)
+        state_files = self.repo.status(
+            match=matcher,
+            ignored=True,
+            unknown=True,
+            clean=True,
+        )
         for state, files in zip(names, state_files):
             for file in files:
                 yield StatedPath(file, state, base=self.repo.root)
@@ -169,51 +184,4 @@ class Mercurial(WorkDir):
 
 
 
-# mercurial internal api changes a lot, so we have a explicit check
 
-# status for releases prior to 1.0.1
-# no support for pre 0.9.5 
-if hgversion in ('0.9.5','1.0', '1.0.1', '1.0.2'):
-    def _status(repo, files):
-            if files:
-                matcher = lambda x:x in files
-            else:
-                matcher = util.always
-            return _status_detail(repo, matcher)
-
-    if hgversion=='0.9.5':
-        # 0.95 doesn't know list_unknoen
-        def _status_detail(repo, matcher):
-                return repo.status(
-                    match=matcher,
-                    list_ignored=True,
-                    list_clean=True,
-                )
-    else:
-        def _status_detail(repo, matcher):
-                return repo.status(
-                    match=matcher,
-                    list_ignored=True,
-                    list_unknown=True,
-                    list_clean=True,
-                )
-
-else:
-    # hopefully works in crew
-    try:
-        from mercurial.match import always, exact
-        def _status(repo, files):
-            if files:
-                #XXX: investigate cwd arg
-                matcher = exact(repo.root, repo.root, files)
-            else:
-                matcher = always(repo.root, repo.root)
-            return repo.status(
-                match=matcher,
-                ignored=True,
-                unknown=True,
-                clean=True,
-            )
-    except ImportError:
-        # ops, probably a hg < 0.9.5 - darn
-        _status = None
