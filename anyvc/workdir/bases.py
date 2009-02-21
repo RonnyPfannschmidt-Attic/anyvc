@@ -72,9 +72,8 @@ class WorkDir(object):
     def rename(self, source=None, target=None):
         raise NotImplementedError
 
-VCSWorkDir = WorkDir
 
-class VCSWorkDir_WithParser(VCSWorkDir):
+class WorkDirWithParser(WorkDir):
 
     def parse_status_items(self, items, cache):
         """

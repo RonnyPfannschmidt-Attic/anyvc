@@ -9,18 +9,18 @@
     :license: LGPL2 or later
     :copyright: 2008 Ronny Pfannschmidt
 """
-
-__all__ = 'Mercurial',
-
 import os
 from functools import wraps
 from .file import StatedPath
-from .bases import VCSWorkDir
 
 from mercurial.__version__ import version as hgversion
-from mercurial import ui, hg
-from mercurial import commands
+from mercurial import ui, hg, commands
 import mercurial.util
+from anyvc.workdir.bases import WorkDir
+
+__all__ = 'Mercurial',
+
+
 
 #XXX: this shouldn't work if used by the vc client
 #     console output should be responsive
@@ -50,7 +50,7 @@ def _find_repo(path):
         last = cur
         cur = os.path.dirname(cur)
 
-class Mercurial(VCSWorkDir):
+class Mercurial(WorkDir):
 
     @staticmethod
     def make_repo(path): #XXX: bullshit here

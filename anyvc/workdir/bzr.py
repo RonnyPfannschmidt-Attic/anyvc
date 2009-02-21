@@ -1,5 +1,5 @@
 #pida imports
-from bases import VCSWorkDir, VCSWorkDir_WithParser
+from bases import VCSWorkDir, WorkDirWithParser
 from file import StatedPath as Path
 
 
@@ -24,7 +24,7 @@ from bzrlib.diff import show_diff_trees
 from bzrlib import revisionspec
 
 
-class Bazaar(VCSWorkDir_WithParser):
+class Bazaar(WorkDirWithParser):
     statemap  = {
             "unknown:": 'unknown',
             "added:": 'added',
