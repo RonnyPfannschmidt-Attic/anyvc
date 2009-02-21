@@ -16,7 +16,7 @@ from .file import StatedPath
 from mercurial.__version__ import version as hgversion
 from mercurial import ui, hg, commands
 import mercurial.util
-from anyvc.workdir.bases import WorkDir
+from anyvc.workdir.base import WorkDir
 
 __all__ = 'Mercurial',
 

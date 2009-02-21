@@ -1,5 +1,5 @@
 #pida imports
-from bases import VCSWorkDir, WorkDirWithParser
+from base import VCSWorkDir, WorkDirWithParser
 from file import StatedPath as Path
 
 

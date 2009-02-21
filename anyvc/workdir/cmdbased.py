@@ -17,7 +17,7 @@ import os, os.path
 
 #TODO: more reviews
 
-from bases import WorkDirWithParser
+from base import WorkDirWithParser
 from file import StatedPath as Path
 
 def relative_to(base_path):
