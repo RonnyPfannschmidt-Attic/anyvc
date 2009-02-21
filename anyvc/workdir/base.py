@@ -6,8 +6,6 @@
     :copyright: 2008 Ronny Pfannschmidt
     :license: LGPL2 or later
 """
-__all__ = ["VCSWorkDir",]
-
 from .file import StatedPath
 from os.path import join
 
