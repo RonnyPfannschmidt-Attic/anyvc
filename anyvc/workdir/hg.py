@@ -11,12 +11,12 @@
 """
 import os
 from functools import wraps
-from .file import StatedPath
 
+from .file import StatedPath
+from .base import WorkDir
+
+from mercurial import ui, hg, commands, util
 from mercurial.__version__ import version as hgversion
-from mercurial import ui, hg, commands
-import mercurial.util
-from anyvc.workdir.base import WorkDir
 
 __all__ = 'Mercurial',
 
@@ -178,7 +178,7 @@ if hgversion in ('0.9.5','1.0', '1.0.1', '1.0.2'):
             if files:
                 matcher = lambda x:x in files
             else:
-                matcher = mercurial.util.always
+                matcher = util.always
             return _status_detail(repo, matcher)
 
     if hgversion=='0.9.5':
