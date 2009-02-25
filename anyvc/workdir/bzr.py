@@ -1,17 +1,10 @@
-#pida imports
-from base import VCSWorkDir, WorkDirWithParser
-from file import StatedPath as Path
-
-
-#python imports
 import sys
 import os
 
-try:
-    from cStringIO import StringIO
-except:
-    from StringIO import StringIO
+from .base import WorkDir, WorkDirWithParser
+from .file import StatedPath as Path
 
+from StringIO import StringIO
 
 #bzr imports
 from bzrlib.workingtree import WorkingTree
