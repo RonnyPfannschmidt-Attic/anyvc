@@ -15,20 +15,13 @@ def getversion():
     if not os.path.exists('.hg'):
         return None # not in a repository
 
-    # execute hg out of this directory with a custom environment which
-    # includes the pure Python modules in mercurial/pure
-    pypath = os.environ.get('PYTHONPATH', '')
-    purepath = os.path.join('mercurial', 'pure')
-    os.environ['PYTHONPATH'] = os.pathsep.join(['mercurial', purepath, pypath])
     os.environ['HGRCPATH'] = '' # do not read any config file
-    cmd = '%s hg id -it' % sys.executable
+    cmd = 'hg id -it' 
 
     try:
         l = os.popen(cmd).read().split()
     except OSError, e:
         print "warning: could not establish Mercurial version: %s" % e
-
-    os.environ['PYTHONPATH'] = pypath
 
     while len(l) > 1 and l[-1][0].isalpha(): # remove non-numbered tags
         l.pop()
