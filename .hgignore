@@ -2,3 +2,7 @@
 .*\.pyc
 \.rope.*
 docs/build
+build
+dist
+MANIFEST
+anyvc/__version__.py

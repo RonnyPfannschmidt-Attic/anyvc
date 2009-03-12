@@ -4,6 +4,12 @@ import os, sys
 
 from distutils.core import setup
 
+def read_readme():
+    f = open('docs/source/readme.rst')
+    readme = f.read()
+    f.close()
+    return readme
+
 #XXX: anyvc should do that itself
 def getversion():
     if not os.path.exists('.hg'):
@@ -58,7 +64,7 @@ setup(
     url='http://www.bitbucket.org/RonnyPfannschmidt/anyvc/',
     author='Ronny Pfannschmidt',
     author_email='Ronny.Pfannschmidt@gmx.de',
-    #long_description=read_readme(),
+    long_description=read_readme(),
     classifiers = [
         'Intended Audience :: Developers',
     ],
