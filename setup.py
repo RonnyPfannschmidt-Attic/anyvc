@@ -38,8 +38,6 @@ if version:
     f.write('version = "%s"\n' % version)
     f.close()
 else:
-    if os.path.exists('anyvc/__version__.py'):
-        os.unlink('anyvc/__version__.py')
     version = "unknown"
 
 
