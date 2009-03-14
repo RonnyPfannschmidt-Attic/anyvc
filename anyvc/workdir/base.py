@@ -37,7 +37,7 @@ class WorkDir(object):
         """
         raise NotImplementedError
 
-    def update(self, revision=None):
+    def update(self, paths=(), revision=None):
         """
         :param revision: the target revision
                          may not actually work for
