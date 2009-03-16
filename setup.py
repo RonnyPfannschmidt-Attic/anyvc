@@ -1,27 +1,23 @@
 #!/usr/bin/python
+from __future__ import with_statement
 import os, sys
-
-
+from commands import getoutput
 from distutils.core import setup
+import time
 
 def read_readme():
-    f = open('docs/source/readme.rst')
-    readme = f.read()
-    f.close()
-    return readme
+    with open('docs/source/readme.rst') as f:
+        return f.read()
 
 #XXX: anyvc should do that itself
 def getversion():
     if not os.path.exists('.hg'):
         return None # not in a repository
-
-    os.environ['HGRCPATH'] = '' # do not read any config file
-    cmd = 'hg id -it' 
-
     try:
-        l = os.popen(cmd).read().split()
+        l = getoutput('hg id -it').split()
     except OSError, e:
         print "warning: could not establish Mercurial version: %s" % e
+        return
 
     while len(l) > 1 and l[-1][0].isalpha(): # remove non-numbered tags
         l.pop()
