@@ -221,8 +221,10 @@ class SubVersion(CommandBased):
             return None
         state = item[0]
         file = item.split()[-1]
-        if file == '.': #ignore '.' as path, its not informative
-            return
+        if file == '.':
+            # this is the path of the repo
+            # normalize to ''
+            file = ''
         #TODO: handle paths with whitespace if ppl fall in that one
         return self.state_map[state], file
 
