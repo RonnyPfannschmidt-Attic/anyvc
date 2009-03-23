@@ -53,7 +53,6 @@ class Bazaar(WorkDirWithParser):
 
     def parse_status_item(self, change, cache):
 
-        print change
         (file_id,
             paths, changed, versioned,
             parent, name, kind,

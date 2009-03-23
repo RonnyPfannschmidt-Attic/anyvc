@@ -261,7 +261,6 @@ class Darcs(CommandBased):
             return
         match = self.move_regex.match(item)
         if match:
-            print match.groups()
             return None, (match.group('removed'),  match.group('added'))
 
         elements = item.split(None, 2)[:2] #TODO: handle filenames with spaces
