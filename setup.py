@@ -48,6 +48,7 @@ setup(
     scripts = ['bin/vc'],
 
     description='Library to access any version control system.',
+    license='GNU LGPL2 (or later) as published by the FSF',
     url='http://www.bitbucket.org/RonnyPfannschmidt/anyvc/',
     author='Ronny Pfannschmidt',
     author_email='Ronny.Pfannschmidt@gmx.de',
