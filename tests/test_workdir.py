@@ -1,6 +1,6 @@
 # copyright 2008 by Ronny Pfannschmidt
 # license lgpl2 or later
-from .helpers import for_all, disable
+from .helpers import for_all
 from nose.tools import assert_equal
 
 def initial(mgr):
