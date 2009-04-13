@@ -10,7 +10,7 @@
 from .base import Repository
 from ..workdir.hg import grab_output
 
-from mercurial.commands import push
+from mercurial import commands
 
 class MercurialRepository(Repository):
     def __init__(self, workdir=None, path=None):
@@ -23,11 +23,10 @@ class MercurialRepository(Repository):
 
     @grab_output
     def push(self, dest=None, rev=None):
-        push(self.ui, self.repo, dest, rev=rev)
+        commands.push(self.ui, self.repo, dest, rev=rev)
 
     @grab_output
     def pull(self, source="default", rev=None):
-        pull(self.ui, self.repo, source, rev=rev)
-
+        commands.pull(self.ui, self.repo, source, rev=rev)
 
 
