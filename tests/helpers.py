@@ -17,7 +17,8 @@ from nose.tools import assert_equal
 def do(*args, **kw):
     print args
     p = Popen(args, stdin=None, stdout=PIPE, stderr=PIPE, **kw)
-    map(sys.stdout.write, p.communicate())
+    for out in p.communicate():
+        sys.stdout.write(out)
 
 
 def for_all(func):
