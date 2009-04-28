@@ -35,12 +35,12 @@ def grab_output(func):
     """
     @wraps(func)
     def grabber(self, *k, **kw):
-        self.ui.pushbuffer()
+        self.repo.ui.pushbuffer()
         try:
             func(self, *k, **kw)
-            return self.ui.popbuffer()
+            return self.repo.ui.popbuffer()
         except Exception, e:
-            e.hg_output = self.ui.popbuffer()
+            e.hg_output = self.repo.ui.popbuffer()
             raise
 
     return grabber
@@ -71,7 +71,11 @@ class Mercurial(WorkDir):
         If `create` is true, a new repo is created.
         """
         self.path = os.path.normpath( os.path.abspath(path) )
-        self.ui = ui.ui(interactive=False, verbose=True, debug=True)
+        try:
+            self.ui = ui.ui(interactive=False, verbose=True, debug=True)
+        except TypeError: # hg >= 1.3 ui
+            self.ui = ui.ui()
+            self.ui.setconfig('ui', 'interactive', 'off')
         ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
         try:
             self.ui.pushbuffer()
