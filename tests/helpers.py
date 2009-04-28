@@ -71,6 +71,8 @@ class WdWrap(object):
                 os.makedirs(dir)
             with open(path, 'w') as f:
                 f.write(content)
+                if content[-1] != "\n":
+                    f.write("\n")
 
     def check_states(self, mapping, exact=False):
         """takes a mapping of filename-> state
