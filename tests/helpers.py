@@ -15,13 +15,17 @@ from nose.tools import assert_equal
 
 
 def do(*args, **kw):
+    args = map(str, args)
     print args
+    if 'cwd' in kw:
+        kw['cwd'] = str(kw['cwd'])
     p = Popen(args, stdin=None, stdout=PIPE, stderr=PIPE, **kw)
     for out in p.communicate():
         sys.stdout.write(out)
 
 
 def for_all(func):
+    return func
 
     @wraps(func)
     def single(vc):
@@ -55,24 +59,18 @@ class WdWrap(object):
     """wraps a vcs"""
     def __init__(self, vc, path):
         self.__path = path
-        self.__vc = vc(path)
+        self.__vc = vc(str(path))
 
     def __getattr__(self, key):
         return getattr(self.__vc, key)
 
     def bpath(self, name):
-        return join(self.__path, name)
+        return self.__path.join(name)
 
     def put_files(self, mapping):
         for name, content in mapping.items():
-            path = self.bpath(name)
-            dir = dirname(path)
-            if not exists(dir):
-                os.makedirs(dir)
-            with open(path, 'w') as f:
-                f.write(content)
-                if content[-1] != "\n":
-                    f.write("\n")
+            path = self.__path.ensure(name)
+            path.write(content.rstrip() + '\n')
 
     def check_states(self, mapping, exact=False):
         """takes a mapping of filename-> state
@@ -96,23 +94,12 @@ class WdWrap(object):
 
 class VcsMan(object):
     """controller over a tempdir for tests"""
-    def __init__(self, vc):
+    def __init__(self, vc, base):
         self.vc = vc
-        self.base = mkdtemp()
+        self.base = base
 
     def bpath(self, name):
-        return join(self.base, name)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, args):
-        if type is None:
-            rmtree(self.base)
-            return True
-        else:
-            print self.base
-            return False
+        return self.base.join(name)
 
     @generic #XXX:lazy hack, completely missplaced
     def make_wd(self, spec, repo, workdir):
@@ -130,15 +117,14 @@ class VcsMan(object):
         do('bzr', 'branch', repo, workdir)
 
     def make_wd_subversion(self, repo, workdir):
-        do('svn', 'co', 'file://'+repo, workdir)
+        do('svn', 'co', 'file://%s'%repo, workdir)
 
     def make_wd_git(self, repo, workdir):
         do('git', 'clone', repo, workdir)
 
     def make_wd_darcs(self, repo, workdir):
         do('darcs', 'get', repo, workdir)
-        with open(join(workdir, '_darcs/prefs/author'), 'w') as f:
-            f.write('test')
+        workdir.join('_darcs/prefs/author').write('test')
 
     @generic #XXX:lazy hack, completely missplaced
     def make_repo(self, spec, path):
@@ -146,7 +132,7 @@ class VcsMan(object):
 
     def make_repo_generic(self, path):
         #XXX: return value?!
-        self.vc.make_repo(path)
+        self.vc.make_repo(str(path))
 
     def make_repo_subversion(self, path):
         do('svnadmin', 'create', path)
@@ -155,11 +141,11 @@ class VcsMan(object):
         do('bzr', 'init', path)
 
     def make_repo_git(self, path):
-        os.mkdir(path)
-        do('git','init', cwd=path)
+        path.ensure(dir=True)
+        do('git','init', cwd=str(path))
         #XXX: git doesnt like clone of empty repos
         do('git', 'commit', '--allow-empty' , '-m', 'dummy 1', cwd=path)
 
     def make_repo_darcs(self, path):
-        os.mkdir(path)
+        path.ensure(dir=True)
         do('darcs', 'initialize', '--darcs-2', cwd=path)
