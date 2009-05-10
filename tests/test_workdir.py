@@ -2,13 +2,18 @@
 # license lgpl2 or later
 from .helpers import for_all
 from nose.tools import assert_equal
+import py.test
 
-def initial(mgr):
+def initial(mgr, commit=False):
     print mgr.make_repo('repo')
     wd = mgr.make_wd('repo', 'wd')
     wd.put_files({
         'test.py':'print "test"',
         })
+    assert wd.has_files('test.py')
+    if commit:
+        wd.add(paths=['test.py'])
+        wd.commit(message='*')
     return wd
 
 def test_workdir_add(mgr):
@@ -42,23 +47,20 @@ def test_subdir_state_add(mgr):
 
 
 def test_workdir_remove(mgr):
-    wd = initial(mgr)
-    wd.add(paths=['test.py'])
-    wd.commit(message='*')
+    wd = initial(mgr, commit=True)
     wd.check_states({
         'test.py': 'clean',
         })
     wd.remove(paths=['test.py'])
     wd.check_states({
         'test.py': 'removed',
-        })
+        }) 
     wd.commit(message='*')
-    wd.check_states({'test.py': 'clean'})
+
+    py.test.raises(AssertionError,wd.check_states, {'test.py': 'clean'})
 
 def test_workdir_rename(mgr):
-    wd = initial(mgr)
-    wd.add(paths=['test.py'])
-    wd.commit(message='*')
+    wd = initial(mgr, commit=True)
 
     wd.rename(source='test.py', target='test2.py')
     wd.check_states({
@@ -70,9 +72,8 @@ def test_workdir_rename(mgr):
     wd.check_states({'test2.py': 'clean'})
 
 def test_workdir_revert(mgr):
-    wd = initial(mgr)
-    wd.add(paths=['test.py'])
-    wd.commit(message='*')
+    wd = initial(mgr, commit=True)
+
     wd.remove(paths=['test.py'])
     wd.check_states({'test.py': 'removed'})
 
