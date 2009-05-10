@@ -86,6 +86,8 @@ class Bazaar(WorkDirWithParser):
         elif source!=target:
             return None, paths
         elif changed:
+            if kind[0] != kind[1]:
+                return 'missing', result_path
             return 'modified', result_path
         elif all(versioned):
             return 'clean', result_path
