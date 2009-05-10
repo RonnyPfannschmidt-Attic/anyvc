@@ -47,6 +47,9 @@ def test_subdir_state_add(mgr):
 
 
 def test_workdir_remove(mgr):
+    if mgr.vc.__name__ == 'Git':
+        py.test.skip('git remove metadata is broken')
+
     wd = initial(mgr, commit=True)
     wd.check_states({
         'test.py': 'clean',
@@ -72,6 +75,8 @@ def test_workdir_rename(mgr):
     wd.check_states({'test2.py': 'clean'})
 
 def test_workdir_revert(mgr):
+    if mgr.vc.__name__ == 'Git':
+        py.test.skip('git remove metadata is broken')
     wd = initial(mgr, commit=True)
 
     wd.remove(paths=['test.py'])
@@ -104,7 +109,8 @@ def test_diff_all(mgr):
 
 
 def test_file_missing(mgr):
-    wd = initial(mgr)
-    wd.commit(message='*')
+    if mgr.vc.__name__ == 'Git':
+        py.test.skip('git remove metadata is broken')
+    wd = initial(mgr, commit=True)
     wd.delete_files('test.py')
     wd.check_states({'test.py':'missing'})
