@@ -1,5 +1,6 @@
 from .helpers import all_known, VcsMan
 
+pytest_plugins = "doctest"
 
 class ConftestPlugin:
     def pytest_pycollect_genfuncargs(self, function):
