@@ -243,7 +243,7 @@ class Darcs(CommandBased):
         return ['revert', '-a'] + list(paths)
 
     def get_status_args(self, **kw):
-        return ['whatsnew', '--boring', '--summary']
+        return ['whatsnew', '--boring', '--look-for-adds']
 
     state_map = {
         "a": 'unknown',
