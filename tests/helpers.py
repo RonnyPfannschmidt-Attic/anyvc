@@ -6,6 +6,7 @@ import os
 import sys 
 
 from anyvc.workdir import all_known
+from anyvc.metadata import state_descriptions
 from functools import wraps, partial
 from os.path import join, dirname, exists
 from tempfile import mkdtemp
@@ -71,6 +72,10 @@ class WdWrap(object):
         for name, content in mapping.items():
             path = self.__path.ensure(name)
             path.write(content.rstrip() + '\n')
+    
+    def delete_files(self, *files):
+        for file in files:
+            os.unlink(str(self.bpath(file)))
 
     def check_states(self, mapping, exact=False):
         """takes a mapping of filename-> state
@@ -82,6 +87,7 @@ class WdWrap(object):
         infos = list(self.status())
         for info in infos:
             print repr(info)
+            assert info.state in state_descriptions
             if info.relpath in mapping:
                 assert info.state==mapping[info.relpath], info.path
                 used.add(info.relpath)

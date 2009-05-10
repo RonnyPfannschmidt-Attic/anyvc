@@ -100,3 +100,10 @@ def test_diff_all(mgr):
     print diff
     assert 'ooo' in diff
     assert 'print "test"' in diff
+
+
+def test_file_missing(mgr):
+    wd = initial(mgr)
+    wd.commit(message='*')
+    wd.delete_files('test.py')
+    wd.check_states({'test.py':'missing'})
