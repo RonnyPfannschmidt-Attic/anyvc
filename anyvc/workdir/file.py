@@ -9,7 +9,7 @@
     :license: LGPL2 or later
 """
 
-from os.path import dirname, basename, join
+from os.path import dirname, basename, join, normpath
 
 class StatedPath(object):
     """
@@ -23,7 +23,7 @@ class StatedPath(object):
     """
 
     def __init__(self, name, state='normal', base=None):
-        self.relpath = name
+        self.relpath = normpath(name)
         self.path = dirname(name)
         self.name = basename(name)
         self.base = base
