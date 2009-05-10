@@ -195,7 +195,7 @@ class SubVersion(CommandBased):
             "?": 'unknown',
             "A": 'added',
             " ": 'clean',
-            "!": 'deleted',
+            "!": 'missing',
             "I": 'ignored',
             "M": 'modified',
             "D": 'removed',
