@@ -156,7 +156,8 @@ class VcsMan(object):
         path.ensure(dir=True)
         do('git','init', cwd=str(path))
         #XXX: git doesnt like clone of empty repos
-        do('git', 'commit', '--allow-empty' , '-m', 'dummy 1', cwd=path)
+        #XXX: seems to have changed to not liking a push
+        #do('git', 'commit', '--allow-empty' , '-m', 'dummy 1', cwd=path)
 
     def make_repo_darcs(self, path):
         path.ensure(dir=True)
