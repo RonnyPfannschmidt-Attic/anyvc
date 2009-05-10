@@ -6,6 +6,8 @@
 'b/a'
 >>> StatedPath('a')
 <normal 'a'>
+>>> StatedPath('./a')
+<normal 'a'>
 """
 from anyvc.workdir.file import StatedPath
 
