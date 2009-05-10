@@ -97,7 +97,7 @@ class Mercurial(WorkDir):
         #XXX: merce conflicts ?!
         names = (
                 'modified', 'added', 'removed',
-                'deleted', 'unknown', 'ignored', 'clean',
+                'missing', 'unknown', 'ignored', 'clean',
                 )
         # create a list of files that we are interessted in
         if not kw.get('recursive', True):
