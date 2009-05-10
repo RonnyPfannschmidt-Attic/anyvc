@@ -72,6 +72,12 @@ class WdWrap(object):
         for name, content in mapping.items():
             path = self.__path.ensure(name)
             path.write(content.rstrip() + '\n')
+
+    def has_files(self, *files):
+        for name in files:
+            path = self.bpath(name)
+            assert os.path.exists(str(path))
+        return True
     
     def delete_files(self, *files):
         for file in files:
