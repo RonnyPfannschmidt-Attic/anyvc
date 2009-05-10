@@ -96,7 +96,12 @@ class WdWrap(object):
             all.add(info.relpath)
             assert info.state in state_descriptions
             if info.relpath in mapping:
-                assert info.state==mapping[info.relpath], info.path
+                expected = mapping[info.relpath]
+                assert info.state==expected, "%s %s<>%s"%(
+                        info.relpath, 
+                        info.state,
+                        expected,
+                        )
                 used.add(info.relpath)
         
 
