@@ -61,6 +61,13 @@ class Bazaar(WorkDirWithParser):
         if file_id=='TREE_ROOT':
             return None
 
+        print file_id
+        print 'paths', paths
+        print 'changed', changed
+        print 'versioned', versioned
+        print 'name', name
+        print 'kind', kind
+
         #XXX: propperly handle removed vs deleted vs made untracked
 
         # paths -> renamed
@@ -71,11 +78,11 @@ class Bazaar(WorkDirWithParser):
         old, new = versioned
         if new and not old:
             return 'added', result_path
-        elif not any(versioned):
-            return 'unknown', result_path
         elif old and not new:
             # deleted ?!
             return 'removed', result_path
+        elif not new and not old:
+            return 'unknown', result_path
         elif source!=target:
             return None, paths
         elif changed:
@@ -120,7 +127,7 @@ class Bazaar(WorkDirWithParser):
 
     def remove(self, paths=None, execute=False, recursive=False):
         assert paths is not None, 'uh wtf, dont do that till there is a sane ui'
-        self.wt.remove(self._abspaths(paths))
+        self.wt.remove(self._abspaths(paths), keep_files=False)
 
     def rename(self, source, target):
         #XXX: again the relpath weird :(
