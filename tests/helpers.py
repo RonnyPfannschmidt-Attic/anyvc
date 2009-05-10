@@ -77,22 +77,28 @@ class WdWrap(object):
         for file in files:
             os.unlink(str(self.bpath(file)))
 
-    def check_states(self, mapping, exact=False):
+    def check_states(self, mapping, exact=True):
         """takes a mapping of filename-> state
         if exact is true, additional states are ignored
         returns true if all supplied files have the asumed state
         """
         print mapping
         used = set()
+        all = set()
         infos = list(self.status())
         for info in infos:
-            print repr(info)
+            all.add(info.relpath)
             assert info.state in state_descriptions
             if info.relpath in mapping:
                 assert info.state==mapping[info.relpath], info.path
                 used.add(info.relpath)
+        
 
         if exact:
+            print infos
+            print 'all:', all
+            print 'used:', used
+            print 'missing?:', all - used
             assert len(mapping) == len(used), 'not all excepted stated occured'
 
 
