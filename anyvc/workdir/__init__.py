@@ -17,8 +17,8 @@ from .cmdbased import SubVersion, Darcs
 from .monotone import Monotone
 from .git import Git
 
-all_known = [ SubVersion, Darcs, Git]
-unsupported = [ Monotone, ]
+all_known = [ SubVersion, Git]
+unsupported = [ Monotone, Darcs ]
 
 try:
     from .hg import Mercurial
