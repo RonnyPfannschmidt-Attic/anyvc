@@ -62,8 +62,6 @@ class Bazaar(WorkDirWithParser):
             return None
 
         #XXX: propperly handle removed vs deleted vs made untracked
-        if file_id==None:
-            return None
 
         # paths -> renamed
         source, target = paths
@@ -73,6 +71,8 @@ class Bazaar(WorkDirWithParser):
         old, new = versioned
         if new and not old:
             return 'added', result_path
+        elif not any(versioned):
+            return 'unknown', result_path
         elif old and not new:
             # deleted ?!
             return 'removed', result_path
@@ -82,8 +82,6 @@ class Bazaar(WorkDirWithParser):
             return 'modified', result_path
         elif all(versioned):
             return 'clean', result_path
-        elif not any(versioned):
-            return 'unknown', result_path
 
         #XXX more tricky things ?!
 
