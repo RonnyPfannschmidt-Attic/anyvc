@@ -3,10 +3,11 @@ from .helpers import all_known, VcsMan
 pytest_plugins = "doctest"
 
 class ConftestPlugin:
-    def pytest_pycollect_genfuncargs(self, function):
-        if not function.hasfuncarg('mgr'):
+    def pytest_genfuncruns(self, runspec):
+        if 'mgr' not in runspec.funcargnames:
             return
         for vc in all_known:
-            testdir = function.config.ensuretemp(vc.__name__).mkdir(function.name)
-            yield { 'mgr': VcsMan(vc, testdir) }
+            vcdir = runspec.config.ensuretemp(vc.__name__)
+            testdir = vcdir.mkdir(runspec.function.__name__)
+            runspec.addfuncarg('mgr', VcsMan(vc, testdir))
 
