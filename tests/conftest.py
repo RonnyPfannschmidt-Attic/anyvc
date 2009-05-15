@@ -13,11 +13,13 @@ class ConftestPlugin:
         names = metafunc.config.option.vcs
         if names:
             names = names.split(",")
+            assert any(vc.__name__ == name for name in names for vc in all_known), "%r not known"%(names,)
+
 
         if 'mgr' not in metafunc.funcargnames:
             return
         for vc in all_known:
-            if names and vc.__name not in names:
+            if names and vc.__name__ not in names:
                 continue
             metafunc.addcall(id=vc, param=vc)
 
