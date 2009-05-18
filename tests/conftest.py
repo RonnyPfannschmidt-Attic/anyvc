@@ -21,7 +21,7 @@ class ConftestPlugin:
         for vc in all_known:
             if names and vc.__name__ not in names:
                 continue
-            metafunc.addcall(id=vc, param=vc)
+            metafunc.addcall(id=vc.__name__, param=vc)
 
     def pytest_funcarg__mgr(self, request):
         vc = request.param
