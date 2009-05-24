@@ -61,13 +61,6 @@ class Bazaar(WorkDirWithParser):
         if file_id=='TREE_ROOT':
             return None
 
-        print file_id
-        print 'paths', paths
-        print 'changed', changed
-        print 'versioned', versioned
-        print 'name', name
-        print 'kind', kind
-
         #XXX: propperly handle removed vs deleted vs made untracked
 
         # paths -> renamed
