@@ -15,27 +15,12 @@ import re
 
 class Git(CommandBased):
     """
-    experimental
-    copyed processing from http://www.geekfire.com/~alex/pida-git.py by alex
+    fooked liek hell
+    git wants 3 subprocess calls to get all needed infos
+    data might be wrong in coner cases
     """
     cmd = 'git'
     detect_subdir = '.git'
-
-    state_map = {
-        #XXX: sane mapping?!
-        'H': 'clean', #git calls it cached (ie added to the index,
-        'M': 'unmerged',
-        'R': 'removed', #XXX: figure a way to decide
-        'C': 'changed',
-        'K': 'to be killed',
-        '?': 'ignored',
-        }
-
-    cache_map = {
-        'modified' : 'modified',
-        'new file':  'added',
-        'deleted' : 'removed',
-    }
 
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--no-color'] + self.process_paths(paths)
@@ -56,71 +41,61 @@ class Git(CommandBased):
     def get_revert_args(self, paths=(), recursive=False, **kw):
         return ['checkout','HEAD'] + self.process_paths(paths)
 
-    def get_status_args(self, **kw):
-        return ['ls-files',
-                '-c', '-d', '-o',
-                '-k', '-m', '-t',
-                ]
-
-    def parse_status_item(self, item, cache):
-        state , name = item[0], item[2:].rstrip()
-        return Path(name, self.state_map[state], self.base_path)
-
-    
     def get_remove_args(self, paths=(), recursive=False, execute=False, **kw):
         return ['rm'] +  self.process_paths(paths)
 
     def get_rename_args(self, source, target):
         return ['mv', source, target]
 
-    def cache_impl(self, recursive, **kw):
-        """
-        only runs caching if it knows, how
-        """
-        args = self.get_cache_args(**kw)
-        if args:
-            return self.execute_command(args, result_type=str, **kw)
+    def parse_status_item(self, item, cache):
+        print item
+        return item
+
+    def status_impl(self, *k, **kw):
+        #XXX: OMG HELLISH FRAGILE SHIT
+        if self.execute_command(['branch']).strip():
+            tree = set(self.execute_command([
+            'ls-tree', '-r', '--name-only', 'HEAD'
+            ]).splitlines())
         else:
-            return []
+            print "FAIL?"
+            tree = set()
 
+        def ls_files(args):
+            files = self.execute_command([
+                    'ls-files' ] + [
+                    '-%s'%c for c in args
+                ]).splitlines()
 
-    def get_cache_args(self, **kw):
-        return ["status"]
+            d = dict()
+            for item in files:
+                state, name = item.split(" ", 1)
+                d.setdefault(name, set()).add(state)
+            return dict(reversed(x.split(" ", 1))
+                        for x in files)
 
-    def parse_cache_items(self, items):
-        untracked = re.search("include in what will be committed\)\n#\n(#\t[\w\.\-/]*\n)+",items)        
-        index = re.search("to unstage\)\n#\n(#\t[\w\.\- :>/]*\n)+",items)        
-        changed = re.search("update what will be committed\)\n#\n(#\t[\w\.\-: /]*\n)+",items)
-        if untracked:
-            state = 'unknown'
-            for fn in re.findall("#\t([\w\.\-/]*)\n",untracked.group()):
-                yield fn,state
-        if changed:
-            for state in re.findall("#\t([\w\.\-:/ ]*)",changed.group()):
-                (state , fn ) = state.split(':')
-                yield fn.strip(),self.cache_map[state.strip()]
-        if index:
-           for state in re.findall("#\t([\w\.\-:/> ]*)\n",index.group()):
-                (state , fn ) = state.split(':')
-                if  state == "renamed":
-                    oldf,newf = fn.split('->')
-                    yield newf.strip(),(state,oldf.strip())
-                else:
-                    yield fn.strip(),self.cache_map[state.strip()]
+        wd = ls_files("tdmo")
+        index = ls_files("tcdo")
+        all = sorted(tree | set(wd) | set(index))
 
-#        if not index and not untracked and not changed:
-            
-    def parse_status_items(self, items, cache):
-        for item in items:
-            state , name = item[0], item[2:].rstrip()
-            if name in cache:
-                if cache[name][0] == "renamed":
-                    yield Path(name ,"added", self.base_path)
-                    yield Path(cache[name][1], "removed", self.base_path)
-                elif state != 'C':               
-                    yield Path(name, cache[name], self.base_path)
-            else:
-                yield Path(name, self.state_map[state], self.base_path)
+        for name in all:
+            it = name in tree
+            w = wd.get(name, [])
+            i = index.get(name, [])
+            print name, it, w, i
+            #XXX: factor into parse_status_item
+            if '?' in w:
+                yield 'unknown', name
+            elif 'H' in i and not w and not it:
+                yield 'added', name
+            elif 'H' in i and not w and it:
+                yield 'clean', name
+            elif not w and not i and it:
+                yield 'removed', name
 
+            elif 'C' in w and 'R' in i:
+                yield 'missing', name
+            elif 'C' in w and 'H' in i:
+                yield 'modified', name
 
 
