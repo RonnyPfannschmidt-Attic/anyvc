@@ -48,7 +48,6 @@ class Git(CommandBased):
         return ['mv', source, target]
 
     def parse_status_item(self, item, cache):
-        print item
         return item
 
     def status_impl(self, *k, **kw):
@@ -58,7 +57,6 @@ class Git(CommandBased):
             'ls-tree', '-r', '--name-only', 'HEAD'
             ]).splitlines())
         else:
-            print "FAIL?"
             tree = set()
 
         def ls_files(args):
@@ -82,7 +80,6 @@ class Git(CommandBased):
             it = name in tree
             w = wd.get(name, [])
             i = index.get(name, [])
-            print name, it, w, i
             #XXX: factor into parse_status_item
             if '?' in w:
                 yield 'unknown', name
