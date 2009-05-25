@@ -13,7 +13,7 @@ from tempfile import mkdtemp
 from subprocess import Popen, PIPE
 from shutil import rmtree
 from nose.tools import assert_equal
-
+from anyvc.repository import get_repo_mgr
 
 def do(*args, **kw):
     args = map(str, args)
@@ -151,24 +151,12 @@ class VcsMan(object):
 
     @generic #XXX:lazy hack, completely missplaced
     def make_repo(self, spec, path):
-        spec(self.bpath(path))
+        return spec(self.bpath(path))
 
     def make_repo_generic(self, path):
         #XXX: return value?!
-        self.vc.make_repo(str(path))
-
-    def make_repo_subversion(self, path):
-        do('svnadmin', 'create', path)
-
-    def make_repo_bazaar(self, path):
-        do('bzr', 'init', path)
-
-    def make_repo_git(self, path):
-        path.ensure(dir=True)
-        do('git','init', cwd=str(path))
-        #XXX: git doesnt like clone of empty repos
-        #XXX: seems to have changed to not liking a push
-        #do('git', 'commit', '--allow-empty' , '-m', 'dummy 1', cwd=path)
+        VCM = get_repo_mgr(self.vc.__name__)
+        return VCM(path=str(path), create=True)
 
     def make_repo_darcs(self, path):
         path.ensure(dir=True)
