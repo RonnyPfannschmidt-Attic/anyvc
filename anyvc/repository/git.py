@@ -11,12 +11,14 @@ import subprocess
 import os
 
 class GitRepository(Repository):
-    def __init__(self, path, create=False):
+    def __init__(self, path, create=False, bare=False):
         if create:
             #XXX: fragile
+            from dulwich.repo import Repo
+
             if not os.path.exists(path):
                 os.mkdir(path)
-            subprocess.check_call(['git', 'init'], cwd=path, stdout=None, stdin=None)
+            Repo.init(path)
 
     def __len__(self):
         return 0
