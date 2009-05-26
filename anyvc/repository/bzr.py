@@ -11,7 +11,7 @@ from .base import Repository
 class BazaarRepository(Repository):
     def __init__(self, path, create=False):
         if create:
-            BzrDir.create_branch_convenience(path)
+            self.branch = BzrDir.create_branch_convenience(path)
 
     def __len__(self):
         return 0
