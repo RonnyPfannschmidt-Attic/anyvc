@@ -74,14 +74,13 @@ class WdWrap(object):
             path.write(content.rstrip() + '\n')
 
     def has_files(self, *files):
-        for name in files:
-            path = self.bpath(name)
-            assert os.path.exists(str(path))
-        return True
+        missing = [name for name in map(self.bpath, files) if not name.check()]
+        assert not missing, 'missing %s'%', '.join(missing)
+        return not missing
     
     def delete_files(self, *files):
         for file in files:
-            os.unlink(str(self.bpath(file)))
+            self.bpath(file).remove()
 
     def check_states(self, mapping, exact=True):
         """takes a mapping of filename-> state
