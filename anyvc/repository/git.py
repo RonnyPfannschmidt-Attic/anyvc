@@ -14,7 +14,8 @@ class GitRepository(Repository):
     def __init__(self, path, create=False):
         if create:
             #XXX: fragile
-            os.mkdir(path)
+            if not os.path.exists(path):
+                os.mkdir(path)
             subprocess.check_call(['git', 'init'], cwd=path, stdout=None, stdin=None)
 
     def __len__(self):
