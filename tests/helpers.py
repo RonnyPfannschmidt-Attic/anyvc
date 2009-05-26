@@ -119,7 +119,7 @@ class VcsMan(object):
     """controller over a tempdir for tests"""
     def __init__(self, vc, base):
         self.vc = vc
-        self.base = base
+        self.base = base.ensure(dir=True)
 
     def bpath(self, name):
         return self.base.join(name)
@@ -149,14 +149,9 @@ class VcsMan(object):
         do('darcs', 'get', repo, workdir)
         workdir.join('_darcs/prefs/author').write('test')
 
-    @generic #XXX:lazy hack, completely missplaced
-    def make_repo(self, spec, path):
-        return spec(self.bpath(path))
-
-    def make_repo_generic(self, path):
-        #XXX: return value?!
+    def make_repo(self, path):
         VCM = get_repo_mgr(self.vc.__name__)
-        return VCM(path=str(path), create=True)
+        return VCM(path=str(self.bpath(path)), create=True)
 
     def make_repo_darcs(self, path):
         path.ensure(dir=True)
