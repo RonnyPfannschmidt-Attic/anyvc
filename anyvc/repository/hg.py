@@ -7,10 +7,21 @@
         * 2008 by Ronny Pfannschmidt <Ronny.Pfannschmidt@gmx.de>
 """
 
-from .base import Repository
+from .base import Repository, Revision
 from ..workdir.hg import grab_output
 
 from mercurial import commands, localrepo, ui
+
+
+
+class MercurialRevision(Revision):
+    def __init__(self, repo, rev):
+        self.repo, self.rev = repo, rev
+
+    @property
+    def message(self):
+        return self.rev.description()
+
 
 class MercurialRepository(Repository):
     def __init__(self, workdir=None, path=None, create=False):
@@ -38,5 +49,9 @@ class MercurialRepository(Repository):
 
     def __len__(self):
         return 0
+
+    def get_default_head(self):
+        self.repo.invalidate() #XXX: hg wont do itself :(
+        return MercurialRevision(self, self.repo['tip'])
 
 

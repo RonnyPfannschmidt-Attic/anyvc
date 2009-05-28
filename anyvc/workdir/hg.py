@@ -61,7 +61,8 @@ class Mercurial(WorkDir):
     def make_repo(path): #XXX: bullshit here
         return Mercurial(path, create=True)
 
-    def get_repository(self):
+    @property
+    def repository(self):
         from ..repository.hg import MercurialRepository
         return MercurialRepository(self)
 

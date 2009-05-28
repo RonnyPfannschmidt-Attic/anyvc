@@ -21,6 +21,11 @@ class Git(CommandBased):
     """
     cmd = 'git'
     detect_subdir = '.git'
+    
+    @property
+    def repository(self):
+        from ..repository.git import GitRepository
+        return GitRepository(workdir=self)
 
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--no-color'] + self.process_paths(paths)

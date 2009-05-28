@@ -6,13 +6,37 @@
 """
 
 from bzrlib.bzrdir import BzrDir
-from .base import Repository
+from bzrlib.branch import Branch
+from .base import Repository, Revision
+
+class BazaarRevision(Revision):
+    def __init__(self, repo, bzrrev):
+        self.repo, self.bzrrev = repo, bzrrev
+
+    @property
+    def message(self):
+        return self.bzrrev.message
 
 class BazaarRepository(Repository):
-    def __init__(self, path, create=False):
+    def __init__(self, path=None, workdir=None, create=False):
+        if workdir:
+            self.branch = workdir.wt.branch
+        #XXX
         if create:
             self.branch = BzrDir.create_branch_convenience(path)
 
     def __len__(self):
         return 0
 
+    def get_default_head(self):
+        revision_id = self.branch.last_revision()
+        revision = self.branch.repository.get_revision(revision_id)
+        return BazaarRevision(self, revision)
+
+
+    def push(self, *k, **kw):
+        print "bzr push", self.branch.get_parent()
+        parent = self.branch.get_parent()
+        remote = Branch.open(parent)
+
+        self.branch.push(remote)

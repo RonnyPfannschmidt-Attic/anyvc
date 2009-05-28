@@ -30,6 +30,12 @@ class Bazaar(WorkDirWithParser):
             "renamed:": "placeholder", # special cased, needs parsing 
             #XXX: figure why None didn't work
             }
+    
+    @property
+    def repository(self):
+        from ..repository.bzr import BazaarRepository
+
+        return BazaarRepository(workdir=self)
 
     def __init__(self,path): 
         self.path = path

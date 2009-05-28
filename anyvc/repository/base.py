@@ -14,6 +14,9 @@
 
 """
 
+class Revision(object):
+    pass
+
 class Repository(object):
     """
     represents a repository

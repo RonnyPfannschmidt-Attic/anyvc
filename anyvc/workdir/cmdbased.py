@@ -182,6 +182,7 @@ class CommandBased(WorkDirWithParser):
 class SubVersion(CommandBased):
     cmd = "svn"
     detect_subdir = ".svn"
+    repository = None # no local repo
 
     def get_status_args(self, recursive, paths, **kw):
         #TODO: figure a good way to deal with changes in external
