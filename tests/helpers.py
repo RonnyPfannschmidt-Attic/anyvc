@@ -10,7 +10,7 @@ from anyvc.metadata import state_descriptions
 from functools import wraps, partial
 from os.path import join, dirname, exists
 from tempfile import mkdtemp
-from subprocess import Popen, PIPE
+from subprocess import call
 from shutil import rmtree
 from nose.tools import assert_equal
 from anyvc.repository import get_repo_mgr
@@ -20,9 +20,7 @@ def do(*args, **kw):
     print args
     if 'cwd' in kw:
         kw['cwd'] = str(kw['cwd'])
-    p = Popen(args, stdin=None, stdout=PIPE, stderr=PIPE, **kw)
-    for out in p.communicate():
-        sys.stdout.write(out)
+    call(args, stdin=None, **kw)
 
 
 def for_all(func):
