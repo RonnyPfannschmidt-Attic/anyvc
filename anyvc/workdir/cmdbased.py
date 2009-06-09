@@ -88,7 +88,8 @@ class CommandBased(WorkDirWithParser):
                 stderr=STDOUT,
                 cwd=self.base_path,
                 close_fds=True,
-                env={'LANG':'C', 'LANGUAGE': 'C', 'LC_All': 'C'})
+                env=dict(os.environ, LANG='C',LANGUAGE='C', LC_All='C'),
+                )
         if result_type is str:
             return ret.communicate()[0]
         elif result_type is iter:
