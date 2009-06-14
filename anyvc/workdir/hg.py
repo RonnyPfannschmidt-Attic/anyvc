@@ -92,6 +92,7 @@ class Mercurial(WorkDir):
 
         finally:
             self.__init_out = self.ui.popbuffer()
+            self.ui = self.repo.ui
 
     def status(self, paths=(), *k, **kw):
         recursive = kw.get('recursive')
