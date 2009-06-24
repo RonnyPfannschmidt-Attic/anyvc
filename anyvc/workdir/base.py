@@ -14,7 +14,7 @@ class WorkDir(object):
     Basic Workdir API
 
     :param path: base path
-    :raises ValueError: missing the correct vcs control dir
+    :raises NotFoundError: missing the correct vcs control dir
     """
 
     def __init__(self, path): 

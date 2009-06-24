@@ -17,8 +17,9 @@ import os, os.path
 
 #TODO: more reviews
 
-from base import WorkDirWithParser
-from file import StatedPath as Path
+from .base import WorkDirWithParser
+from .file import StatedPath as Path
+from ..exc import NotFoundError
 
 def relative_to(base_path):
     """
@@ -49,12 +50,7 @@ class CommandBased(WorkDirWithParser):
         self.path = os.path.normpath( os.path.abspath(versioned_path) )
         self.base_path = self.find_basepath(self.path)
         if self.base_path is None:
-            raise ValueError(
-                    'VC Basepath for vc class %r'
-                    'not found above %s'%(
-                        self.__class__.__name__, 
-                        self.path)
-                    )
+            raise NotFoundError(self.__class__,self.path)
 
     @classmethod
     def find_basepath(cls, act_path):

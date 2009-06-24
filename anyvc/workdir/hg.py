@@ -14,6 +14,7 @@ from functools import wraps
 
 from .file import StatedPath
 from .base import WorkDir
+from ..exc import NotFoundError
 
 from mercurial.__version__ import version as hgversion
 # no support for hg <= 1.0.2
@@ -78,21 +79,19 @@ class Mercurial(WorkDir):
             self.ui = ui.ui()
             self.ui.setconfig('ui', 'interactive', 'off')
         ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
-        try:
-            self.ui.pushbuffer()
-            if not create:
-                r = _find_repo(self.path)
-                if r is None or r in ignored_path:
-                    raise ValueError('No mercurial repo below %r'%path)
-                self.base_path = r
-                self.repo = hg.repository(self.ui, r)
-            else:
-                self.base_path = self.path
-                self.repo = hg.repository(self.ui, self.path, create=True)
+        
+        if create:
+            #XXX: its not yet sure if create might fail
+            self.base_path = self.path
+        else:
+            self.base_path = _find_repo(self.path)
+        if self.base_path is None or self.base_path in ignored_path:
+            raise NotFoundError(self.__class__, path)
 
-        finally:
-            self.__init_out = self.ui.popbuffer()
-            self.ui = self.repo.ui
+        self.ui.pushbuffer()
+        self.repo = hg.repository(self.ui, self.path, create=create)
+        self.ui = self.repo.ui
+        self.__init_out = self.ui.popbuffer()
 
     def status(self, paths=(), *k, **kw):
         recursive = kw.get('recursive')

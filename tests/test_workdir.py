@@ -3,6 +3,7 @@
 from .helpers import for_all
 from nose.tools import assert_equal
 import py.test
+from anyvc.exc import NotFoundError
 
 def initial(mgr, commit=False):
     print mgr.make_repo('repo')
@@ -108,3 +109,7 @@ def test_file_missing(mgr):
     wd = initial(mgr, commit=True)
     wd.delete_files('test.py')
     wd.check_states({'test.py':'missing'})
+
+
+def test_handle_not_a_workdir(mgr):
+    py.test.raises( NotFoundError, mgr.vc,  "/does/not/exist/really")

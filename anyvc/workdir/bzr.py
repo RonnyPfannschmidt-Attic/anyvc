@@ -3,6 +3,7 @@ import os
 
 from .base import WorkDir, WorkDirWithParser
 from .file import StatedPath as Path
+from ..exc import NotFoundError
 
 from StringIO import StringIO
 
@@ -43,7 +44,7 @@ class Bazaar(WorkDirWithParser):
             self.wt, self._rest = WorkingTree.open_containing(self.path)
             self.base_path = self.wt.basedir
         except NotBranchError:
-            raise ValueError("no Bazaar repo below "+path)
+            raise NotFoundError(self.__class__, path)
 
     def status_impl(self, *k, **kw):
         #XXX: paths, recursion
