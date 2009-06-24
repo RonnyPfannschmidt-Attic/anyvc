@@ -21,7 +21,7 @@ from mercurial.__version__ import version as hgversion
 if hgversion in ('1.0', '1.0.1', '1.0.2') or hgversion[0]=='0':
     raise ImportError('HG version too old, please update to a release >= 1.1')
 
-from mercurial import ui, hg, commands, util
+from mercurial import ui as hgui, hg, commands, util
 from mercurial.match import always, exact
 
 __all__ = 'Mercurial',
@@ -74,10 +74,10 @@ class Mercurial(WorkDir):
         """
         self.path = os.path.normpath( os.path.abspath(path) )
         try:
-            self.ui = ui.ui(interactive=False, verbose=True, debug=True)
+            ui = hgui.ui(interactive=False, verbose=True, debug=True)
         except TypeError: # hg >= 1.3 ui
-            self.ui = ui.ui()
-            self.ui.setconfig('ui', 'interactive', 'off')
+            ui = hgui.ui()
+            ui.setconfig('ui', 'interactive', 'off')
         ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
         
         if create:
@@ -88,10 +88,8 @@ class Mercurial(WorkDir):
         if self.base_path is None or self.base_path in ignored_path:
             raise NotFoundError(self.__class__, path)
 
-        self.ui.pushbuffer()
-        self.repo = hg.repository(self.ui, self.path, create=create)
+        self.repo = hg.repository(ui, self.path, create=create)
         self.ui = self.repo.ui
-        self.__init_out = self.ui.popbuffer()
 
     def status(self, paths=(), *k, **kw):
         recursive = kw.get('recursive')
