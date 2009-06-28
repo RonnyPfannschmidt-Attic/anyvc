@@ -88,7 +88,7 @@ class Mercurial(WorkDir):
         if self.base_path is None or self.base_path in ignored_path:
             raise NotFoundError(self.__class__, path)
 
-        self.repo = hg.repository(ui, self.path, create=create)
+        self.repo = hg.repository(ui, self.base_path, create=create)
         self.ui = self.repo.ui
 
     def status(self, paths=(), *k, **kw):
