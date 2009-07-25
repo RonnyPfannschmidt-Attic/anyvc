@@ -37,21 +37,24 @@ class MercurialRepository(Repository):
             self.ui = repo.ui
             self.repo = repo
 
-
+    def invalidate_cache(self):
+        self.repo.invalidate()
 
     @grab_output
     def push(self, dest=None, rev=None):
+        self.invalidate_cache()
         commands.push(self.ui, self.repo, dest, rev=rev)
 
     @grab_output
     def pull(self, source="default", rev=None):
+        self.invalidate_cache()
         commands.pull(self.ui, self.repo, source, rev=rev)
 
     def __len__(self):
         return 0
 
     def get_default_head(self):
-        self.repo.invalidate() #XXX: hg wont do itself :(
+        self.invalidate_cache()
         return MercurialRevision(self, self.repo['tip'])
 
 
