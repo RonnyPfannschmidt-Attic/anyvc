@@ -48,11 +48,15 @@ implementations = {
         ('shell', None, None),
     ],
     'git':[
+        #XXX the mixed one is an mess that currently works(for the testsuite)
+        ('mixed', 'anyvc.workdir.git.Git', 'anyvc.repository.git.GitRepository'),
         ('dulwich', None, 'anyvc.repository.git.GitRepository'),
         ('gitpython', None, None),
         ('shell', 'anyvc.workdir.git.Git', None),
     ],
     'subversion':[
+        #XXX the mixed one is an mess that currently works (for the testsuite)
+        ('mixed', 'anyvc.workdir.cmdbased.SubVersion', 'anyvc.repository.subversion.SubversionRepository'),
         ('subvertpy', None, 'anyvc.repository.subversion.SubversionRepository'),
         ('native', None, None),
         ('shell', 'anyvc.workdir.cmdbased.SubVersion', None),
