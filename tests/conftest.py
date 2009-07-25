@@ -1,4 +1,6 @@
-from .helpers import all_known, VcsMan
+from .helpers import  VcsMan
+
+from anyvc import metadata
 
 pytest_plugins = "doctest"
 
@@ -17,14 +19,18 @@ def pytest_generate_tests(metafunc):
 
     if 'mgr' not in metafunc.funcargnames:
         return
-    for vc in all_known:
-        if names and vc.__name__ not in names:
+    for vc, details in metadata.implementations.items():
+        if names and vc not in names:
             continue
-        metafunc.addcall(id=vc.__name__, param=vc)
+        for name, wd, repo in details:
+            if wd and repo:
+                metafunc.addcall(id='%s/%s'%(vc, name),
+                                 param=(vc, name))
+
 
 def pytest_funcarg__mgr(request):
-    vc = request.param
-    vcdir = request.config.ensuretemp(vc.__name__)
+    vc,  name= request.param
+    vcdir = request.config.ensuretemp(vc, name)
     testdir = vcdir.mkdir(request.function.__name__)
-    return VcsMan(vc, testdir)
+    return VcsMan(vc, name, testdir)
 

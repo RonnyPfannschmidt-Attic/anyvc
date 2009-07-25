@@ -13,8 +13,7 @@ from tempfile import mkdtemp
 from subprocess import call
 from shutil import rmtree
 from nose.tools import assert_equal
-from anyvc.repository import get_repo_mgr
-
+from anyvc.metadata import get_repo_impl, get_wd_impl
 def do(*args, **kw):
     args = map(str, args)
     print args
@@ -43,7 +42,7 @@ def generic(func):
 
     @wraps(func)
     def wrap(self, *k, **kw):
-        spec = '%s_%s'%(func.__name__, self.vc.__name__.lower())
+        spec = '%s_%s'%(func.__name__, self.vc)
         call = getattr(self, spec, None)
         if call is None:
             call = getattr(self, func.__name__ + '_generic', None)
@@ -56,9 +55,10 @@ def generic(func):
 
 class WdWrap(object):
     """wraps a vcs"""
-    def __init__(self, vc, path):
+    def __init__(self, vc, detail, path):
         self.__path = path
-        self.__vc = vc(str(path))
+        WD = get_wd_impl(vc, detail)
+        self.__vc = WD(str(path))
 
     def __getattr__(self, key):
         return getattr(self.__vc, key)
@@ -114,8 +114,9 @@ class WdWrap(object):
 
 class VcsMan(object):
     """controller over a tempdir for tests"""
-    def __init__(self, vc, base):
+    def __init__(self, vc, detail, base):
         self.vc = vc
+        self.detail= detail
         self.base = base.ensure(dir=True)
 
     def bpath(self, name):
@@ -125,7 +126,7 @@ class VcsMan(object):
     def make_wd(self, spec, repo, workdir):
         """this one is weird, checkout for normal vcs's, clone for dvcs's"""
         spec(self.bpath(repo), self.bpath(workdir))
-        return WdWrap(self.vc, self.bpath(workdir))
+        return WdWrap(self.vc, self.detail, self.bpath(workdir))
 
     def make_wd_mercurial(self, repo, workdir):
         do('hg', 'clone', repo, workdir)
@@ -147,7 +148,7 @@ class VcsMan(object):
         workdir.join('_darcs/prefs/author').write('test')
 
     def make_repo(self, path):
-        VCM = get_repo_mgr(self.vc.__name__)
+        VCM = get_repo_impl(self.vc, self.detail)
         return VCM(path=str(self.bpath(path)), create=True)
 
     def make_repo_darcs(self, path):

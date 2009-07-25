@@ -4,6 +4,7 @@ from .helpers import for_all
 from nose.tools import assert_equal
 import py.test
 from anyvc.exc import NotFoundError
+from anyvc.metadata import get_wd_impl
 
 def initial(mgr, commit=False):
     print mgr.make_repo('repo')
@@ -112,11 +113,12 @@ def test_file_missing(mgr):
 
 
 def test_handle_not_a_workdir(mgr):
-    py.test.raises( NotFoundError, mgr.vc,  "/does/not/exist/really")
+    WD = get_wd_impl(mgr.vc, mgr.detail)
+    py.test.raises( NotFoundError, WD,  "/does/not/exist/really")
 
 
 def test_handle_instanciate_from_subdir(mgr):
     wd = initial(mgr, commit=True)
-
-    test = mgr.vc(str(wd.bpath('wd/test.py')))
+    WD = get_wd_impl(mgr.vc, mgr.detail)
+    test = WD(str(wd.bpath('wd/test.py')))
 
