@@ -26,3 +26,14 @@ def test_repo_default_head(mgr):
         assert head.message.strip()==message.strip()
 
 
+def test_build_first_commit(mgr):
+    repo = mgr.make_repo('repo')
+    with repo.transaction(message='initial', author='test') as root:
+        with root.join('test.txt').open('w') as f:
+            f.write("text")
+
+    with repo.get_default_head().fs as root:
+        with root.join("test.txr").open() as f:
+            content = f.read()
+            assert content == 'text'
+

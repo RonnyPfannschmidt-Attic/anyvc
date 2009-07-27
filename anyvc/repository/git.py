@@ -50,5 +50,6 @@ class GitRepository(Repository):
     def get_default_head(self):
         revs = self.repo.get_refs()
         head = revs.get('HEAD', revs.get('master'))
-        return GitRevision(self, self.repo.get_object(head))
+        if head is not None:
+            return GitRevision(self, self.repo.get_object(head))
 

@@ -31,6 +31,8 @@ class BazaarRepository(Repository):
 
     def get_default_head(self):
         revision_id = self.branch.last_revision()
+        if revision_id == "null:":
+            return
         revision = self.branch.repository.get_revision(revision_id)
         return BazaarRevision(self, revision)
 

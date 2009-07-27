@@ -31,6 +31,8 @@ class SubversionRepository(Repository):
         #XXX: correct paths !!!
         ra = RemoteAccess(self.path)
         last = ra.get_latest_revnum()
+        if last == 0:
+            return
         arev = SubversionRevision(self, last)
         arev.message = "broken"
         def cb(changed_paths, rev, revprops, has_children=None):
