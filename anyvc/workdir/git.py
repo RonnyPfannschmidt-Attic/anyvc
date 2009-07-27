@@ -12,6 +12,7 @@ from cmdbased import CommandBased
 from cmdbased import relative_to
 from file import StatedPath as Path
 import re
+from subprocess import call
 
 class Git(CommandBased):
     """
@@ -21,11 +22,15 @@ class Git(CommandBased):
     """
     cmd = 'git'
     detect_subdir = '.git'
-    
+
     @property
     def repository(self):
         from ..repository.git import GitRepository
         return GitRepository(workdir=self)
+
+    def create_from(self, source):
+        call(['git', 'clone', source, self.path])
+
 
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--no-color'] + self.process_paths(paths)
@@ -39,7 +44,7 @@ class Git(CommandBased):
             return ['commit', '-m', message, '--'] + list(self.process_paths(paths))
         else:
             # commit all found changes
-            # this also adds all files not tracked and not in gitignore 
+            # this also adds all files not tracked and not in gitignore
             # this also commits deletes ?!
             return ['commit', '-a', '-m', message]
 

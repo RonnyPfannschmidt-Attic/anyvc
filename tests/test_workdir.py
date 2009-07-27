@@ -57,7 +57,7 @@ def test_workdir_remove(mgr):
     wd.remove(paths=['test.py'])
     wd.check_states({
         'test.py': 'removed',
-        }) 
+        })
     wd.commit(message='*')
 
     py.test.raises(AssertionError,wd.check_states, {'test.py': 'clean'})

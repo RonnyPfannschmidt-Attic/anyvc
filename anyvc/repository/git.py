@@ -13,6 +13,7 @@ import os
 from dulwich.repo import Repo
 
 class GitRevision(object):
+
     def __init__(self, repo, commit):
         self.repo, self.commit = repo, commit
 
@@ -45,7 +46,7 @@ class GitRepository(Repository):
     def push(self):
         #XXX: hell, figure if the remote is empty, push master in that case
         subprocess.check_call(['git', 'push', '--all'], cwd=self.path)
-    
+
     def get_default_head(self):
         revs = self.repo.get_refs()
         head = revs.get('HEAD', revs.get('master'))

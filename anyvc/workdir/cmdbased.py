@@ -12,8 +12,8 @@
 """
 import re
 
-from subprocess import Popen, PIPE, STDOUT
-import os, os.path 
+from subprocess import Popen, PIPE, STDOUT, call
+import os, os.path
 
 #TODO: more reviews
 
@@ -46,11 +46,18 @@ class CommandBased(WorkDirWithParser):
     """
     #TODO: set up the missing actions
 
-    def __init__(self, versioned_path):
+    def __init__(self, versioned_path, create=False, source=None):
         self.path = os.path.normpath( os.path.abspath(versioned_path) )
+        if create:
+            if source:
+                self.create_from(source)
+            else:
+                assert create and source
         self.base_path = self.find_basepath(self.path)
         if self.base_path is None:
             raise NotFoundError(self.__class__,self.path)
+
+
 
     @classmethod
     def find_basepath(cls, act_path):
@@ -63,7 +70,7 @@ class CommandBased(WorkDirWithParser):
                 if act_path in ignored_path:
                     return None
                 detected_path = act_path
-                # continue cause some vcs's 
+                # continue cause some vcs's
                 # got the subdir in every path
             op = act_path
             act_path = os.path.dirname(act_path)
@@ -89,7 +96,7 @@ class CommandBased(WorkDirWithParser):
         if result_type is str:
             return ret.communicate()[0]
         elif result_type is iter:
-            return iter(ret.stdout)
+            return ret.stdout
         elif result_type is file:
             return ret.stdout
 
@@ -153,10 +160,10 @@ class CommandBased(WorkDirWithParser):
 
     def status_impl(self, **kw):
         """
-        the default implementation is only cappable of 
+        the default implementation is only cappable of
         recursive operation on the complete workdir
 
-        rcs-specific implementations might support 
+        rcs-specific implementations might support
         non-recursive and path-specific listing
         """
         args = self.get_status_args(**kw)
@@ -189,6 +196,9 @@ class SubVersion(CommandBased):
             ret.append("--non-recursive")
         return ret + list(paths)
 
+
+    def create_from(self, source):
+        call(['svn', 'co', 'file://'+source, self.path])
     state_map = {
             "?": 'unknown',
             "A": 'added',
@@ -265,7 +275,7 @@ class Darcs(CommandBased):
         state = self.state_map[elements[0]]
         file = os.path.normpath(elements[1])
         return state, file
-    
+
     def get_rename_args(self, source, target):
         return ['mv', source, target]
 

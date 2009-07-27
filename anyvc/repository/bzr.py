@@ -18,6 +18,7 @@ class BazaarRevision(Revision):
         return self.bzrrev.message
 
 class BazaarRepository(Repository):
+    #XXX: this whole thing is broken and messed
     def __init__(self, path=None, workdir=None, create=False):
         if workdir:
             self.branch = workdir.wt.branch

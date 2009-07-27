@@ -3,7 +3,7 @@
     ~~~~~~~~~~~~~~
 
     some basic metadata about vcs states and other fun
-    
+
     .. warning::
 
       this module is subject to huge changes
@@ -77,11 +77,13 @@ def _import(name):
 
 def get_wd_impl(vcs, detail):
     for name, wd, repo in implementations[vcs]:
-        if name == detail:
-            return wd and _import(wd)
+        if name == detail and wd:
+            return _import(wd)
+    raise KeyError, (vcs, detail)
 
 
 def get_repo_impl(vcs, detail):
     for name, wd, repo in implementations[vcs]:
-        if name == detail:
-            return repo and _import(repo)
+        if name == detail and repo:
+            return _import(repo)
+    raise KeyError, (vcs, detail)

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 """
     weird base classes
@@ -17,7 +17,7 @@ class WorkDir(object):
     :raises NotFoundError: missing the correct vcs control dir
     """
 
-    def __init__(self, path): 
+    def __init__(self, path, create=False, source=None):
         self.path = path
 
     def status(self, paths=(), recursive=True):
@@ -52,7 +52,7 @@ class WorkDir(object):
         :param path: the paths
         :param message: the commit message
         :param user: optional author name
-        
+
         commits the given paths/files with the given commit message and author
         """
 
@@ -78,7 +78,7 @@ class WorkDirWithParser(WorkDir):
         redirect to parse_status_item
         a more complex parser might need to overwrite
         """
-        for item in items: 
+        for item in items:
             rv = self.parse_status_item(item, cache)
 
             if rv is not None:
@@ -138,6 +138,6 @@ class WorkDirWithParser(WorkDir):
         cache = self.cache(paths = paths,recursive=recursive)
         return self.parse_status_items(
                 self.status_impl(
-                    paths = paths, 
-                    recursive=recursive, 
+                    paths = paths,
+                    recursive=recursive,
                     ), cache)

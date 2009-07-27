@@ -2,7 +2,8 @@ import py.test
 
 def test_repo_create(mgr):
     repo = mgr.make_repo('repo')
-    assert len(repo) == 0
+    default_branch = repo.prepare_default_structure()
+    assert len(repo) in (0,1)
 
 def test_repo_default_head(mgr):
     repo = mgr.make_repo('repo')

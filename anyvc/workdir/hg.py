@@ -21,7 +21,7 @@ from mercurial.__version__ import version as hgversion
 if hgversion in ('1.0', '1.0.1', '1.0.2') or hgversion[0]=='0':
     raise ImportError('HG version too old, please update to a release >= 1.1')
 
-from mercurial import ui as hgui, hg, commands, util
+from mercurial import ui as hgui, hg, commands, util, cmdutil
 from mercurial.match import always, exact
 
 __all__ = 'Mercurial',
@@ -67,7 +67,7 @@ class Mercurial(WorkDir):
         from ..repository.hg import MercurialRepository
         return MercurialRepository(self)
 
-    def __init__(self, path, create=False):
+    def __init__(self, path, create=False, source=None):
         """
         Get a repo for a given path.
         If `create` is true, a new repo is created.
@@ -79,10 +79,18 @@ class Mercurial(WorkDir):
             ui = hgui.ui()
             ui.setconfig('ui', 'interactive', 'off')
         ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
-        
+
         if create:
             #XXX: its not yet sure if create might fail
             self.base_path = self.path
+            if not os.path.exists(self.path):
+                os.makedirs(self.path)
+
+            if source is not None:
+                hg.clone(cmdutil.remoteui(ui, {}),
+                         source, self.path)
+                create = False
+
         else:
             self.base_path = _find_repo(self.path)
         if self.base_path is None or self.base_path in ignored_path:
@@ -106,7 +114,7 @@ class Mercurial(WorkDir):
             files = ()
 
         files = () #XXX kill all preselection till i get the matcher interface
-        
+
         if files:
         #XXX: investigate cwd arg
             matcher = exact(self.repo.root, self.repo.root, files)
@@ -146,7 +154,7 @@ class Mercurial(WorkDir):
             )
 
     @grab_output
-    def remove(self, paths): 
+    def remove(self, paths):
         #XXX: support for after ?
         commands.remove(self.ui, self.repo,
                 after=False, # only hg 0.9.5 needs that explicit

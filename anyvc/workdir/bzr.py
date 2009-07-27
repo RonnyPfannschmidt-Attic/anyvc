@@ -8,6 +8,7 @@ from ..exc import NotFoundError
 from StringIO import StringIO
 
 #bzr imports
+from bzrlib.branch import Branch
 from bzrlib.workingtree import WorkingTree
 from bzrlib.errors import NotBranchError
 from bzrlib import bzrdir
@@ -28,18 +29,26 @@ class Bazaar(WorkDirWithParser):
             "modified:": 'modified',
             "conflicts:": 'conflict',
             "pending merges:": 'conflict',
-            "renamed:": "placeholder", # special cased, needs parsing 
+            "renamed:": "placeholder", # special cased, needs parsing
             #XXX: figure why None didn't work
             }
-    
+
     @property
     def repository(self):
         from ..repository.bzr import BazaarRepository
 
         return BazaarRepository(workdir=self)
 
-    def __init__(self,path): 
+    def __init__(self, path, create=False, source=None):
+
+
         self.path = path
+
+        if create:
+            assert source
+            source,r = Branch.open_containing(source)
+            source.bzrdir.sprout(path)
+
         try:
             self.wt, self._rest = WorkingTree.open_containing(self.path)
             self.base_path = self.wt.basedir

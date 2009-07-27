@@ -3,7 +3,7 @@
 
 from __future__ import with_statement
 import os
-import sys 
+import sys
 
 from anyvc.workdir import all_known
 from anyvc.metadata import state_descriptions
@@ -37,7 +37,7 @@ def for_all(func):
     return test
 
 def generic(func):
-    """this is a dirty little dispatcher, 
+    """this is a dirty little dispatcher,
     its in place cause most stuff only half works"""
 
     @wraps(func)
@@ -47,7 +47,7 @@ def generic(func):
         if call is None:
             call = getattr(self, func.__name__ + '_generic', None)
             assert call is not None, 'cant find function %s for %r'%(
-                    func.__name__, 
+                    func.__name__,
                     self.vc.__name__,
                     )
         return func(self, call, *k, **kw)
@@ -75,7 +75,7 @@ class WdWrap(object):
         missing = [name for name in map(self.bpath, files) if not name.check()]
         assert not missing, 'missing %s'%', '.join(missing)
         return not missing
-    
+
     def delete_files(self, *files):
         for file in files:
             self.bpath(file).remove()
@@ -95,12 +95,12 @@ class WdWrap(object):
             if info.relpath in mapping:
                 expected = mapping[info.relpath]
                 assert info.state==expected, "%s %s<>%s"%(
-                        info.relpath, 
+                        info.relpath,
                         info.state,
                         expected,
                         )
                 used.add(info.relpath)
-        
+
 
         if exact:
             print infos
@@ -122,34 +122,18 @@ class VcsMan(object):
     def bpath(self, name):
         return self.base.join(name)
 
-    @generic #XXX:lazy hack, completely missplaced
-    def make_wd(self, spec, repo, workdir):
-        """this one is weird, checkout for normal vcs's, clone for dvcs's"""
-        spec(self.bpath(repo), self.bpath(workdir))
+    def make_wd(self, repo, workdir):
+        WD = get_wd_impl(self.vc, self.detail)
+        WD(str(self.bpath(workdir)), create=True, source=str(self.bpath(repo)))
         return WdWrap(self.vc, self.detail, self.bpath(workdir))
-
-    def make_wd_mercurial(self, repo, workdir):
-        do('hg', 'clone', repo, workdir)
-
-    make_wd_nativemercurial = make_wd_mercurial
-
-
-    def make_wd_bazaar(self, repo, workdir):
-        do('bzr', 'branch', repo, workdir)
-
-    def make_wd_subversion(self, repo, workdir):
-        do('svn', 'co', 'file://%s'%repo, workdir)
-
-    def make_wd_git(self, repo, workdir):
-        do('git', 'clone', repo, workdir)
-
-    def make_wd_darcs(self, repo, workdir):
-        do('darcs', 'get', repo, workdir)
-        workdir.join('_darcs/prefs/author').write('test')
 
     def make_repo(self, path):
         VCM = get_repo_impl(self.vc, self.detail)
         return VCM(path=str(self.bpath(path)), create=True)
+
+    def make_wd_darcs(self, repo, workdir):
+        do('darcs', 'get', repo, workdir)
+        workdir.join('_darcs/prefs/author').write('test')
 
     def make_repo_darcs(self, path):
         path.ensure(dir=True)

@@ -28,11 +28,17 @@ class Repository(object):
         self.path = path
         self.extra = extra
 
+    def prepare_default_structure(self):
+        """
+        if the vcs has a common standard repo structure, set it up
+        """
+        pass
+
     def push(self, dest=None, rev=None):
         """
         push to a location
 
-        :param dest: the destination 
+        :param dest: the destination
         :param rev: the maximum revision to push, may be none for latest
         """
         raise NotImplementedError("%r doesnt implement push"%self.__class__)
