@@ -7,11 +7,10 @@
         * 2008 by Ronny Pfannschmidt <Ronny.Pfannschmidt@gmx.de>
 """
 
-from .base import Repository, Revision
+from .base import Repository, Revision, CommitBuilder, DumbFile, join
 from ..workdir.hg import grab_output
 
-from mercurial import commands, localrepo, ui
-
+from mercurial import commands, localrepo, ui, context
 
 
 class MercurialRevision(Revision):
@@ -21,6 +20,9 @@ class MercurialRevision(Revision):
     @property
     def message(self):
         return self.rev.description()
+
+    def __enter__(self):
+        return MercurialRevisionView(self)
 
 
 class MercurialRepository(Repository):
@@ -56,5 +58,40 @@ class MercurialRepository(Repository):
     def get_default_head(self):
         self.invalidate_cache()
         return MercurialRevision(self, self.repo['tip'])
+
+
+    def transaction(self, **extra):
+        return MercurialCommitBuilder(self, self.get_default_head(), **extra)
+
+class MercurialRevisionView(object):
+    def __init__(self, rev, path='/'):
+        self.rev = rev
+        self.path = path
+
+    def join(self, path):
+        return MercurialRevisionView(self.rev, join(self.path, path))
+
+    def open(self):
+        return DumbFile(self.rev.rev[self.path].data())
+
+
+class MercurialCommitBuilder(CommitBuilder):
+    def commit(self):
+        repo = self.repo.repo
+        def get_file(repo, ctx, path):
+            return context.memfilectx(
+                    path,
+                    self.files[path].content,
+                    False, False, False)
+            
+
+        ctx = context.memctx(
+                repo,
+                [None, None],
+                self.extra['message'],
+                list(self.files),
+                get_file)
+        repo.commitctx(ctx)
+
 
 

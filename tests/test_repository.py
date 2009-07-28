@@ -32,8 +32,8 @@ def test_build_first_commit(mgr):
         with root.join('test.txt').open('w') as f:
             f.write("text")
 
-    with repo.get_default_head().fs as root:
-        with root.join("test.txr").open() as f:
+    with repo.get_default_head() as root:
+        with root.join("test.txt").open() as f:
             content = f.read()
             assert content == 'text'
 

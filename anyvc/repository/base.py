@@ -16,8 +16,24 @@
 from posixpath import join
 from collections import defaultdict
 
+
+class DumbFile(object):
+    #XXX this stupid thing is only here for testing, it has to go
+    def __init__(self, data):
+        self.data = data
+
+    def read(self):
+        return self.data
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, et, ev, tb):
+        pass
+
 class Revision(object):
-    pass
+    def __exit__(self, et, ev, tb):
+        pass
 
 class Repository(object):
     """
@@ -53,28 +69,33 @@ class Repository(object):
 
 
     def transaction(self, **extra):
-        return CommitBuilder(self, self.get_default_head())
+        return CommitBuilder(self, self.get_default_head(), **extra)
 
 
 class CommitBuilder(object):
     def __init__(self, repo, base_commit, **extra):
         self.repo = repo
         self.base_commit = base_commit
-        self.files = {}
+        self.extra = extra
+        self.files = {} #XXX: lossy painfull
 
 
     def filebuilder(self, path):
-
+        #XXX: broken model
         if path not in self.files:
             self.files[path] = FileBuilder(self.repo, self.base_commit, path)
 
         return self.files[path]
 
+    def commit(self):
+        raise NotImplementedError
+
     def __enter__(self):
         return RepoPath(self.base_commit, "/", self)
 
     def __exit__(self, etype, eval, tb):
-        pass
+        if etype is None:
+            self.commit()
 
 
 class RepoPath(object):
@@ -101,7 +122,8 @@ class FileBuilder(object):
         self.content = None
 
     def write(self, data):
-        pass
+        #XXX: no im not kidding, just lazy
+        self.content = data
 
     def __enter__(self):
         return self

@@ -4,10 +4,11 @@
     :license: LGPL 2 or later
     :copyright: 2009 by Ronny Pfannschmidt
 """
-
 from bzrlib.bzrdir import BzrDir
 from bzrlib.branch import Branch
-from .base import Repository, Revision
+from bzrlib.memorytree import MemoryTree
+from .base import Repository, Revision, CommitBuilder, join, DumbFile
+import StringIO
 
 class BazaarRevision(Revision):
     def __init__(self, repo, bzrrev):
@@ -16,6 +17,9 @@ class BazaarRevision(Revision):
     @property
     def message(self):
         return self.bzrrev.message
+
+    def __enter__(self):
+        return BzrRevisionView(self, '')
 
 class BazaarRepository(Repository):
     #XXX: this whole thing is broken and messed
@@ -43,3 +47,55 @@ class BazaarRepository(Repository):
         remote = Branch.open(parent)
 
         self.branch.push(remote)
+
+    def transaction(self, **extra):
+        return BzrCommitBuilder(self, self.get_default_head(), **extra)
+
+class BzrCommitBuilder(CommitBuilder):
+    def __init__(self, *k, **kw):
+        super(BzrCommitBuilder, self).__init__(*k, **kw)
+        self.tree = MemoryTree.create_on_branch(self.repo.branch)
+
+    def __enter__(self):
+        self.tree.lock_write()
+        return super(BzrCommitBuilder, self).__enter__()
+
+    def commit(self):
+        tree = self.tree
+        if tree.path2id('') is None:
+            tree.add('')
+
+        for file in self.files:
+            print file
+            tree.add(file)
+            id = tree.path2id(file)
+            tree.put_file_bytes_non_atomic(id, self.files[file].content)
+
+
+        self.tree.lock_write()
+        self.tree.commit(message=self.extra['message'], authors=[self.extra['author']])
+
+    def __exit__(self, et, ev, tb):
+        super(BzrCommitBuilder, self).__exit__(et, ev, tb)
+        self.tree.unlock()
+        self.tree = None
+
+class BzrRevisionView(object):
+    def __init__(self, revision, path):
+        self.revision = revision
+        self.path = path
+
+
+    def join(self, path):
+        return BzrRevisionView(self.revision, join(self.path, path))
+
+    def open(self):
+        tree = self.revision.repo.branch.basis_tree()
+        id = tree.path2id(self.path)
+        try:
+            tree.lock_read()
+            sio = tree.get_file(id)
+            return DumbFile(sio.read())
+        finally:
+            tree.unlock()
+
