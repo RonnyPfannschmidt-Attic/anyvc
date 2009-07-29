@@ -98,7 +98,7 @@ class BzrRevisionView(object):
         return BzrRevisionView(self.revision, join(self.path, path))
 
     def open(self):
-        tree = self.revision.repo.branch.basis_tree()
+        tree = self.revision.repo.branch.repository.revision_tree(self.revision.bzrrev.revision_id)
         id = tree.path2id(self.path)
         try:
             tree.lock_read()

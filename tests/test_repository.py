@@ -56,3 +56,9 @@ def test_generate_commit_chain(mgr):
         revs.append(rev)
 
     assert len(revs) == 10
+
+    for i, rev in enumerate(reversed(revs)):
+        with rev as root:
+            with root.join('test.txt').open() as f:
+                data = f.read()
+                assert data == 'test%s'%i

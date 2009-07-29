@@ -120,8 +120,7 @@ class GitRevisionView(object):
 
     def open(self):
         repo = self.revision.repo.repo
-        head = repo['HEAD']
-        tree = repo[head.tree]
+        tree = repo[self.revision.commit.tree]
         #XXX: highly incorrect, should walk and check the type
         blob =repo[tree[self.path.lstrip('/')][1]]
 
