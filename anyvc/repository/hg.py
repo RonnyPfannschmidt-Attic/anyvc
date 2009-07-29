@@ -18,6 +18,12 @@ class MercurialRevision(Revision):
         self.repo, self.rev = repo, rev
 
     @property
+    def parents(self):
+        print self.rev.parents()
+        return [MercurialRevision(self.repo, rev) for rev in self.rev.parents() if rev]
+
+
+    @property
     def message(self):
         return self.rev.description()
 
@@ -83,11 +89,15 @@ class MercurialCommitBuilder(CommitBuilder):
                     path,
                     self.files[path].content,
                     False, False, False)
-            
 
+
+        if self.base_commit is not None:
+            base = self.base_commit.rev.node()
+        else:
+            base = None
         ctx = context.memctx(
                 repo,
-                [None, None],
+                [base, None],
                 self.extra['message'],
                 list(self.files),
                 get_file)

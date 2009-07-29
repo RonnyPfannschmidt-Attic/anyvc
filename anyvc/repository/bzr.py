@@ -15,6 +15,11 @@ class BazaarRevision(Revision):
         self.repo, self.bzrrev = repo, bzrrev
 
     @property
+    def parents(self):
+        return [ BazaarRevision(self.repo,
+                                self.repo.branch.repository.get_revision(rev))
+                for rev in self.bzrrev.parent_ids]
+    @property
     def message(self):
         return self.bzrrev.message
 

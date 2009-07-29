@@ -14,6 +14,14 @@ import StringIO
 class SubversionRevision(Revision):
     def __init__(self, repo, id):
         self.repo, self.id = repo, id
+
+    @property
+    def parents(self):
+        #XXX: jup over irelevant id's
+        if self.id == 1:
+            return []
+        return [SubversionRevision(self.repo, self.id -1)]
+
     def __enter__(self):
         return SvnRevisionView(self.repo.path, self.id, '/')
 

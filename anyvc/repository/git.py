@@ -23,6 +23,11 @@ class GitRevision(Revision):
         return self.commit.id
 
     @property
+    def parents(self):
+        return [GitRevision(self.repo, self.repo.repo.commit(id))
+                for id in self.commit.parents]
+
+    @property
     def message(self):
         return self.commit.message.rstrip()
 
