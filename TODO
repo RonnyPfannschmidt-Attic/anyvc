@@ -1,4 +1,8 @@
-* py.test based integration testing on multiple vcs versions via virtualenv
+* py.test based integration testing on multiple vcs versions via
+
+  * virtualenv
+  * vsp 
+
 * a way to select the vcs to choose for init of repo/workdir
 * history view
 * fs branches <> clones
