@@ -43,5 +43,7 @@ def test_generate_commit_chain(mgr):
         with repo.transaction(message='test%s'%i, author='test') as root:
             with root.join('test.txt').open('w') as f:
                 f.write("test%s"%i)
-                
+    
+    assert len(repo) == 10
+
 

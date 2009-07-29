@@ -19,6 +19,10 @@ class GitRevision(Revision):
         self.repo, self.commit = repo, commit
 
     @property
+    def id(self):
+        return self.commit.id
+
+    @property
     def message(self):
         return self.commit.message.rstrip()
 
@@ -44,7 +48,11 @@ class GitRepository(Repository):
 
 
     def __len__(self):
-        return 0
+        #XXX: fragile
+        head = self.get_default_head()
+        if head is None:
+            return 0
+        return len(self.repo.revision_history(head.id))
 
     def push(self):
         #XXX: hell, figure if the remote is empty, push master in that case
@@ -83,6 +91,8 @@ class GitCommitBuilder(CommitBuilder):
         store.add_object(tree)
 
         commit = Commit()
+        if self.base_commit:
+            commit.parents = [self.base_commit.commit.id]
         commit.tree = tree.id
         commit.message = self.extra['message']
         commit.committer = self.extra['author']

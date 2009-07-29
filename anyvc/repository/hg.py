@@ -53,7 +53,7 @@ class MercurialRepository(Repository):
         commands.pull(self.ui, self.repo, source, rev=rev)
 
     def __len__(self):
-        return 0
+        return len(self.repo)
 
     def get_default_head(self):
         self.invalidate_cache()

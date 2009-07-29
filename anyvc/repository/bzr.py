@@ -31,7 +31,9 @@ class BazaarRepository(Repository):
             self.branch = BzrDir.create_branch_convenience(path)
 
     def __len__(self):
-        return 0
+        revs = self.branch.iter_merge_sorted_revisions()
+
+        return sum(1 for i in revs)
 
     def get_default_head(self):
         revision_id = self.branch.last_revision()
