@@ -58,8 +58,10 @@ class SvnCommitBuilder(CommitBuilder):
         editor = ra.get_commit_editor({'svn:log':self.extra['message']})
         root = editor.open_root()
         for file in self.files:
-            svnfile = root.add_file(file)
-            print dir(svnfile)
+            try:
+                svnfile = root.add_file(file)
+            except:
+                svnfile = root.open_file(file)
             txhandler = svnfile.apply_textdelta()
             delta.send_stream(
                     StringIO.StringIO(self.files[file].content),

@@ -37,3 +37,11 @@ def test_build_first_commit(mgr):
             content = f.read()
             assert content == 'text'
 
+def test_generate_commit_chain(mgr):
+    repo = mgr.make_repo('repo')
+    for i in range(10):
+        with repo.transaction(message='test%s'%i, author='test') as root:
+            with root.join('test.txt').open('w') as f:
+                f.write("test%s"%i)
+                
+

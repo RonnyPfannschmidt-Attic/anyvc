@@ -67,7 +67,8 @@ class BzrCommitBuilder(CommitBuilder):
 
         for file in self.files:
             print file
-            tree.add(file)
+            if not tree.path2id(file):
+                tree.add(file)
             id = tree.path2id(file)
             tree.put_file_bytes_non_atomic(id, self.files[file].content)
 
