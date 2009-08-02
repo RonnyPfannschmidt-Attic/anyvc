@@ -26,6 +26,18 @@ class BazaarRevision(Revision):
     def __enter__(self):
         return BzrRevisionView(self, '')
 
+    def file_content(self, path):
+        tree = self.repo.branch.repository.revision_tree(self.bzrrev.revision_id)
+        id = tree.path2id(path)
+        try:
+            tree.lock_read()
+            sio = tree.get_file(id)
+            return sio.read()
+        finally:
+            tree.unlock()
+
+
+
 class BazaarRepository(Repository):
     #XXX: this whole thing is broken and messed
     def __init__(self, path=None, workdir=None, create=False):
@@ -36,6 +48,7 @@ class BazaarRepository(Repository):
             self.branch = BzrDir.create_branch_convenience(path)
 
     def __len__(self):
+        #XXX: crap
         revs = self.branch.iter_merge_sorted_revisions()
 
         return sum(1 for i in revs)
@@ -46,7 +59,6 @@ class BazaarRepository(Repository):
             return
         revision = self.branch.repository.get_revision(revision_id)
         return BazaarRevision(self, revision)
-
 
     def push(self, *k, **kw):
         print "bzr push", self.branch.get_parent()
@@ -97,12 +109,4 @@ class BzrRevisionView(object):
         return BzrRevisionView(self.revision, join(self.path, path))
 
     def open(self):
-        tree = self.revision.repo.branch.repository.revision_tree(self.revision.bzrrev.revision_id)
-        id = tree.path2id(self.path)
-        try:
-            tree.lock_read()
-            sio = tree.get_file(id)
-            return DumbFile(sio.read())
-        finally:
-            tree.unlock()
-
+        return DumbFile(self.revision.file_content(self.path))
