@@ -13,7 +13,7 @@
         the repo apis are unstable and incomplete
 
 """
-from posixpath import join
+from posixpath import join, basename, dirname
 from collections import defaultdict
 
 
@@ -32,8 +32,23 @@ class DumbFile(object):
         pass
 
 class Revision(object):
+    def __enter__(self):
+       return RevisionView(self, '/')
+
     def __exit__(self, et, ev, tb):
         pass
+
+class RevisionView(object):
+    def __init__(self, revision, path):
+        self.revision = revision
+        self.path = path
+
+    def join(self, path):
+        return RevisionView(self.revision, join(self.path, path))
+
+    def open(self):
+        return DumbFile(self.revision.file_content(self.path))
+
 
 class Repository(object):
     """

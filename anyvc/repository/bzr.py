@@ -23,9 +23,6 @@ class BazaarRevision(Revision):
     def message(self):
         return self.bzrrev.message
 
-    def __enter__(self):
-        return BzrRevisionView(self, '')
-
     def file_content(self, path):
         tree = self.repo.branch.repository.revision_tree(self.bzrrev.revision_id)
         id = tree.path2id(path)

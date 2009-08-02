@@ -27,8 +27,8 @@ class MercurialRevision(Revision):
     def message(self):
         return self.rev.description()
 
-    def __enter__(self):
-        return MercurialRevisionView(self)
+    def file_content(self, path):
+        return self.rev[path].data()
 
 
 class MercurialRepository(Repository):
@@ -68,17 +68,6 @@ class MercurialRepository(Repository):
 
     def transaction(self, **extra):
         return MercurialCommitBuilder(self, self.get_default_head(), **extra)
-
-class MercurialRevisionView(object):
-    def __init__(self, rev, path='/'):
-        self.rev = rev
-        self.path = path
-
-    def join(self, path):
-        return MercurialRevisionView(self.rev, join(self.path, path))
-
-    def open(self):
-        return DumbFile(self.rev.rev[self.path].data())
 
 
 class MercurialCommitBuilder(CommitBuilder):
