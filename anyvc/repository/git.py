@@ -31,8 +31,14 @@ class GitRevision(Revision):
     def message(self):
         return self.commit.message.rstrip()
 
-    def __enter__(self):
-        return GitRevisionView(self)
+    def file_content(self, path):
+        repo = self.repo.repo
+        tree = repo[self.commit.tree]
+        #XXX: highly incorrect, should walk and check the type
+        blob =repo[tree[path.lstrip('/')][1]]
+
+        return blob.data
+
 
 class GitRepository(Repository):
     def __init__(self, path=None, workdir=None, create=False, bare=False):
@@ -110,18 +116,3 @@ class GitCommitBuilder(CommitBuilder):
         self.repo.repo.refs['HEAD'] = commit.id
 
 
-class GitRevisionView(object):
-    def __init__(self, revision, path="/"):
-        self.revision = revision
-        self.path = path
-    
-    def join(self, path):
-        return GitRevisionView(self.revision, join(self.path, path))
-
-    def open(self):
-        repo = self.revision.repo.repo
-        tree = repo[self.revision.commit.tree]
-        #XXX: highly incorrect, should walk and check the type
-        blob =repo[tree[self.path.lstrip('/')][1]]
-
-        return DumbFile(blob.data)

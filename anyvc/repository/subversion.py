@@ -13,6 +13,7 @@ import StringIO
 
 class SubversionRevision(Revision):
     def __init__(self, repo, id):
+        #XXX: branch subdirs
         self.repo, self.id = repo, id
 
     @property
@@ -22,8 +23,12 @@ class SubversionRevision(Revision):
             return []
         return [SubversionRevision(self.repo, self.id -1)]
 
-    def __enter__(self):
-        return SvnRevisionView(self.repo.path, self.id, '/')
+    def file_content(self, path):
+        ra = RemoteAccess(self.repo.path)
+        import os
+        target = StringIO.StringIO()
+        ra.get_file(path.lstrip('/'), target, self.id)
+        return target.getvalue()
 
 
 class SubversionRepository(Repository):
@@ -33,8 +38,6 @@ class SubversionRepository(Repository):
         if create:
             repos.create(path)
         self.path = "file://"+path
-
-
 
     def __len__(self):
         ra = RemoteAccess(self.path)
@@ -77,25 +80,5 @@ class SvnCommitBuilder(CommitBuilder):
             svnfile.close()
         root.close()
         editor.close()
-
-
-class SvnRevisionView(object):
-    def __init__(self, base, rev, path):
-        self.base = base
-        self.rev = rev
-        self.path = path
-
-    def join(self, path):
-        return SvnRevisionView(self.base, self.rev, join(self.path, path))
-
-
-    def open(self):
-        ra = RemoteAccess(self.base)
-        import os
-        target = StringIO.StringIO()
-        ra.get_file(self.path.lstrip('/'), target, self.rev)
-        return DumbFile(target.getvalue())
-
-
 
 
