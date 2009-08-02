@@ -62,3 +62,19 @@ def test_generate_commit_chain(mgr):
             with root.join('test.txt').open() as f:
                 data = f.read()
                 assert data == 'test%s'%i
+
+@py.test.mark.xfail
+def test_rename(mgr):
+    repo = mgr.make_repo('repo')
+
+    with repo.transaction(message='create', author='test') as root:
+        with root.join('test.txt').open('w') as f:
+            f.write('test')
+
+    with repo.transaction(message='rename', author='test') as root:
+        #XXX: check if relative names are ok for rename in the fs api
+        root.join('test.txt').rename('test_renamed.txt')
+
+    with repo.get_default_head() as root:
+        assert not root.join('test.txt').exists()
+        assert root.join('test_renamed.txt').exists()
