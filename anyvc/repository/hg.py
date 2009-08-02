@@ -85,6 +85,9 @@ class MercurialCommitBuilder(CommitBuilder):
     def commit(self):
         repo = self.repo.repo
         def get_file(repo, ctx, path):
+            #XXX: copy sources
+            #XXX: renames
+            #XXX: deletes
             return context.memfilectx(
                     path,
                     self.files[path].content,
