@@ -119,6 +119,9 @@ class VcsMan(object):
         self.detail= detail
         self.base = base.ensure(dir=True)
 
+    def __repr__(self):
+        return '<VcsMan %(vc)s/%(detail)s %(base)r>'%vars(self)
+
     def bpath(self, name):
         return self.base.join(name)
 
