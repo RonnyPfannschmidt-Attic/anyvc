@@ -80,7 +80,6 @@ class BzrCommitBuilder(CommitBuilder):
             tree.put_file_bytes_non_atomic(id, self.files[file].content)
 
 
-        self.tree.lock_write()
         self.tree.commit(message=self.extra['message'], authors=[self.extra['author']])
 
     def __exit__(self, et, ev, tb):
