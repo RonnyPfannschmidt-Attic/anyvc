@@ -96,14 +96,3 @@ class BzrCommitBuilder(CommitBuilder):
         self.tree.unlock()
         self.tree = None
 
-class BzrRevisionView(object):
-    def __init__(self, revision, path):
-        self.revision = revision
-        self.path = path
-
-
-    def join(self, path):
-        return BzrRevisionView(self.revision, join(self.path, path))
-
-    def open(self):
-        return DumbFile(self.revision.file_content(self.path))
