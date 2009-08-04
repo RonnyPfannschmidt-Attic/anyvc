@@ -7,8 +7,7 @@
 from bzrlib.bzrdir import BzrDir
 from bzrlib.branch import Branch
 from bzrlib.memorytree import MemoryTree
-from .base import Repository, Revision, CommitBuilder, join, DumbFile
-import StringIO
+from .base import Repository, Revision, CommitBuilder, join
 
 class BazaarRevision(Revision):
     def __init__(self, repo, bzrrev):
@@ -87,6 +86,10 @@ class BzrCommitBuilder(CommitBuilder):
                 tree.add(file)
             id = tree.path2id(file)
             tree.put_file_bytes_non_atomic(id, self.files[file].content)
+
+        for old, new in self.renames:
+            print old, '->', new
+            tree.rename_one(old.lstrip('/'), new.lstrip('/'))
 
 
         self.tree.commit(message=self.extra['message'], authors=[self.extra['author']])

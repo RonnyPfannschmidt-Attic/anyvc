@@ -6,7 +6,7 @@
 """
 
 
-from .base import Repository, Revision, CommitBuilder, join, DumbFile
+from .base import Repository, Revision, CommitBuilder, join
 import subprocess
 import os
 from collections import defaultdict

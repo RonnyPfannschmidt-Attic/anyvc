@@ -15,15 +15,12 @@
 """
 from posixpath import join, basename, dirname
 from collections import defaultdict
+from StringIO import StringIO
 
-
-class DumbFile(object):
-    #XXX this stupid thing is only here for testing, it has to go
-    def __init__(self, data):
-        self.data = data
-
-    def read(self):
-        return self.data
+class MemoryFile(StringIO):
+    def __init__(self, data='', path=None):
+        StringIO.__init__(self, data)
+        self.path = path
 
     def __enter__(self):
         return self
@@ -47,7 +44,27 @@ class RevisionView(object):
         return RevisionView(self.revision, join(self.path, path))
 
     def open(self):
-        return DumbFile(self.revision.file_content(self.path))
+        return MemoryFile(self.revision.file_content(self.path))
+
+    def isdir(self):
+        #XXX: sucks
+        try:
+            self.listdir()
+            return True
+        except: #XXX: smarter
+            return False
+
+    def isfile(self):
+        #XXX: sucks
+        try:
+            self.open()
+            return True
+        except: #XXX: smarter
+            return False
+
+    def exists(self):
+        #XXX: sucks
+        return self.isdir() or self.isfile()
 
 
 class Repository(object):
@@ -93,14 +110,22 @@ class CommitBuilder(object):
         self.base_commit = base_commit
         self.extra = extra
         self.files = {} #XXX: lossy painfull
+        self.renames = []
 
 
-    def filebuilder(self, path):
+    def create(self, path):
         #XXX: broken model
         if path not in self.files:
             self.files[path] = FileBuilder(self.repo, self.base_commit, path)
 
         return self.files[path]
+    filebuilder = create
+    def remove(self, path):
+        pass
+
+    def rename(self, source, dest):
+        pass
+
 
     def commit(self):
         raise NotImplementedError
@@ -119,6 +144,13 @@ class RepoPath(object):
         self.path = path
         self.builder = builder
 
+    def rename(self, new_name):
+        new = self.parent().join(new_name)
+        assert self.path != '/' and new_name != '/'
+        self.builder.renames.append( (self.path, new.path))
+
+    def parent(self):
+        return RepoPath(self.commit, dirname(self.path), self.builder)
 
     def join(self, path):
         return RepoPath(self.commit, join(self.path, path), self.builder)
