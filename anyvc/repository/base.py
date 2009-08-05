@@ -105,6 +105,9 @@ class Repository(object):
 
 
 class CommitBuilder(object):
+    '''
+    a simple state-tracker
+    '''
     def __init__(self, repo, base_commit, **extra):
         self.repo = repo
         self.base_commit = base_commit
@@ -124,7 +127,7 @@ class CommitBuilder(object):
         pass
 
     def rename(self, source, dest):
-        pass
+        self.renames.append((source, dest))
 
 
     def commit(self):
@@ -161,19 +164,14 @@ class RepoPath(object):
         elif mode == 'w':
             return self.builder.filebuilder(self.path)
 
-class FileBuilder(object):
+class FileBuilder(MemoryFile):
     def __init__(self, repo, base_commit, path):
+        MemoryFile.__init__(self, path=path)
         self.repo = repo
         self.base_commit = base_commit
-        self.path = path
-        self.content = None
-
-    def write(self, data):
-        #XXX: no im not kidding, just lazy
-        self.content = data
 
     def __enter__(self):
         return self
 
     def __exit__(self, et, ev, tb):
-        pass
+        self.seek(0)

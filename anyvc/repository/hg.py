@@ -79,7 +79,7 @@ class MercurialCommitBuilder(CommitBuilder):
             #XXX: deletes
             return context.memfilectx(
                     path,
-                    self.files[path].content,
+                    self.files[path].getvalue(),
                     False, False, False)
 
 

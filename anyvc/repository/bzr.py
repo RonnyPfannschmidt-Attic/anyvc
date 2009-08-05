@@ -85,7 +85,7 @@ class BzrCommitBuilder(CommitBuilder):
             if not tree.path2id(file):
                 tree.add(file)
             id = tree.path2id(file)
-            tree.put_file_bytes_non_atomic(id, self.files[file].content)
+            tree.put_file_bytes_non_atomic(id, self.files[file].getvalue())
 
         for old, new in self.renames:
             print old, '->', new

@@ -75,7 +75,7 @@ class SvnCommitBuilder(CommitBuilder):
                 svnfile = root.open_file(file)
             txhandler = svnfile.apply_textdelta()
             delta.send_stream(
-                    StringIO.StringIO(self.files[file].content),
+                    self.files[file],
                     txhandler)
             svnfile.close()
         root.close()

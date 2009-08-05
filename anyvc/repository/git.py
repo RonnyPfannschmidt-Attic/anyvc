@@ -96,7 +96,7 @@ class GitCommitBuilder(CommitBuilder):
         tree = Tree()
         for n in names:
             blob = Blob()
-            blob.data = self.files[n].content
+            blob.data = self.files[n].getvalue()
             store.add_object(blob)
             tree.add(0555, os.path.basename(n), blob.id)
         store.add_object(tree)
