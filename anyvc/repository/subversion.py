@@ -68,6 +68,15 @@ class SvnCommitBuilder(CommitBuilder):
                           auth=Auth([get_username_provider()]))
         editor = ra.get_commit_editor({'svn:log':self.extra['message']})
         root = editor.open_root()
+
+        for src, target in self.renames:
+            #XXX: directories
+            src = src.lstrip('/')
+            target = target.lstrip('/')
+            file = root.add_file(target, join(self.repo.path, src), 1)
+            file.close()
+            root.delete_entry(src)
+
         for file in self.files:
             try:
                 svnfile = root.add_file(file)
