@@ -80,7 +80,12 @@ class GitRepository(Repository):
 
 
 class GitCommitBuilder(CommitBuilder):
+
     def commit(self):
+        #XXX: evidence for the rest of 
+        # this functions is supposed not to exist
+        # yes, its that 
+
         r = self.repo.repo
         store = r.object_store
         names = sorted(self.files)
@@ -92,8 +97,20 @@ class GitCommitBuilder(CommitBuilder):
                 nametree[nbase].append(base)
                 base = nbase
 
+        if self.base_commit:
+            tree = r.tree(self.base_commit.commit.tree)
+            tree._ensure_parsed()
+            print tree._entries
+        else:
+            tree = Tree()
 
-        tree = Tree()
+        for src, dest in self.renames:
+            src = src.strip('/')
+            dest = dest.strip('/')
+            tree[dest] = tree[src]
+            del tree[src]
+
+
         for n in names:
             blob = Blob()
             blob.data = self.files[n].getvalue()
@@ -114,5 +131,8 @@ class GitCommitBuilder(CommitBuilder):
         commit.author_timezone = 0
         store.add_object(commit)
         self.repo.repo.refs['HEAD'] = commit.id
+
+
+
 
 

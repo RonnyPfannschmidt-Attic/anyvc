@@ -77,11 +77,33 @@ class MercurialCommitBuilder(CommitBuilder):
             #XXX: copy sources
             #XXX: renames
             #XXX: deletes
-            return context.memfilectx(
-                    path,
-                    self.files[path].getvalue(),
-                    False, False, False)
+            if path in rn and path not in self.files:
+                raise IOError()
+            if path in rrn:
+                assert base is not None
+                parent = self.base_commit.rev[rrn[path]]
+                if path in self.files:
+                    data = self.files[path].getvalue()
+                else:
+                    data = parent.data()
+                copyed = rrn[path]
+            else:
+                data = self.files[path].getvalue()
+                copyed = False
 
+            islink = False #XXX
+            isexec = False #XXX
+
+
+            return context.memfilectx(path, data, islink, isexec, copyed)
+
+        rn = dict(self.renames)
+        rrn = dict(reversed(x) for x in self.renames)
+        #XXX: directory renames
+
+        files = set(self.files)
+        files.update(rn.keys())
+        files.update(rn.values())
 
         if self.base_commit is not None:
             base = self.base_commit.rev.node()
@@ -91,7 +113,7 @@ class MercurialCommitBuilder(CommitBuilder):
                 repo,
                 [base, None],
                 self.extra['message'],
-                list(self.files),
+                sorted(files),
                 get_file)
         repo.commitctx(ctx)
 

@@ -105,6 +105,7 @@ class Repository(object):
 
 
 class CommitBuilder(object):
+    #XXX: ugly and inflexible
     '''
     a simple state-tracker
     '''
@@ -114,7 +115,6 @@ class CommitBuilder(object):
         self.extra = extra
         self.files = {} #XXX: lossy painfull
         self.renames = []
-
 
     def create(self, path):
         #XXX: broken model
