@@ -7,8 +7,8 @@
         * 2008 by Ronny Pfannschmidt <Ronny.Pfannschmidt@gmx.de>
 """
 
-from .base import Repository, Revision, CommitBuilder, join
-from ..workdir.hg import grab_output
+from ..repository.base import Repository, Revision, CommitBuilder, join
+from .workdir import grab_output
 
 from mercurial import commands, localrepo, ui, context
 

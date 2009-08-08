@@ -12,8 +12,8 @@
 import os
 from functools import wraps
 
-from .file import StatedPath
-from .base import WorkDir
+from ..workdir.file import StatedPath
+from ..workdir.base import WorkDir
 from ..exc import NotFoundError
 
 from mercurial.__version__ import version as hgversion
@@ -64,7 +64,7 @@ class Mercurial(WorkDir):
 
     @property
     def repository(self):
-        from ..repository.hg import MercurialRepository
+        from .repo import MercurialRepository
         return MercurialRepository(self)
 
     def __init__(self, path, create=False, source=None):

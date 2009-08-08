@@ -1,4 +1,4 @@
-from anyvc.workdir.hg import Mercurial as Workdir
-from anyvc.repository.hg import MercurialRepository as Repository
+from .workdir import Mercurial as Workdir
+from .repo import MercurialRepository as Repository
 
 
