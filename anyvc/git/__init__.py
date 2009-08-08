@@ -1,2 +1,2 @@
-from anyvc.repository.git import GitRepository as Repository
-from anyvc.workdir.git import Git as Workdir
+from .repo import GitRepository as Repository
+from .workdir import Git as Workdir

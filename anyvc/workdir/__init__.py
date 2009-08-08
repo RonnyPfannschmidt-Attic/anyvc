@@ -15,7 +15,7 @@ __all__ = ["all_known", "get_workdir_manager_for_path"]
 
 from .cmdbased import SubVersion, Darcs
 from .monotone import Monotone
-from .git import Git
+from ..git import Workdir as Git
 
 all_known = [ SubVersion, Git]
 unsupported = [ Monotone, Darcs ]

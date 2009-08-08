@@ -8,9 +8,8 @@
 
 
 
-from cmdbased import CommandBased
-from cmdbased import relative_to
-from file import StatedPath as Path
+from ..workdir.cmdbased import CommandBased, relative_to
+from ..workdir.file import StatedPath as Path
 import re
 from subprocess import call
 
@@ -25,7 +24,7 @@ class Git(CommandBased):
 
     @property
     def repository(self):
-        from ..repository.git import GitRepository
+        from .repo import GitRepository
         return GitRepository(workdir=self)
 
     def create_from(self, source):
