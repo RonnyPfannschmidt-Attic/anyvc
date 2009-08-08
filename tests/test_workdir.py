@@ -113,12 +113,12 @@ def test_file_missing(mgr):
 
 
 def test_handle_not_a_workdir(mgr):
-    WD = get_wd_impl(mgr.vc, mgr.detail)
+    WD = get_wd_impl(mgr.vc)
     py.test.raises( NotFoundError, WD,  "/does/not/exist/really")
 
 
 def test_handle_instanciate_from_subdir(mgr):
     wd = initial(mgr, commit=True)
-    WD = get_wd_impl(mgr.vc, mgr.detail)
+    WD = get_wd_impl(mgr.vc)
     test = WD(str(wd.bpath('wd/test.py')))
 

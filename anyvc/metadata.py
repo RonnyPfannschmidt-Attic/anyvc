@@ -28,62 +28,27 @@ aliases = {
     'svn': 'subversion',
     'bzr': 'bazaar',
     'hg': 'mercurial',
-    'mtn': 'monotone',
 }
 
 
 # known implementations
-# mapping of vcs name to a listing of (type, workdir, repo)
-# XXX: this format sucks, fix it
 
-
-implementations = {
-    'mercurial':[
-        ('native', 'anyvc.workdir.hg.Mercurial', 'anyvc.repository.hg.MercurialRepository'),
-        ('shell', None, None),
-    ],
-    'bazaar':[
-        ('native', 'anyvc.workdir.bzr.Bazaar', 'anyvc.repository.bzr.BazaarRepository'),
-        ('shell-xml', None, None),
-        ('shell', None, None),
-    ],
-    'git':[
-        #XXX the mixed one is an mess that currently works(for the testsuite)
-        ('mixed', 'anyvc.workdir.git.Git', 'anyvc.repository.git.GitRepository'),
-        ('dulwich', None, 'anyvc.repository.git.GitRepository'),
-        ('gitpython', None, None),
-        ('shell', 'anyvc.workdir.git.Git', None),
-    ],
-    'subversion':[
-        #XXX the mixed one is an mess that currently works (for the testsuite)
-        ('mixed', 'anyvc.workdir.cmdbased.SubVersion', 'anyvc.repository.subversion.SubversionRepository'),
-        ('subvertpy', None, 'anyvc.repository.subversion.SubversionRepository'),
-        ('native', None, None),
-        ('shell', 'anyvc.workdir.cmdbased.SubVersion', None),
-    ],
-    'darcs':[
-        ('shell', None, None),
-    ],
-    'monotone':[
-        ('shell', None, None),
-    ],
+backends = {
+    'mercurial': 'anyvc.mercurial',
+    'bazaar': 'anyvc.bazaar',
+    'git': 'anyvc.git',
+    'subversion': 'anyvc.subversion'
 }
 
 
-def _import(name):
-    mod, attr = name.rsplit('.', 1)
-    pymod = __import__(mod, fromlist=['*'])
-    return getattr(pymod, attr)
+def get_backend(vcs):
+    mod = __import__(backends[vcs], fromlist=['*'])
+    print mod
+    return mod
 
-def get_wd_impl(vcs, detail):
-    for name, wd, repo in implementations[vcs]:
-        if name == detail and wd:
-            return _import(wd)
-    raise KeyError, (vcs, detail)
+def get_wd_impl(vcs):
+    return get_backend(vcs).Workdir
 
 
-def get_repo_impl(vcs, detail):
-    for name, wd, repo in implementations[vcs]:
-        if name == detail and repo:
-            return _import(repo)
-    raise KeyError, (vcs, detail)
+def get_repo_impl(vcs):
+    return get_backend(vcs).Repository

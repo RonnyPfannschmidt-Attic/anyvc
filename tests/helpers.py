@@ -13,7 +13,7 @@ from tempfile import mkdtemp
 from subprocess import call
 from shutil import rmtree
 from nose.tools import assert_equal
-from anyvc.metadata import get_repo_impl, get_wd_impl
+from anyvc.metadata import get_backend
 def do(*args, **kw):
     args = map(str, args)
     print args
@@ -55,10 +55,9 @@ def generic(func):
 
 class WdWrap(object):
     """wraps a vcs"""
-    def __init__(self, vc, detail, path):
+    def __init__(self, vc, path):
         self.__path = path
-        WD = get_wd_impl(vc, detail)
-        self.__vc = WD(str(path))
+        self.__vc = vc
 
     def __getattr__(self, key):
         return getattr(self.__vc, key)
@@ -114,25 +113,30 @@ class WdWrap(object):
 
 class VcsMan(object):
     """controller over a tempdir for tests"""
-    def __init__(self, vc, detail, base):
+    def __init__(self, vc, base):
         self.vc = vc
-        self.detail= detail
         self.base = base.ensure(dir=True)
+        self.backend = get_backend(vc)
 
     def __repr__(self):
-        return '<VcsMan %(vc)s/%(detail)s %(base)r>'%vars(self)
+        return '<VcsMan %(vc)s %(base)r>'%vars(self)
 
     def bpath(self, name):
         return self.base.join(name)
 
     def make_wd(self, repo, workdir):
-        WD = get_wd_impl(self.vc, self.detail)
-        WD(str(self.bpath(workdir)), create=True, source=str(self.bpath(repo)))
-        return WdWrap(self.vc, self.detail, self.bpath(workdir))
+        path = self.bpath(workdir)
+        wd = self.backend.Workdir(
+                str(path),
+                create=True,
+                source=str(self.bpath(repo)))
+
+        return WdWrap(wd, path)
 
     def make_repo(self, path):
-        VCM = get_repo_impl(self.vc, self.detail)
-        return VCM(path=str(self.bpath(path)), create=True)
+        return self.backend.Repository(
+                path=str(self.bpath(path)),
+                create=True)
 
     def make_wd_darcs(self, repo, workdir):
         do('darcs', 'get', repo, workdir)

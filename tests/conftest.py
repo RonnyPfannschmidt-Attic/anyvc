@@ -19,18 +19,15 @@ def pytest_generate_tests(metafunc):
 
     if 'mgr' not in metafunc.funcargnames:
         return
-    for vc, details in metadata.implementations.items():
-        if names and vc not in names:
+    for name in metadata.backends:
+        if names and name not in names:
             continue
-        for name, wd, repo in details:
-            if wd and repo:
-                metafunc.addcall(id='%s/%s'%(vc, name),
-                                 param=(vc, name))
+        metafunc.addcall(id=name, param=name)
 
 
 def pytest_funcarg__mgr(request):
-    vc,  name= request.param
-    vcdir = request.config.ensuretemp(vc, name)
+    vc = request.param
+    vcdir = request.config.ensuretemp(vc)
     testdir = vcdir.mkdir(request.function.__name__)
-    return VcsMan(vc, name, testdir)
+    return VcsMan(vc, testdir)
 
