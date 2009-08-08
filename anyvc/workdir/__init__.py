@@ -17,25 +17,20 @@ from .cmdbased import SubVersion, Darcs
 from .monotone import Monotone
 from ..git import Workdir as Git
 
-all_known = [ SubVersion, Git]
-unsupported = [ Monotone, Darcs ]
 
-try:
-    from .hg import Mercurial
-    all_known.append(Mercurial)
-except ImportError:
-    pass
+from ..metadata import backends, get_backend
 
-try:
-    from .bzr import Bazaar
-    all_known.append(Bazaar)
-except ImportError:
-    pass
+all_known = []
 
-def enable_unsupported():
-    all_known.extend(unsupported)
-
+for backend in backends:
+    try:
+        b = get_backend(backend).Workdir
+        all_known.append(b)
+    except: #XXX: diaper antipattern
+        pass
+    
 def get_workdir_manager_for_path(path):
+    #XXX: this has to die
     found_vcm = None
     for vcm in all_known:
         try:
