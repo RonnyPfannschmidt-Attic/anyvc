@@ -7,7 +7,7 @@
 from bzrlib.bzrdir import BzrDir
 from bzrlib.branch import Branch
 from bzrlib.memorytree import MemoryTree
-from .base import Repository, Revision, CommitBuilder, join
+from ..repository.base import Repository, Revision, CommitBuilder, join
 
 class BazaarRevision(Revision):
     def __init__(self, repo, bzrrev):

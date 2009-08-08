@@ -1,8 +1,8 @@
 import sys
 import os
 
-from .base import WorkDir, WorkDirWithParser
-from .file import StatedPath as Path
+from ..workdir.base import WorkDir, WorkDirWithParser
+from ..workdir.file import StatedPath as Path
 from ..exc import NotFoundError
 
 from StringIO import StringIO
@@ -35,7 +35,7 @@ class Bazaar(WorkDirWithParser):
 
     @property
     def repository(self):
-        from ..repository.bzr import BazaarRepository
+        from .repo import BazaarRepository
 
         return BazaarRepository(workdir=self)
 
