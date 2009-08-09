@@ -9,6 +9,8 @@
 from ..repository.base import Repository, Revision, CommitBuilder, join
 import subprocess
 import os
+from datetime import datetime
+import time
 from collections import defaultdict
 from dulwich.repo import Repo
 from dulwich.objects import Blob, Tree, Commit
@@ -21,6 +23,11 @@ class GitRevision(Revision):
     @property
     def id(self):
         return self.commit.id
+
+    @property
+    def time(self):
+        #XXX distinct author and commiters?
+        return datetime.fromtimestamp(self.commit.commit_time)
 
     @property
     def parents(self):
@@ -118,16 +125,20 @@ class GitCommitBuilder(CommitBuilder):
             tree.add(0555, os.path.basename(n), blob.id)
         store.add_object(tree)
 
+        timestamp = self.extra.pop('time', None) or datetime.datetime.now()
+        #mktime returns float git needs int
+        timestamp = int(time.mktime(timestamp.timetuple()))
+
         commit = Commit()
         if self.base_commit:
             commit.parents = [self.base_commit.commit.id]
         commit.tree = tree.id
         commit.message = self.extra['message']
         commit.committer = self.extra['author']
-        commit.commit_time = 0
+        commit.commit_time = timestamp
         commit.commit_timezone = 0
         commit.author = self.extra['author']
-        commit.author_time = 0 #XXX omg
+        commit.author_time = timestamp #XXX omg
         commit.author_timezone = 0
         store.add_object(commit)
         self.repo.repo.refs['HEAD'] = commit.id

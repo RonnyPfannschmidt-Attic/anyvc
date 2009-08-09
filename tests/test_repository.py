@@ -1,4 +1,5 @@
 import py.test
+from datetime import datetime
 
 def test_repo_create(mgr):
     repo = mgr.make_repo('repo')
@@ -39,8 +40,11 @@ def test_build_first_commit(mgr):
 
 def test_generate_commit_chain(mgr):
     repo = mgr.make_repo('repo')
-    for i in range(10):
-        with repo.transaction(message='test%s'%i, author='test') as root:
+    for i in range(1,11):
+        with repo.transaction(
+                message='test%s'%i,
+                author='test',
+                time=datetime(2000, 1, i, 10, 0, 0)) as root:
             with root.join('test.txt').open('w') as f:
                 f.write("test%s"%i)
 
@@ -61,7 +65,9 @@ def test_generate_commit_chain(mgr):
         with rev as root:
             with root.join('test.txt').open() as f:
                 data = f.read()
-                assert data == 'test%s'%i
+                assert data == 'test%s'%(i+1)
+        print rev.time
+        assert rev.time == datetime(2000, 1, i+1, 10, 0, 0)
 
 def test_rename(mgr):
     repo = mgr.make_repo('repo')
