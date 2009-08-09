@@ -8,7 +8,7 @@ import sys
 
 from subvertpy import repos, delta
 from subvertpy.ra import RemoteAccess, Auth, get_username_provider
-from .base import Repository, Revision, CommitBuilder, join
+from ..repository.base import Repository, Revision, CommitBuilder, join
 import StringIO
 
 class SubversionRevision(Revision):

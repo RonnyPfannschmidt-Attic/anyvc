@@ -1,2 +1,2 @@
-from anyvc.workdir.cmdbased import SubVersion as Workdir
-from anyvc.repository.subversion import SubversionRepository as Repository
+from .workdir import SubVersion as Workdir
+from .repo import SubversionRepository as Repository
