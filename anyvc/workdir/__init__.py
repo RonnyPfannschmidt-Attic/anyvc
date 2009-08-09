@@ -13,10 +13,6 @@
 """
 __all__ = ["all_known", "get_workdir_manager_for_path"]
 
-from .cmdbased import SubVersion, Darcs
-from .monotone import Monotone
-from ..git import Workdir as Git
-
 
 from ..metadata import backends, get_backend
 
