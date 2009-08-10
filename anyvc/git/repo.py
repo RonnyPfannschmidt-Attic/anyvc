@@ -10,7 +10,6 @@ from ..repository.base import Repository, Revision, CommitBuilder, join
 import subprocess
 import os
 from datetime import datetime
-import time
 from collections import defaultdict
 from dulwich.repo import Repo
 from dulwich.objects import Blob, Tree, Commit
@@ -93,6 +92,9 @@ class GitCommitBuilder(CommitBuilder):
         # this functions is supposed not to exist
         # yes, its that 
 
+        #XXX: generate all objects at once and 
+        #     add them as pack instead of legacy objects
+
         r = self.repo.repo
         store = r.object_store
         names = sorted(self.files)
@@ -125,21 +127,17 @@ class GitCommitBuilder(CommitBuilder):
             tree.add(0555, os.path.basename(n), blob.id)
         store.add_object(tree)
 
-        timestamp = self.extra.pop('time', None) or datetime.datetime.now()
-        #mktime returns float git needs int
-        timestamp = int(time.mktime(timestamp.timetuple()))
-
         commit = Commit()
         if self.base_commit:
             commit.parents = [self.base_commit.commit.id]
         commit.tree = tree.id
         commit.message = self.extra['message']
         commit.committer = self.extra['author']
-        commit.commit_time = timestamp
-        commit.commit_timezone = 0
+        commit.commit_time = int(self.time_unix)
+        commit.commit_timezone = self.time_offset
         commit.author = self.extra['author']
-        commit.author_time = timestamp #XXX omg
-        commit.author_timezone = 0
+        commit.author_time = int(self.time_unix)
+        commit.author_timezone = self.time_offset
         store.add_object(commit)
         self.repo.repo.refs['HEAD'] = commit.id
 

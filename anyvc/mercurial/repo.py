@@ -9,13 +9,17 @@
 
 from ..repository.base import Repository, Revision, CommitBuilder, join
 from .workdir import grab_output
-
+from datetime import datetime
 from mercurial import commands, localrepo, ui, context
 
 
 class MercurialRevision(Revision):
     def __init__(self, repo, rev):
         self.repo, self.rev = repo, rev
+
+    @property
+    def time(self):
+        return datetime.fromtimestamp(self.rev.date()[0])
 
     @property
     def parents(self):
@@ -114,7 +118,9 @@ class MercurialCommitBuilder(CommitBuilder):
                 [base, None],
                 self.extra['message'],
                 sorted(files),
-                get_file)
+                get_file,
+                date="%(time_unix)d %(time_offset)s"%self.__dict__,
+                )
         repo.commitctx(ctx)
 
 

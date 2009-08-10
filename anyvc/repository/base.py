@@ -16,6 +16,8 @@
 from posixpath import join, basename, dirname
 from collections import defaultdict
 from StringIO import StringIO
+import time as unixtime
+from datetime import datetime
 
 class MemoryFile(StringIO):
     def __init__(self, data='', path=None):
@@ -109,12 +111,32 @@ class CommitBuilder(object):
     '''
     a simple state-tracker
     '''
-    def __init__(self, repo, base_commit, **extra):
+    def __init__(self, repo, base_commit, time=None, local_time=True, **extra):
         self.repo = repo
         self.base_commit = base_commit
         self.extra = extra
         self.files = {} #XXX: lossy painfull
         self.renames = []
+
+        if time is None:
+            time = datetime.now()
+
+        self.time = time
+        self.time_local = local_time
+
+        timetuple = time.timetuple()
+
+        self.time_unix = unixtime.mktime(timetuple)
+        # timetuple[8] is the daylight saving flag
+        # its -1 for normal datetimes
+        # XXX: the current logic is flawed cause it only thinks about localtime
+        # XXX: should it be extended to properly deal
+        #      with user defined timezones via pytz/dateutil?
+        #if timetuple[8] == 1 and unixtime.daylight:
+        #    self.time_offset = unixtime.altzone
+        #else:
+        #XXX: ignores daylight saving
+        self.time_offset = unixtime.timezone
 
     def create(self, path):
         #XXX: broken model

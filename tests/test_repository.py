@@ -66,8 +66,10 @@ def test_generate_commit_chain(mgr):
             with root.join('test.txt').open() as f:
                 data = f.read()
                 assert data == 'test%s'%(i+1)
-        print rev.time
-        assert rev.time == datetime(2000, 1, i+1, 10, 0, 0)
+        if mgr.vc != 'subversion':
+            assert rev.time == datetime(2000, 1, i+1, 10, 0, 0)
+        else:
+            assert rev.time < datetime.now()
 
 def test_rename(mgr):
     repo = mgr.make_repo('repo')

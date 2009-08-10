@@ -8,10 +8,15 @@ from bzrlib.bzrdir import BzrDir
 from bzrlib.branch import Branch
 from bzrlib.memorytree import MemoryTree
 from ..repository.base import Repository, Revision, CommitBuilder, join
+from datetime import datetime
 
 class BazaarRevision(Revision):
     def __init__(self, repo, bzrrev):
         self.repo, self.bzrrev = repo, bzrrev
+
+    @property
+    def time(self):
+        return datetime.fromtimestamp(self.bzrrev.timestamp)
 
     @property
     def parents(self):
@@ -92,7 +97,12 @@ class BzrCommitBuilder(CommitBuilder):
             tree.rename_one(old.lstrip('/'), new.lstrip('/'))
 
 
-        self.tree.commit(message=self.extra['message'], authors=[self.extra['author']])
+        self.tree.commit(
+                message=self.extra['message'],
+                authors=[self.extra['author']],
+                timestamp=self.time_unix,
+                timezone=self.time_offset,
+                )
 
     def __exit__(self, et, ev, tb):
         super(BzrCommitBuilder, self).__exit__(et, ev, tb)

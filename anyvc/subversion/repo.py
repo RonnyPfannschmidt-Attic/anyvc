@@ -9,7 +9,11 @@ import sys
 from subvertpy import repos, delta
 from subvertpy.ra import RemoteAccess, Auth, get_username_provider
 from ..repository.base import Repository, Revision, CommitBuilder, join
+from subvertpy.properties import time_from_cstring, time_to_cstring
 import StringIO
+
+from datetime import datetime
+
 
 class SubversionRevision(Revision):
     def __init__(self, repo, id):
@@ -30,6 +34,21 @@ class SubversionRevision(Revision):
         ra.get_file(path.lstrip('/'), target, self.id)
         return target.getvalue()
 
+    @property
+    def message(self):
+        ra = RemoteAccess(self.repo.path)
+        return ra.rev_proplist(self.id).get('svn:log')
+
+    @property
+    def time(self):
+        ra = RemoteAccess(self.repo.path)
+        date_str = ra.rev_proplist(self.id).get('svn:date')
+        timestamp = time_from_cstring(date_str)
+        #XXX: subertpy uses a magic factor of 1000000
+        return datetime.fromtimestamp(float(timestamp)/1000000)
+
+
+
 
 class SubversionRepository(Repository):
 
@@ -49,13 +68,7 @@ class SubversionRepository(Repository):
         last = ra.get_latest_revnum()
         if last == 0:
             return
-        arev = SubversionRevision(self, last)
-        arev.message = "broken"
-        def cb(changed_paths, rev, revprops, has_children=None):
-            arev.message=revprops.get('svn:log')
-
-        ra.get_log(callback=cb, paths=None, start=last-1, end=last)
-        return arev
+        return SubversionRevision(self, last)
 
     def transaction(self, **extra):
         return SvnCommitBuilder(self, None, **extra)
@@ -66,7 +79,13 @@ class SvnCommitBuilder(CommitBuilder):
     def commit(self):
         ra = RemoteAccess(self.repo.path,
                           auth=Auth([get_username_provider()]))
-        editor = ra.get_commit_editor({'svn:log':self.extra['message']})
+        editor = ra.get_commit_editor({
+            'svn:log':self.extra['message'],
+            #XXX: subertpy uses a magic factor of 1000000
+            #XXX: subversion cant set a commit date on commit, sucker
+            #'svn:date':time_to_cstring(self.time_unix*1000000),
+            })
+        print self.time
         root = editor.open_root()
 
         for src, target in self.renames:
