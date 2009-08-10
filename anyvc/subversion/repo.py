@@ -40,6 +40,12 @@ class SubversionRevision(Revision):
         return ra.rev_proplist(self.id).get('svn:log')
 
     @property
+    def author(self):
+        ra = RemoteAccess(self.repo.path)
+        return ra.rev_proplist(self.id).get('svn:author')
+        
+
+    @property
     def time(self):
         ra = RemoteAccess(self.repo.path)
         date_str = ra.rev_proplist(self.id).get('svn:date')
@@ -81,6 +87,7 @@ class SvnCommitBuilder(CommitBuilder):
                           auth=Auth([get_username_provider()]))
         editor = ra.get_commit_editor({
             'svn:log':self.extra['message'],
+
             #XXX: subertpy uses a magic factor of 1000000
             #XXX: subversion cant set a commit date on commit, sucker
             #'svn:date':time_to_cstring(self.time_unix*1000000),

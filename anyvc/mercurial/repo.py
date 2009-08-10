@@ -18,12 +18,16 @@ class MercurialRevision(Revision):
         self.repo, self.rev = repo, rev
 
     @property
+    def author(self):
+        print self.rev.user()
+        return self.rev.user()
+
+    @property
     def time(self):
         return datetime.fromtimestamp(self.rev.date()[0])
 
     @property
     def parents(self):
-        print self.rev.parents()
         return [MercurialRevision(self.repo, rev) for rev in self.rev.parents() if rev]
 
 
@@ -119,6 +123,7 @@ class MercurialCommitBuilder(CommitBuilder):
                 self.extra['message'],
                 sorted(files),
                 get_file,
+                user=self.extra['author'],
                 date="%(time_unix)d %(time_offset)s"%self.__dict__,
                 )
         repo.commitctx(ctx)

@@ -24,6 +24,10 @@ class GitRevision(Revision):
         return self.commit.id
 
     @property
+    def author(self):
+        return self.commit.author
+
+    @property
     def time(self):
         #XXX distinct author and commiters?
         return datetime.fromtimestamp(self.commit.commit_time)
