@@ -7,12 +7,14 @@
 
 
 from ..repository.base import Repository, Revision, CommitBuilder, join
+from ..exc import NotFoundError
 import subprocess
 import os
 from datetime import datetime
 from collections import defaultdict
 from dulwich.repo import Repo
 from dulwich.objects import Blob, Tree, Commit
+from dulwich.errors import NotGitRepository
 
 class GitRevision(Revision):
 
@@ -65,8 +67,10 @@ class GitRepository(Repository):
             self.repo = Repo.init(path)
         else:
             assert os.path.exists(self.path)
-            self.repo = Repo(self.path)
-
+            try:
+                self.repo = Repo(self.path)
+            except NotGitRepository:
+                raise NotFoundError('git', self.path)
 
     def __len__(self):
         #XXX: fragile

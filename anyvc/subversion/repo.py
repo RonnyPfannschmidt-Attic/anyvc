@@ -7,10 +7,12 @@
 import sys
 
 from subvertpy import repos, delta
-from subvertpy.ra import RemoteAccess, Auth, get_username_provider
+from subvertpy.ra import RemoteAccess, Auth, get_username_provider, SubversionException
 from ..repository.base import Repository, Revision, CommitBuilder, join
 from subvertpy.properties import time_from_cstring, time_to_cstring
 import StringIO
+from ..exc import NotFoundError
+
 
 from datetime import datetime
 
@@ -63,6 +65,10 @@ class SubversionRepository(Repository):
         if create:
             repos.create(path)
         self.path = "file://"+path
+        try:
+            RemoteAccess(self.path)
+        except SubversionException:
+            raise NotFoundError('subversion', self.path)
 
     def __len__(self):
         ra = RemoteAccess(self.path)

@@ -11,6 +11,8 @@ from ..repository.base import Repository, Revision, CommitBuilder, join
 from .workdir import grab_output
 from datetime import datetime
 from mercurial import commands, localrepo, ui, context
+from mercurial import error
+from ..exc import NotFoundError
 
 
 class MercurialRevision(Revision):
@@ -40,7 +42,7 @@ class MercurialRevision(Revision):
 
 
 class MercurialRepository(Repository):
-    def __init__(self, workdir=None, path=None, create=False):
+    def __init__(self, path=None, workdir=None, create=False):
         self.path = path
         self.workdir = workdir
         #XXX: path only handling
@@ -49,7 +51,11 @@ class MercurialRepository(Repository):
             self.ui = self.repo.ui
 
         elif path is not None:
-            repo = localrepo.localrepository(ui.ui(), path, create=create)
+            try:
+                repo = localrepo.localrepository(ui.ui(), path, create=create)
+            except error.RepoError:
+                raise NotFoundError('mercurial', path)
+
             self.ui = repo.ui
             self.repo = repo
 

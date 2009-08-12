@@ -40,10 +40,19 @@ backends = {
     'subversion': 'anyvc.subversion'
 }
 
+def get_backends(use=backends):
+    """
+    a generator over all known backends
+    """
+    for backend in use:
+        try:
+            yield get_backend(backend)
+        except ImportError:
+            pass
+
 
 def get_backend(vcs):
     mod = __import__(backends[vcs], fromlist=['*'])
-    print mod
     return mod
 
 def get_wd_impl(vcs):

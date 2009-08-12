@@ -6,9 +6,11 @@
 """
 from bzrlib.bzrdir import BzrDir
 from bzrlib.branch import Branch
+from bzrlib import errors
 from bzrlib.memorytree import MemoryTree
 from ..repository.base import Repository, Revision, CommitBuilder, join
 from datetime import datetime
+from ..exc import NotFoundError
 
 class BazaarRevision(Revision):
     def __init__(self, repo, bzrrev):
@@ -47,10 +49,20 @@ class BazaarRepository(Repository):
     #XXX: this whole thing is broken and messed
     def __init__(self, path=None, workdir=None, create=False):
         if workdir:
+            assert not path and not create
             self.branch = workdir.wt.branch
-        #XXX
-        if create:
+        elif create:
+            assert path, 'create needs a path'
             self.branch = BzrDir.create_branch_convenience(path)
+        else:
+            try:
+                self.branch, rest = Branch.open_containing(path)
+            except errors.NotBranchError:
+                raise NotFoundError('bzr', path)
+
+
+    def __repr__(self):
+        return "<Bzr 'repo' at %s>"%self.branch.base
 
     def __len__(self):
         #XXX: crap
