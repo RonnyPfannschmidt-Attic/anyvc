@@ -65,7 +65,7 @@ class Mercurial(WorkDir):
     @property
     def repository(self):
         from .repo import MercurialRepository
-        return MercurialRepository(self)
+        return MercurialRepository(workdir=self)
 
     def __init__(self, path, create=False, source=None):
         """
