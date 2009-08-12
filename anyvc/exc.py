@@ -8,6 +8,4 @@ class NotFoundError(LookupError, ValueError):
         self.path = path
 
     def __str__(self):
-        return "%s repo not found for %r"%(
-                self.vc.__class__.__name__, self.path
-                )
+        return "%(vc)s repo not found for %(path)r"%vars(self)
