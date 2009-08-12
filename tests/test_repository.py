@@ -75,7 +75,7 @@ def test_generate_commit_chain(mgr):
             assert rev.time < datetime.now()
             assert rev.author
 
-def test_rename(mgr):
+def test_rename_simple(mgr):
     repo = mgr.make_repo('repo')
 
     with repo.transaction(message='create', author='test') as root:
