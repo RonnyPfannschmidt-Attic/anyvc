@@ -111,7 +111,7 @@ class CommitBuilder(object):
     '''
     a simple state-tracker
     '''
-    def __init__(self, repo, base_commit, time=None, local_time=True, **extra):
+    def __init__(self, repo, base_commit, time=None, local_time=True, author=None, **extra):
         self.repo = repo
         self.base_commit = base_commit
         self.extra = extra
@@ -120,7 +120,7 @@ class CommitBuilder(object):
 
         if time is None:
             time = datetime.now()
-
+        self.author = author.strip() # normalize whitespace
         self.time = time
         self.time_local = local_time
 

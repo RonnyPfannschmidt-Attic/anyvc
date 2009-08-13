@@ -115,7 +115,7 @@ class BzrCommitBuilder(CommitBuilder):
 
         self.tree.commit(
                 message=self.extra['message'],
-                authors=[self.extra['author']],
+                authors=[self.author],
                 timestamp=self.time_unix,
                 timezone=self.time_offset,
                 )

@@ -140,10 +140,10 @@ class GitCommitBuilder(CommitBuilder):
             commit.parents = [self.base_commit.commit.id]
         commit.tree = tree.id
         commit.message = self.extra['message']
-        commit.committer = self.extra['author']
+        commit.committer = self.author
         commit.commit_time = int(self.time_unix)
         commit.commit_timezone = self.time_offset
-        commit.author = self.extra['author']
+        commit.author = self.author
         commit.author_time = int(self.time_unix)
         commit.author_timezone = self.time_offset
         store.add_object(commit)

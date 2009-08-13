@@ -129,7 +129,7 @@ class MercurialCommitBuilder(CommitBuilder):
                 self.extra['message'],
                 sorted(files),
                 get_file,
-                user=self.extra['author'],
+                user=self.author,
                 date="%(time_unix)d %(time_offset)s"%self.__dict__,
                 )
         repo.commitctx(ctx)

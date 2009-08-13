@@ -26,55 +26,6 @@ def test_repo_default_head(mgr):
         #XXX: how to propperly normalize them
         assert head.message.strip()==message.strip()
 
-
-def test_build_first_commit(mgr):
-    repo = mgr.make_repo('repo')
-    with repo.transaction(message='initial', author='test') as root:
-        with root.join('test.txt').open('w') as f:
-            f.write("text")
-
-    with repo.get_default_head() as root:
-        with root.join("test.txt").open() as f:
-            content = f.read()
-            assert content == 'text'
-
-def test_generate_commit_chain(mgr):
-    repo = mgr.make_repo('repo')
-    for i in range(1,11):
-        with repo.transaction(
-                message='test%s'%i,
-                author='test',
-                time=datetime(2000, 1, i, 10, 0, 0)) as root:
-            with root.join('test.txt').open('w') as f:
-                f.write("test%s"%i)
-
-    assert len(repo) == 10
-
-    head = repo.get_default_head()
-
-    revs = [head]
-    rev = head
-
-    while rev.parents:
-        rev = rev.parents[0]
-        revs.append(rev)
-
-    assert len(revs) == 10
-
-    for i, rev in enumerate(reversed(revs)):
-        with rev as root:
-            with root.join('test.txt').open() as f:
-                data = f.read()
-                assert data == 'test%s'%(i+1)
-
-
-        if mgr.vc != 'subversion':
-            assert rev.time == datetime(2000, 1, i+1, 10, 0, 0)
-            assert rev.author=="test"
-        else:
-            assert rev.time < datetime.now()
-            assert rev.author
-
 def test_rename_simple(mgr):
     repo = mgr.make_repo('repo')
 
