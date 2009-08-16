@@ -16,6 +16,33 @@ class BazaarRevision(Revision):
     def __init__(self, repo, bzrrev):
         self.repo, self.bzrrev = repo, bzrrev
 
+
+    def get_changed_files(self):
+        # TODO: this doesn't yet handle the case of multiple parent revisions
+        #XXX: handle first commit beter
+        rev = self.bzrrev
+        repo = self.repo.branch.repository
+
+        current = repo.revision_tree(rev.revision_id)
+        if self.parents:
+            prev = repo.revision_tree(rev.parent_ids[0])
+
+            delta = current.changes_from(prev)
+            files = [f[0] for f in delta.added + delta.removed + delta.renamed + delta.kind_changed + delta.modified]
+            return files
+        else:
+            return [x[0] for x in current.list_files()]
+
+
+        # diff_file is a stringio
+        #diff_tree = diff.DiffTree(prev, current, diff_file)
+
+        #self._branch.lock_read()
+        #diff_tree.show_diff('')
+        #self._branch.unlock()
+
+
+
     @property
     def time(self):
         return datetime.fromtimestamp(self.bzrrev.timestamp)

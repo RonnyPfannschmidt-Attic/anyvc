@@ -31,6 +31,11 @@ class MemoryFile(StringIO):
         pass
 
 class Revision(object):
+
+    def get_parent_diff(self):
+        from anyvc.diff import diff_for_commit
+        return diff_for_commit(self)
+
     def __enter__(self):
        return RevisionView(self, '/')
 

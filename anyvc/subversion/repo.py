@@ -24,7 +24,7 @@ class SubversionRevision(Revision):
 
     @property
     def parents(self):
-        #XXX: jup over irelevant id's
+        #XXX: jump over irelevant id's
         if self.id == 1:
             return []
         return [SubversionRevision(self.repo, self.id -1)]
@@ -40,6 +40,23 @@ class SubversionRevision(Revision):
     def message(self):
         ra = RemoteAccess(self.repo.path)
         return ra.rev_proplist(self.id).get('svn:log')
+
+    def get_changed_files(self):
+        files = []
+        ra = RemoteAccess(self.repo.path)
+        def callback(paths, rev, props, childs=None):
+            #XXX: take branch path into account?
+            files.extend(paths)
+        ra.get_log(
+            start = self.id,
+            end = self.id,
+            callback = callback,
+            paths = None,
+            discover_changed_paths=True)
+        return files
+
+
+
 
     @property
     def author(self):

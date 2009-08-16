@@ -40,6 +40,9 @@ class MercurialRevision(Revision):
     def file_content(self, path):
         return self.rev[path].data()
 
+    def get_changed_files(self):
+        return self.rev.files()
+
 
 class MercurialRepository(Repository):
     def __init__(self, path=None, workdir=None, create=False):

@@ -51,6 +51,15 @@ class GitRevision(Revision):
 
         return blob.data
 
+    def get_changed_files(self):
+        new = self.commit.tree
+        if self.parents:
+            old = self.parents[0].commit.tree
+        else:
+            old = None
+        #XXX: bad code
+        added, removed, changed = diff_tree(self.repo.repo, old, new)
+        return sorted(added | removed | changed)
 
 class GitRepository(Repository):
     def __init__(self, path=None, workdir=None, create=False, bare=False):
@@ -81,6 +90,7 @@ class GitRepository(Repository):
 
     def push(self):
         #XXX: hell, figure if the remote is empty, push master in that case
+        #XXX: use dulwich?
         subprocess.check_call(['git', 'push', '--all'], cwd=self.path)
 
     def get_default_head(self):
@@ -148,6 +158,39 @@ class GitCommitBuilder(CommitBuilder):
         commit.author_timezone = self.time_offset
         store.add_object(commit)
         self.repo.repo.refs['HEAD'] = commit.id
+
+
+def walk_tree_object(repo, tree, path=''):
+    #XXX: recursion
+    for mode, name, sha in tree.entries():
+        print name, sha
+        yield name, sha
+
+def walk_tree(repo, tree_id):
+    if tree_id is None:
+        return ()
+    tree = repo.get_object(tree_id)
+    assert tree.__class__ is Tree
+    return walk_tree_object(repo, tree)
+
+
+def diff_tree(repo, old, new):
+    #XXX: bad code
+    new_sha = dict(walk_tree(repo, new))
+    old_sha = dict(walk_tree(repo, old))
+    new_set = set(new_sha)
+    old_set = set(old_sha)
+
+    print new_set, old_set
+    added = new_set - old_set
+    removed = old_set - new_set
+
+    changed = set(name
+            for name, sha in new_sha.items()
+            if name not in added
+            and name not in removed
+            and old_sha[name] != sha)
+    return added, removed, changed
 
 
 
