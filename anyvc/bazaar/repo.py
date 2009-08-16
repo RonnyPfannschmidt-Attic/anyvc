@@ -26,12 +26,11 @@ class BazaarRevision(Revision):
         current = repo.revision_tree(rev.revision_id)
         if self.parents:
             prev = repo.revision_tree(rev.parent_ids[0])
-
-            delta = current.changes_from(prev)
-            files = [f[0] for f in delta.added + delta.removed + delta.renamed + delta.kind_changed + delta.modified]
-            return files
         else:
-            return [x[0] for x in current.list_files()]
+            prev = repo.revision_tree('null:')
+        delta = current.changes_from(prev)
+        files = [f[0] for f in delta.added + delta.removed + delta.renamed + delta.kind_changed + delta.modified]
+        return files
 
 
         # diff_file is a stringio
