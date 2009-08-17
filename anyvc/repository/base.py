@@ -201,4 +201,5 @@ class FileBuilder(MemoryFile):
         return self
 
     def __exit__(self, et, ev, tb):
+        # subvertpy file data transfer doesn't seek back
         self.seek(0)
