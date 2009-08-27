@@ -57,8 +57,7 @@ class RepositoryHandler(RemoteHandler):
         return [p.id for p in self.repo[id].parents]
 
     def commit_time(self, id):
-        t = self.repo[id].time
-        return t
+        return self.repo[id].time
 
     def commit_author(self, id):
         return self.repo[id].author
