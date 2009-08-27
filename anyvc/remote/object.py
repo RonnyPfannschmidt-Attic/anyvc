@@ -12,11 +12,9 @@ class RemoteCaller(object):
         self.channel = channel
 
     def _call_method(self, name, *k, **kw):
-        print 'calling', name, k, kw, 'on', self.channel
         assert not self.channel.isclosed()
         data = pickle.dumps((name, k, kw))
         self.channel.send(data)
-        print self.channel.receive()
         result = self.channel.receive()
         if isinstance(result, str):
             return pickle.loads(result)
@@ -42,7 +40,6 @@ class RemoteHandler(object):
             method, k, kw = pickle.loads(data)
             method = getattr(self, method)
             result = method(*k, **kw)
-            self.channel.send(str(type(result)))
             import __main__
             if not isinstance(result, __main__.Channel):
                 send = pickle.dumps(result)
