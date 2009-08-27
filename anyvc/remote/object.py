@@ -16,6 +16,7 @@ class RemoteCaller(object):
         data = pickle.dumps((name, k, kw))
         self.channel.send(data)
         result = self.channel.receive()
+        #XXX: again a job for py.execnet
         if isinstance(result, str):
             return pickle.loads(result)
         else:
@@ -40,6 +41,7 @@ class RemoteHandler(object):
             method, k, kw = pickle.loads(data)
             method = getattr(self, method)
             result = method(*k, **kw)
+            #XXX: let a later py.execnet manage that
             import __main__
             if not isinstance(result, __main__.Channel):
                 send = pickle.dumps(result)
@@ -47,6 +49,7 @@ class RemoteHandler(object):
                 send = result
             self.channel.send(send)
         except Exception, e :
+            #XXX: py.execnet should pass callback exceptions
             import traceback
             import sys
             excinfo = sys.exc_info()
