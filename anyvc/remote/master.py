@@ -63,35 +63,35 @@ class RemoteRepository(RemoteCaller):
         return RemoteCommit(self, id)
 
     def get_default_head(self):
-        id = self._call_method('get_default_head')
+        id = self._call_remote('get_default_head')
         return self.get_commit(id)
 
     def transaction(self, *k, **kw):
-        channel = self._call_method('transaction', *k, **kw)
+        channel = self._call_remote('transaction', *k, **kw)
         return RemoteTransaction(channel)
 
     def __len__(self):
-        return self._call_method('count_revisions')
+        return self._call_remote('count_revisions')
 
    
 class RemoteWorkdir(RemoteCaller):
 
     def status(self, **kw):
         from anyvc.workdir.file import StatedPath
-        items = self._call_method('status', **kw)
+        items = self._call_remote('status', **kw)
         for path, base, state in items:
             yield StatedPath(path, state, base)
 
     @property
     def repository(self):
         #XXX: this one shouldnt be
-        channel = self._call_method('get_local_repo')
+        channel = self._call_remote('get_local_repo')
         if channel is not None:
             return RemoteRepository(channel)
 
     @property
     def path(self):
-        return self._call_method('path')
+        return self._call_remote('path')
 
 class RemoteTransaction(RemoteCaller):
     def __enter__(self):

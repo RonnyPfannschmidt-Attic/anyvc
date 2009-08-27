@@ -11,7 +11,7 @@ class RemoteCaller(object):
     def __init__(self, channel):
         self.channel = channel
 
-    def _call_method(self, name, *k, **kw):
+    def _call_remote(self, name, *k, **kw):
         assert not self.channel.isclosed()
         data = pickle.dumps((name, k, kw))
         self.channel.send(data)
@@ -23,7 +23,7 @@ class RemoteCaller(object):
 
     def __getattr__(self, name):
         def method(*k, **kw):
-            return self._call_method(name, *k, **kw)
+            return self._call_remote(name, *k, **kw)
         method.__name__ = name
         return method
 
