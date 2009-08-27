@@ -61,6 +61,8 @@ def test_create_commit_at_time(mgr):
 
     head = repo.get_default_head()
 
+    print repr(head.id)
+    print head.time
     assert head.time == time
 
 

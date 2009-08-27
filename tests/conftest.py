@@ -22,12 +22,15 @@ def pytest_generate_tests(metafunc):
     for name in metadata.backends:
         if names and name not in names:
             continue
-        metafunc.addcall(id=name, param=name)
+                                        #remote 
+        metafunc.addcall(id=name, param=(False, name))
+        metafunc.addcall(id='remote/'+name, param=(True, name))
 
 
 def pytest_funcarg__mgr(request):
-    vc = request.param
-    vcdir = request.config.ensuretemp(vc)
+    remote, vc = request.param
+    r = 'remote' if remote else 'local'
+    vcdir = request.config.ensuretemp('%s_%s'%(vc, r) )
     testdir = vcdir.mkdir(request.function.__name__)
-    return VcsMan(vc, testdir)
+    return VcsMan(vc, testdir, remote)
 

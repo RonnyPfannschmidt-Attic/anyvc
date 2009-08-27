@@ -18,10 +18,13 @@ from ..exc import NotFoundError
 class MercurialRevision(Revision):
     def __init__(self, repo, rev):
         self.repo, self.rev = repo, rev
+    
+    @property
+    def id(self):
+        return self.rev.node()
 
     @property
     def author(self):
-        print self.rev.user()
         return self.rev.user()
 
     @property
@@ -38,7 +41,10 @@ class MercurialRevision(Revision):
         return self.rev.description()
 
     def file_content(self, path):
-        return self.rev[path].data()
+        try:
+            return self.rev[path].data()
+        except LookupError:
+            raise IOError('%r not found'%path)
 
     def get_changed_files(self):
         return self.rev.files()
@@ -82,6 +88,8 @@ class MercurialRepository(Repository):
         self.invalidate_cache()
         return MercurialRevision(self, self.repo['tip'])
 
+    def __getitem__(self, id):
+        return MercurialRevision(self, self.repo[id])
 
     def transaction(self, **extra):
         return MercurialCommitBuilder(self, self.get_default_head(), **extra)

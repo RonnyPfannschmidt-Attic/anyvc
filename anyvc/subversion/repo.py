@@ -30,11 +30,14 @@ class SubversionRevision(Revision):
         return [SubversionRevision(self.repo, self.id -1)]
 
     def file_content(self, path):
-        ra = RemoteAccess(self.repo.path)
-        import os
-        target = StringIO.StringIO()
-        ra.get_file(path.lstrip('/'), target, self.id)
-        return target.getvalue()
+        try:
+            ra = RemoteAccess(self.repo.path)
+            import os
+            target = StringIO.StringIO()
+            ra.get_file(path.lstrip('/'), target, self.id)
+            return target.getvalue()
+        except: #XXX: bad bad
+            raise IOError('%r not found'%path)
 
     @property
     def message(self):
@@ -98,6 +101,9 @@ class SubversionRepository(Repository):
         if last == 0:
             return
         return SubversionRevision(self, last)
+
+    def __getitem__(self, id):
+        return SubversionRevision(self, id)
 
     def transaction(self, **extra):
         return SvnCommitBuilder(self, None, **extra)

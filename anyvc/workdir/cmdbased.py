@@ -46,8 +46,8 @@ class CommandBased(WorkDirWithParser):
     """
     #TODO: set up the missing actions
 
-    def __init__(self, versioned_path, create=False, source=None):
-        self.path = os.path.normpath( os.path.abspath(versioned_path) )
+    def __init__(self, path, create=False, source=None):
+        self.path = os.path.normpath( os.path.abspath(path) )
         if create:
             if source:
                 self.create_from(source)

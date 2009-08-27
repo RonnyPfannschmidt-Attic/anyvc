@@ -14,6 +14,8 @@ from subprocess import call
 from shutil import rmtree
 from nose.tools import assert_equal
 from anyvc.metadata import get_backend
+from anyvc.remote import RemoteBackend
+
 def do(*args, **kw):
     args = map(str, args)
     print args
@@ -113,10 +115,15 @@ class WdWrap(object):
 
 class VcsMan(object):
     """controller over a tempdir for tests"""
-    def __init__(self, vc, base):
+    def __init__(self, vc, base, use_remote):
+        self.remote = use_remote
         self.vc = vc
+        self.remote = use_remote
         self.base = base.ensure(dir=True)
-        self.backend = get_backend(vc)
+        if use_remote:
+            self.backend = RemoteBackend('popen', vc)
+        else:
+            self.backend = get_backend(vc)
 
     def __repr__(self):
         return '<VcsMan %(vc)s %(base)r>'%vars(self)

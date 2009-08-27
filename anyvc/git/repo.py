@@ -44,12 +44,15 @@ class GitRevision(Revision):
         return self.commit.message.rstrip()
 
     def file_content(self, path):
-        repo = self.repo.repo
-        tree = repo[self.commit.tree]
-        #XXX: highly incorrect, should walk and check the type
-        blob =repo[tree[path.lstrip('/')][1]]
+        try:
+            repo = self.repo.repo
+            tree = repo[self.commit.tree]
+            #XXX: highly incorrect, should walk and check the type
+            blob =repo[tree[path.lstrip('/')][1]]
 
-        return blob.data
+            return blob.data
+        except KeyError:
+            raise IOError('%r not found'%path)
 
     def get_changed_files(self):
         new = self.commit.tree
@@ -98,6 +101,9 @@ class GitRepository(Repository):
         head = revs.get('HEAD', revs.get('master'))
         if head is not None:
             return GitRevision(self, self.repo.get_object(head))
+
+    def __getitem__(self, id):
+        return GitRevision(self, self.repo.get_object(id))
 
     def transaction(self, **extra):
         return GitCommitBuilder(self, self.get_default_head(), **extra)

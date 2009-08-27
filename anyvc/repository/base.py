@@ -58,7 +58,7 @@ class RevisionView(object):
         try:
             self.listdir()
             return True
-        except: #XXX: smarter
+        except (IOError, OSError):
             return False
 
     def isfile(self):
@@ -66,12 +66,14 @@ class RevisionView(object):
         try:
             self.open()
             return True
-        except: #XXX: smarter
+        except (IOError, OSError): #XXX: smarter
             return False
 
     def exists(self):
         #XXX: sucks
         return self.isdir() or self.isfile()
+
+    exists = isfile #XXX: nasty hack, fix later
 
 
 class Repository(object):
@@ -160,21 +162,21 @@ class CommitBuilder(object):
     def commit(self):
         raise NotImplementedError
 
-    def __enter__(self):
+    def __enter__(self): 
         return RepoPath(self.base_commit, "/", self)
 
-    def __exit__(self, etype, eval, tb):
-        if etype is None:
+    def __exit__(self, etype,  eval, tb):
+        if etype is None: 
             self.commit()
 
 
-class RepoPath(object):
-    def __init__(self, commit, path, builder):
+class RepoPath( object):
+    def __init__( self, commit, path, builder):
         self.commit = commit
         self.path = path
         self.builder = builder
 
-    def rename(self, new_name):
+    def rename(self , new_name):
         new = self.parent().join(new_name)
         assert self.path != '/' and new_name != '/'
         self.builder.renames.append( (self.path, new.path))
@@ -182,11 +184,11 @@ class RepoPath(object):
     def parent(self):
         return RepoPath(self.commit, dirname(self.path), self.builder)
 
-    def join(self, path):
+    def join(self,  path):
         return RepoPath(self.commit, join(self.path, path), self.builder)
 
-    def open(self, mode='r'):
-        if mode == 'r':
+    def open(self,  mode='r'):
+        if mode ==  'r':
             raise NotImplementedError
         elif mode == 'w':
             return self.builder.filebuilder(self.path)

@@ -16,6 +16,9 @@ class BazaarRevision(Revision):
     def __init__(self, repo, bzrrev):
         self.repo, self.bzrrev = repo, bzrrev
 
+    @property
+    def id(self):
+        return self.bzrrev.revision_id
 
     def get_changed_files(self):
         # TODO: this doesn't yet handle the case of multiple parent revisions
@@ -62,6 +65,8 @@ class BazaarRevision(Revision):
     def file_content(self, path):
         tree = self.repo.branch.repository.revision_tree(self.bzrrev.revision_id)
         id = tree.path2id(path)
+        if id is None:
+            raise IOError('%r not found'%path)
         try:
             tree.lock_read()
             sio = tree.get_file(id)
@@ -102,6 +107,12 @@ class BazaarRepository(Repository):
             return
         revision = self.branch.repository.get_revision(revision_id)
         return BazaarRevision(self, revision)
+
+    def __getitem__(self, id):
+        revision = self.branch.repository.get_revision(id)
+        return BazaarRevision(self, revision)
+
+
 
     def push(self, *k, **kw):
         print "bzr push", self.branch.get_parent()
