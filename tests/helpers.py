@@ -120,10 +120,7 @@ class VcsMan(object):
         self.vc = vc
         self.remote = use_remote
         self.base = base.ensure(dir=True)
-        if use_remote:
-            self.backend = RemoteBackend('popen', vc)
-        else:
-            self.backend = get_backend(vc)
+        self.backend = get_backend(vc, use_remote=use_remote)
 
     def __repr__(self):
         return '<VcsMan %(vc)s %(base)r>'%vars(self)
