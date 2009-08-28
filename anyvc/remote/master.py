@@ -14,6 +14,7 @@ from py.execnet import makegateway
 from os.path import join
 
 from anyvc.exc import NotFoundError
+from anyvc.util import cachedproperty
 from .object import RemoteCaller
 from anyvc.repository.base import CommitBuilder
 
@@ -31,16 +32,16 @@ class RemoteCommit(object):
             raise IOError('%r not found'%path)
         return data
 
-    @property
+    @cachedproperty
     def parents(self):
         return [RemoteCommit(self.repo, id)
                 for id in self.repo.commit_parents(self.id)]
 
-    @property
+    @cachedproperty
     def author(self):
         return self.repo.commit_author(self.id)
 
-    @property
+    @cachedproperty
     def message(self):
         return self.repo.commit_message(self.id)
 
@@ -48,7 +49,7 @@ class RemoteCommit(object):
         from anyvc.repository.base import RevisionView
         return RevisionView(self, '')
 
-    @property
+    @cachedproperty
     def time(self):
         return self.repo.commit_time(self.id)
 
@@ -89,7 +90,7 @@ class RemoteWorkdir(RemoteCaller):
         if channel is not None:
             return RemoteRepository(channel)
 
-    @property
+    @cachedproperty
     def path(self):
         return self._call_remote('path')
 
