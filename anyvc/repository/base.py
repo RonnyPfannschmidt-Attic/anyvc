@@ -39,8 +39,11 @@ class RevisionView(object):
     def join(self, path):
         return RevisionView(self.revision, join(self.path, path))
 
+    def read(self):
+        return self.revision.file_content(self.path)
+    
     def open(self):
-        return MemoryFile(self.revision.file_content(self.path))
+        return MemoryFile(self.read(), self.path)
 
     def isdir(self):
         #XXX: sucks
