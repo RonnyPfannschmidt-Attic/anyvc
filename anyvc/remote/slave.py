@@ -4,7 +4,12 @@ from anyvc.metadata import get_backend
 from anyvc.remote.object import RemoteHandler
 
 def start_controller(channel):
-    backend = get_backend(channel.receive())
+    backend_module = channel.receive()
+    try:
+        backend = __import__(backend_module, fromlist=['*'])
+    except ImportError:
+        channel.send(None) # magic value for 'i dont have it'
+        return
 
     workchan = channel.gateway.newchannel()
     SlaveBackend(workchan, backend)

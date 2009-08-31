@@ -17,6 +17,7 @@ from anyvc.exc import NotFoundError
 from anyvc.util import cachedproperty
 from .object import RemoteCaller
 from anyvc.repository.base import CommitBuilder
+from anyvc.metadata import backends
 
 class RemoteCommit(object):
     def __init__(self, repo, id):
@@ -144,8 +145,11 @@ class RemoteBackend(object):
             from anyvc.remote.slave import start_controller
             start_controller(channel)
         """)
-        channel.send(backend)
+        module = backends[backend]
+        channel.send(module)
         self._channel = channel.receive()
+        if self._channel is None:
+            raise ImportError('module %s not found on remote'%module)
         self._caller = RemoteCaller(self._channel)
         self.active = True
 
