@@ -155,14 +155,14 @@ class CommitBuilder(object):
         raise NotImplementedError
 
     def __enter__(self): 
-        return RepoPath(self.base_commit, "/", self)
+        return RevisionBuilderPath(self.base_commit, "/", self)
 
     def __exit__(self, etype,  eval, tb):
         if etype is None: 
             self.commit()
 
 
-class RepoPath( object):
+class RevisionBuilderPath( object):
     def __init__( self, commit, path, builder):
         self.commit = commit
         self.path = path
@@ -174,10 +174,10 @@ class RepoPath( object):
         self.builder.renames.append( (self.path, new.path))
 
     def parent(self):
-        return RepoPath(self.commit, dirname(self.path), self.builder)
+        return RevisionBuilderPath(self.commit, dirname(self.path), self.builder)
 
     def join(self,  path):
-        return RepoPath(self.commit, join(self.path, path), self.builder)
+        return RevisionBuilderPath(self.commit, join(self.path, path), self.builder)
 
     def open(self,  mode='r'):
         if mode ==  'r':
