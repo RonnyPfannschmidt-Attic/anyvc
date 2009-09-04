@@ -42,8 +42,19 @@ setup(
     name = 'anyvc',
     packages = [
         'anyvc',
+
+        # base apis
         'anyvc.repository',
         'anyvc.workdir',
+
+        # subprocess and remote invocation
+        'anyvc.remote',
+
+        # backends
+        'anyvc.mercurial',
+        'anyvc.git',
+        'anyvc.subversion',
+        'anyvc.bazaar',
     ],
     scripts = ['bin/vc'],
 
