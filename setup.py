@@ -44,7 +44,6 @@ setup(
         'anyvc',
 
         # base apis
-        'anyvc.repository',
         'anyvc.workdir',
         'anyvc.common',
 

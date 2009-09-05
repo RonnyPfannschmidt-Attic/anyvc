@@ -5,7 +5,7 @@
     :copyright: 2009 by Ronny Pfannschmidt
 """
 import os
-from ..exc import NotFoundError
+from anyvc.exc import NotFoundError
 
 def find(base_path, backends=None):
     from anyvc.metadata import get_backends
