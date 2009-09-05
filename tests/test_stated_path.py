@@ -9,5 +9,5 @@
 >>> StatedPath('./a')
 <normal 'a'>
 """
-from anyvc.workdir.file import StatedPath
+from anyvc.common.files import StatedPath
 

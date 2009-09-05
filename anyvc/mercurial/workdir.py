@@ -12,7 +12,7 @@
 import os
 from functools import wraps
 
-from ..workdir.file import StatedPath
+from anyvc.common.files import StatedPath
 from ..workdir.base import WorkDir
 from ..exc import NotFoundError
 

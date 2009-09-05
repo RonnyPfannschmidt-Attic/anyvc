@@ -6,7 +6,7 @@
     :copyright: 2008 Ronny Pfannschmidt
     :license: LGPL2 or later
 """
-from .file import StatedPath
+from anyvc.common.files import StatedPath
 from os.path import join
 
 class WorkDir(object):

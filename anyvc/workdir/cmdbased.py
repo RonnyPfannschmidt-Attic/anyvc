@@ -18,7 +18,7 @@ import os, os.path
 #TODO: more reviews
 
 from .base import WorkDirWithParser
-from .file import StatedPath as Path
+from anyvc.common.files import StatedPath as Path
 from ..exc import NotFoundError
 
 def relative_to(base_path):

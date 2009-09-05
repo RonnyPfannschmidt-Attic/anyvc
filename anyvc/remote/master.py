@@ -79,7 +79,7 @@ class RemoteRepository(RemoteCaller):
 class RemoteWorkdir(RemoteCaller):
 
     def status(self, **kw):
-        from anyvc.workdir.file import StatedPath
+        from anyvc.common.files import StatedPath
         items = self._call_remote('status', **kw)
         for path, base, state in items:
             yield StatedPath(path, state, base)

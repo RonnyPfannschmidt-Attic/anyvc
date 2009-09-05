@@ -9,7 +9,6 @@
 
 
 from ..workdir.cmdbased import CommandBased, relative_to
-from ..workdir.file import StatedPath as Path
 import re
 from subprocess import call
 

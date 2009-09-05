@@ -2,7 +2,6 @@ import sys
 import os
 
 from ..workdir.base import WorkDir, WorkDirWithParser
-from ..workdir.file import StatedPath as Path
 from ..exc import NotFoundError
 
 from StringIO import StringIO
