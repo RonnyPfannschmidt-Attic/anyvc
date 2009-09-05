@@ -7,7 +7,7 @@
         * 2008 by Ronny Pfannschmidt <Ronny.Pfannschmidt@gmx.de>
 """
 
-from ..repository.base import Repository, Revision, CommitBuilder, join
+from anyvc.common.repository import Repository, Revision, CommitBuilder, join
 from .workdir import grab_output
 from datetime import datetime
 from mercurial import commands, localrepo, ui, context

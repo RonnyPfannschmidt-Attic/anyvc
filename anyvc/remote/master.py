@@ -16,7 +16,7 @@ from os.path import join
 from anyvc.exc import NotFoundError
 from anyvc.util import cachedproperty
 from .object import RemoteCaller
-from anyvc.repository.base import CommitBuilder
+from anyvc.common.repository import CommitBuilder
 from anyvc.metadata import backends
 
 class RemoteCommit(object):
@@ -47,7 +47,7 @@ class RemoteCommit(object):
         return self.repo.commit_message(self.id)
 
     def __enter__(self):
-        from anyvc.repository.base import RevisionView
+        from anyvc.common.repository import RevisionView
         return RevisionView(self, '')
 
     @cachedproperty
@@ -124,7 +124,7 @@ class RepoRepoPath(object):
             self.builder.rename(self.path, join(dirname(self.path), other))
 
 
-from anyvc.repository.base import MemoryFile
+from anyvc.common.files import MemoryFile
 
 class RemoteFile(MemoryFile):
     def __init__(self, data, path, builder):
