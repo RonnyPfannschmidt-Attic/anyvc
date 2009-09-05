@@ -17,7 +17,7 @@ from posixpath import join, basename, dirname
 from collections import defaultdict
 import time as unixtime
 from datetime import datetime
-from .files import MemoryFile, FileBuilder
+from anyvc.common.files import MemoryFile, FileBuilder
 
 class Revision(object):
 
