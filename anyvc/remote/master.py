@@ -16,7 +16,8 @@ from os.path import join
 from anyvc.exc import NotFoundError
 from anyvc.util import cachedproperty
 from .object import RemoteCaller
-from anyvc.common.repository import CommitBuilder
+from anyvc.common.commit_builder import CommitBuilder
+from anyvc.common.files import MemoryFile
 from anyvc.metadata import backends
 
 class RemoteCommit(object):
@@ -75,7 +76,7 @@ class RemoteRepository(RemoteCaller):
     def __len__(self):
         return self._call_remote('count_revisions')
 
-   
+
 class RemoteWorkdir(RemoteCaller):
 
     def status(self, **kw):
@@ -95,12 +96,14 @@ class RemoteWorkdir(RemoteCaller):
     def path(self):
         return self._call_remote('path')
 
+
 class RemoteTransaction(RemoteCaller):
     def __enter__(self):
         return RepoRepoPath(self, '')
     def __exit__(self, etype,  eval, tb):
         if etype is None:
             self.commit()
+
 
 class RepoRepoPath(object):
     def __init__(self, builder, path):
@@ -124,8 +127,6 @@ class RepoRepoPath(object):
             self.builder.rename(self.path, join(dirname(self.path), other))
 
 
-from anyvc.common.files import MemoryFile
-
 class RemoteFile(MemoryFile):
     def __init__(self, data, path, builder):
         MemoryFile.__init__(self, data, path)
@@ -135,6 +136,7 @@ class RemoteFile(MemoryFile):
         if et is None:
             print self.path, self.getvalue()
             self.builder.write_file(self.path, self.getvalue())
+
 
 class RemoteBackend(object):
     def __init__(self, spec, backend):

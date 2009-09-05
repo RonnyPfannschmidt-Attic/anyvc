@@ -6,7 +6,8 @@
 """
 
 
-from anyvc.common.repository import Repository, Revision, CommitBuilder, join
+from anyvc.common.repository import Repository, Revision
+from anyvc.common.commit_builder import CommitBuilder
 from ..exc import NotFoundError
 import subprocess
 import os

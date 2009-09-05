@@ -8,7 +8,8 @@ from bzrlib.bzrdir import BzrDir
 from bzrlib.branch import Branch
 from bzrlib import errors
 from bzrlib.memorytree import MemoryTree
-from anyvc.common.repository import Repository, Revision, CommitBuilder, join
+from anyvc.common.repository import Repository, Revision, join
+from anyvc.common.commit_builder import CommitBuilder
 from datetime import datetime
 from ..exc import NotFoundError
 

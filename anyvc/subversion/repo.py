@@ -8,7 +8,8 @@ import sys
 
 from subvertpy import repos, delta
 from subvertpy.ra import RemoteAccess, Auth, get_username_provider, SubversionException
-from anyvc.common.repository import Repository, Revision, CommitBuilder, join
+from anyvc.common.repository import Repository, Revision, join
+from anyvc.common.commit_builder import CommitBuilder
 from subvertpy.properties import time_from_cstring, time_to_cstring
 import StringIO
 from ..exc import NotFoundError
