@@ -23,13 +23,15 @@ def pytest_generate_tests(metafunc):
         if names and name not in names:
             continue
                                         #remote 
-        metafunc.addcall(id=name, param=(False, name))
-        metafunc.addcall(id='remote/'+name, param=(True, name))
+        metafunc.addcall(id=name, param=(None, name))
+        metafunc.addcall(id='remote/'+name, param=('python2', name))
+        #XXX: later, for checking that python3 will always use a remote to python2
+        # metafunc.addcall(id='python3/'+name, param=('python3', name))
 
 
 def pytest_funcarg__mgr(request):
     remote, vc = request.param
-    r = 'remote' if remote else 'local'
+    r = remote or 'local'
     vcdir = request.config.ensuretemp('%s_%s'%(vc, r) )
     testdir = vcdir.mkdir(request.function.__name__)
     return VcsMan(vc, testdir, remote)

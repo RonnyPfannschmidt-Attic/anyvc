@@ -115,12 +115,15 @@ class WdWrap(object):
 
 class VcsMan(object):
     """controller over a tempdir for tests"""
-    def __init__(self, vc, base, use_remote):
-        self.remote = use_remote
+    def __init__(self, vc, base, remote):
+        self.remote = remote
         self.vc = vc
-        self.remote = use_remote
         self.base = base.ensure(dir=True)
-        self.backend = get_backend(vc, use_remote=use_remote)
+        if remote:
+            xspec = 'popen//python='+remote
+        else:
+            xspec = None
+        self.backend = get_backend(vc, use_remote=xspec)
 
     def __repr__(self):
         return '<VcsMan %(vc)s %(base)r>'%vars(self)
