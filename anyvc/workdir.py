@@ -14,7 +14,7 @@
 __all__ = ["all_known", "get_workdir_manager_for_path"]
 
 
-from ..metadata import backends, get_backend
+from .metadata import backends, get_backend
 
 all_known = []
 

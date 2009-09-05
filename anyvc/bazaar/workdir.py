@@ -1,7 +1,7 @@
 import sys
 import os
 
-from ..workdir.base import WorkDir, WorkDirWithParser
+from anyvc.common.workdir import WorkDirWithParser
 from ..exc import NotFoundError
 
 from StringIO import StringIO

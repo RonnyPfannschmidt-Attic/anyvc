@@ -8,7 +8,7 @@
 
 
 
-from ..workdir.cmdbased import CommandBased, relative_to
+from anyvc.common.workdir import CommandBased, relative_to
 import re
 from subprocess import call
 

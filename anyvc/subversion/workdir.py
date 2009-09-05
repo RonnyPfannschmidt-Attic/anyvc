@@ -1,5 +1,5 @@
 
-from anyvc.workdir.cmdbased import CommandBased, relative_to
+from anyvc.common.workdir import CommandBased, relative_to
 from subprocess import call
 
 class SubVersion(CommandBased):

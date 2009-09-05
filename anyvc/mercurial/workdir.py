@@ -13,7 +13,7 @@ import os
 from functools import wraps
 
 from anyvc.common.files import StatedPath
-from ..workdir.base import WorkDir
+from anyvc.common.workdir import WorkDir
 from ..exc import NotFoundError
 
 from mercurial.__version__ import version as hgversion
