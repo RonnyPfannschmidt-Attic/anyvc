@@ -64,51 +64,6 @@ class GitRevision(Revision):
         added, removed, changed = diff_tree(self.repo.repo, old, new)
         return sorted(added | removed | changed)
 
-class GitRepository(Repository):
-    def __init__(self, path=None, workdir=None, create=False, bare=False):
-        assert path or workdir
-        if workdir:
-            assert workdir.path
-            self.path = workdir.path
-        else:
-            self.path = path
-        if create:
-            #XXX: fragile
-            if not os.path.exists(path):
-                os.mkdir(path)
-            self.repo = Repo.init(path)
-        else:
-            assert os.path.exists(self.path)
-            try:
-                self.repo = Repo(self.path)
-            except NotGitRepository:
-                raise NotFoundError('git', self.path)
-
-    def __len__(self):
-        #XXX: fragile
-        head = self.get_default_head()
-        if head is None:
-            return 0
-        return len(self.repo.revision_history(head.id))
-
-    def push(self):
-        #XXX: hell, figure if the remote is empty, push master in that case
-        #XXX: use dulwich?
-        subprocess.check_call(['git', 'push', '--all'], cwd=self.path)
-
-    def get_default_head(self):
-        revs = self.repo.get_refs()
-        head = revs.get('HEAD', revs.get('master'))
-        if head is not None:
-            return GitRevision(self, self.repo.get_object(head))
-
-    def __getitem__(self, id):
-        return GitRevision(self, self.repo.get_object(id))
-
-    def transaction(self, **extra):
-        return GitCommitBuilder(self, self.get_default_head(), **extra)
-
-
 class GitCommitBuilder(CommitBuilder):
 
     def commit(self):
@@ -164,6 +119,51 @@ class GitCommitBuilder(CommitBuilder):
         commit.author_timezone = self.time_offset
         store.add_object(commit)
         self.repo.repo.refs['HEAD'] = commit.id
+
+class GitRepository(Repository):
+    CommitBuilder = GitCommitBuilder
+
+    def __init__(self, path=None, workdir=None, create=False, bare=False):
+        assert path or workdir
+        if workdir:
+            assert workdir.path
+            self.path = workdir.path
+        else:
+            self.path = path
+        if create:
+            #XXX: fragile
+            if not os.path.exists(path):
+                os.mkdir(path)
+            self.repo = Repo.init(path)
+        else:
+            assert os.path.exists(self.path)
+            try:
+                self.repo = Repo(self.path)
+            except NotGitRepository:
+                raise NotFoundError('git', self.path)
+
+    def __len__(self):
+        #XXX: fragile
+        head = self.get_default_head()
+        if head is None:
+            return 0
+        return len(self.repo.revision_history(head.id))
+
+    def push(self):
+        #XXX: hell, figure if the remote is empty, push master in that case
+        #XXX: use dulwich?
+        subprocess.check_call(['git', 'push', '--all'], cwd=self.path)
+
+    def get_default_head(self):
+        revs = self.repo.get_refs()
+        head = revs.get('HEAD', revs.get('master'))
+        if head is not None:
+            return GitRevision(self, self.repo.get_object(head))
+
+    def __getitem__(self, id):
+        return GitRevision(self, self.repo.get_object(id))
+
+
 
 
 def walk_tree_object(repo, tree, path=''):

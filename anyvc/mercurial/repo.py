@@ -50,51 +50,6 @@ class MercurialRevision(Revision):
         return self.rev.files()
 
 
-class MercurialRepository(Repository):
-    def __init__(self, path=None, workdir=None, create=False):
-        self.path = path
-        self.workdir = workdir
-        #XXX: path only handling
-        if workdir is not None:
-            self.repo = workdir.repo
-            self.ui = self.repo.ui
-
-        elif path is not None:
-            try:
-                repo = localrepo.localrepository(ui.ui(), path, create=create)
-            except error.RepoError:
-                raise NotFoundError('mercurial', path)
-
-            self.ui = repo.ui
-            self.repo = repo
-
-    def invalidate_cache(self):
-        self.repo.invalidate()
-
-    @grab_output
-    def push(self, dest=None, rev=None):
-        self.invalidate_cache()
-        commands.push(self.ui, self.repo, dest, rev=rev)
-
-    @grab_output
-    def pull(self, source="default", rev=None):
-        self.invalidate_cache()
-        commands.pull(self.ui, self.repo, source, rev=rev)
-
-    def __len__(self):
-        return len(self.repo)
-
-    def get_default_head(self):
-        self.invalidate_cache()
-        return MercurialRevision(self, self.repo['tip'])
-
-    def __getitem__(self, id):
-        return MercurialRevision(self, self.repo[id])
-
-    def transaction(self, **extra):
-        return MercurialCommitBuilder(self, self.get_default_head(), **extra)
-
-
 class MercurialCommitBuilder(CommitBuilder):
     def commit(self):
         repo = self.repo.repo
@@ -146,4 +101,45 @@ class MercurialCommitBuilder(CommitBuilder):
         repo.commitctx(ctx)
 
 
+class MercurialRepository(Repository):
+    CommitBuilder = MercurialCommitBuilder
 
+    def __init__(self, path=None, workdir=None, create=False):
+        self.path = path
+        self.workdir = workdir
+        #XXX: path only handling
+        if workdir is not None:
+            self.repo = workdir.repo
+            self.ui = self.repo.ui
+
+        elif path is not None:
+            try:
+                repo = localrepo.localrepository(ui.ui(), path, create=create)
+            except error.RepoError:
+                raise NotFoundError('mercurial', path)
+
+            self.ui = repo.ui
+            self.repo = repo
+
+    def invalidate_cache(self):
+        self.repo.invalidate()
+
+    @grab_output
+    def push(self, dest=None, rev=None):
+        self.invalidate_cache()
+        commands.push(self.ui, self.repo, dest, rev=rev)
+
+    @grab_output
+    def pull(self, source="default", rev=None):
+        self.invalidate_cache()
+        commands.pull(self.ui, self.repo, source, rev=rev)
+
+    def __len__(self):
+        return len(self.repo)
+
+    def get_default_head(self):
+        return self['tip']
+
+    def __getitem__(self, id):
+        self.invalidate_cache()
+        return MercurialRevision(self, self.repo[id])

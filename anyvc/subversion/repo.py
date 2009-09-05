@@ -76,40 +76,6 @@ class SubversionRevision(Revision):
         return datetime.fromtimestamp(float(timestamp)/1000000)
 
 
-
-
-class SubversionRepository(Repository):
-
-    def __init__(self, path, create=False):
-        #XXX: correct paths
-        if create:
-            repos.create(path)
-        self.path = "file://"+path
-        try:
-            RemoteAccess(self.path)
-        except SubversionException:
-            raise NotFoundError('subversion', self.path)
-
-    def __len__(self):
-        ra = RemoteAccess(self.path)
-        return ra.get_latest_revnum()
-
-    def get_default_head(self):
-        #XXX: correct paths !!!
-        ra = RemoteAccess(self.path)
-        last = ra.get_latest_revnum()
-        if last == 0:
-            return
-        return SubversionRevision(self, last)
-
-    def __getitem__(self, id):
-        return SubversionRevision(self, id)
-
-    def transaction(self, **extra):
-        return SvnCommitBuilder(self, None, **extra)
-
-
-
 class SvnCommitBuilder(CommitBuilder):
     def commit(self):
         ra = RemoteAccess(self.repo.path,
@@ -145,4 +111,33 @@ class SvnCommitBuilder(CommitBuilder):
         root.close()
         editor.close()
 
+
+class SubversionRepository(Repository):
+
+    CommitBuilder = SvnCommitBuilder
+
+    def __init__(self, path, create=False):
+        #XXX: correct paths
+        if create:
+            repos.create(path)
+        self.path = "file://"+path
+        try:
+            RemoteAccess(self.path)
+        except SubversionException:
+            raise NotFoundError('subversion', self.path)
+
+    def __len__(self):
+        ra = RemoteAccess(self.path)
+        return ra.get_latest_revnum()
+
+    def get_default_head(self):
+        #XXX: correct paths !!!
+        ra = RemoteAccess(self.path)
+        last = ra.get_latest_revnum()
+        if last == 0:
+            return
+        return SubversionRevision(self, last)
+
+    def __getitem__(self, id):
+        return SubversionRevision(self, id)
 

@@ -75,63 +75,14 @@ class BazaarRevision(Revision):
             tree.unlock()
 
 
-
-class BazaarRepository(Repository):
-    #XXX: this whole thing is broken and messed
-    def __init__(self, path=None, workdir=None, create=False):
-        if workdir:
-            assert not path and not create
-            self.branch = workdir.wt.branch
-        elif create:
-            assert path, 'create needs a path'
-            self.branch = BzrDir.create_branch_convenience(path)
-        else:
-            try:
-                self.branch, rest = Branch.open_containing(path)
-            except errors.NotBranchError:
-                raise NotFoundError('bzr', path)
-
-
-    def __repr__(self):
-        return "<Bzr 'repo' at %s>"%self.branch.base
-
-    def __len__(self):
-        #XXX: crap
-        revs = self.branch.iter_merge_sorted_revisions()
-
-        return sum(1 for i in revs)
-
-    def get_default_head(self):
-        revision_id = self.branch.last_revision()
-        if revision_id == "null:":
-            return
-        revision = self.branch.repository.get_revision(revision_id)
-        return BazaarRevision(self, revision)
-
-    def __getitem__(self, id):
-        revision = self.branch.repository.get_revision(id)
-        return BazaarRevision(self, revision)
-
-
-
-    def push(self, *k, **kw):
-        print "bzr push", self.branch.get_parent()
-        parent = self.branch.get_parent()
-        remote = Branch.open(parent)
-
-        self.branch.push(remote)
-
-    def transaction(self, **extra):
-        return BzrCommitBuilder(self, self.get_default_head(), **extra)
-
-class BzrCommitBuilder(CommitBuilder):
+class BazaarCommitBuilder(CommitBuilder):
     def __init__(self, *k, **kw):
-        super(BzrCommitBuilder, self).__init__(*k, **kw)
+        super(BazaarCommitBuilder, self).__init__(*k, **kw)
         self.tree = MemoryTree.create_on_branch(self.repo.branch)
 
     def __enter__(self):
         self.tree.lock_write()
-        return super(BzrCommitBuilder, self).__enter__()
+        return super(BazaarCommitBuilder, self).__enter__()
 
     def commit(self):
         tree = self.tree
@@ -158,7 +109,54 @@ class BzrCommitBuilder(CommitBuilder):
                 )
 
     def __exit__(self, et, ev, tb):
-        super(BzrCommitBuilder, self).__exit__(et, ev, tb)
+        super(BazaarCommitBuilder, self).__exit__(et, ev, tb)
         self.tree.unlock()
         self.tree = None
+
+
+class BazaarRepository(Repository):
+    CommitBuilder = BazaarCommitBuilder
+
+    #XXX: this whole thing is broken and messed
+    def __init__(self, path=None, workdir=None, create=False):
+        if workdir:
+            assert not path and not create
+            self.branch = workdir.wt.branch
+        elif create:
+            assert path, 'create needs a path'
+            self.branch = BzrDir.create_branch_convenience(path)
+        else:
+            try:
+                self.branch, rest = Branch.open_containing(path)
+            except errors.NotBranchError:
+                raise NotFoundError('bzr', path)
+
+
+    def __repr__(self):
+        return "<Bzr 'repo' at %s>"%self.branch.base
+
+    def __len__(self):
+        #XXX: crap
+        revs = self.branch.iter_merge_sorted_revisions()
+
+        return sum(1 for i in revs)
+
+    def get_default_head(self):
+        id = self.branch.last_revision()
+        if id == "null:":
+            return
+        return self[id]
+
+    def __getitem__(self, id):
+        revision = self.branch.repository.get_revision(id)
+        return BazaarRevision(self, revision)
+
+
+
+    def push(self, *k, **kw):
+        print "bzr push", self.branch.get_parent()
+        parent = self.branch.get_parent()
+        remote = Branch.open(parent)
+
+        self.branch.push(remote)
 

@@ -102,7 +102,7 @@ class Repository(object):
 
 
     def transaction(self, **extra):
-        return CommitBuilder(self, self.get_default_head(), **extra)
+        return self.CommitBuilder(self, self.get_default_head(), **extra)
 
 
 class CommitBuilder(object):
