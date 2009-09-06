@@ -16,7 +16,6 @@
 from collections import defaultdict
 from os.path import join, dirname
 from StringIO import StringIO
-from anyvc.common.files import MemoryFile
 
 
 class MemoryFile(StringIO):

@@ -1,18 +1,6 @@
 
 from StringIO import StringIO
 
-class MemoryFile(StringIO):
-    def __init__(self, data='', path=None):
-        StringIO.__init__(self, data)
-        self.path = path
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, et, ev, tb):
-        pass
-
-
 
 
 

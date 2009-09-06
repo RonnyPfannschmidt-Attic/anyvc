@@ -17,7 +17,7 @@ from anyvc.exc import NotFoundError
 from anyvc.util import cachedproperty
 from .object import RemoteCaller
 from anyvc.common.commit_builder import CommitBuilder
-from anyvc.common.files import MemoryFile
+from anyvc.common.repository import MemoryFile
 from anyvc.metadata import backends
 
 class RemoteCommit(object):
