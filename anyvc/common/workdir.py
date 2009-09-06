@@ -150,7 +150,6 @@ import os, os.path
 
 #TODO: more reviews
 
-from anyvc.common.workdir import WorkDirWithParser
 from ..exc import NotFoundError
 
 def relative_to(base_path):

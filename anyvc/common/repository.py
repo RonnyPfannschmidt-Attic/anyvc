@@ -15,7 +15,20 @@
 """
 from collections import defaultdict
 from os.path import join, dirname
-from anyvc.common.files import MemoryFile, FileBuilder
+from StringIO import StringIO
+from anyvc.common.files import MemoryFile
+
+
+class MemoryFile(StringIO):
+    def __init__(self, data='', path=None):
+        StringIO.__init__(self, data)
+        self.path = path
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, et, ev, tb):
+        pass
 
 class Revision(object):
 
@@ -100,6 +113,7 @@ class Repository(object):
 
 
     def transaction(self, **extra):
+        # will be set by subclasses
         return self.CommitBuilder(self, self.get_default_head(), **extra)
 
 
