@@ -105,6 +105,7 @@ class RemoteTransaction(RemoteCaller):
 
 
 class RepoRepoPath(object):
+    #XXX: kill for direct commit builder paths
     def __init__(self, builder, path):
         self.builder = builder
         self.path = path
@@ -115,6 +116,10 @@ class RepoRepoPath(object):
     def open(self, mode=None):#XXX open mode
         #XXX: dont grab old content, evil
         return RemoteFile('', self.path, self.builder)
+
+    def write(self, data):
+        with self.open() as f:
+            f.write(data)
 
     def rename(self, other):
         #XXX: fix own path?

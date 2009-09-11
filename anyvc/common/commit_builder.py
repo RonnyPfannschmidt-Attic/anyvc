@@ -86,10 +86,16 @@ class RevisionBuilderPath( object):
         return RevisionBuilderPath(self.commit, join(self.path, path), self.builder)
 
     def open(self,  mode='r'):
+        #implement in terms of read/write
         if mode ==  'r':
             raise NotImplementedError
         elif mode == 'w':
             return self.builder.filebuilder(self.path)
+
+    def write(self, data):
+        #XXX: implement directly
+        with self.open('w') as f:
+            f.write(data)
 
 
 class FileBuilder(MemoryFile):
