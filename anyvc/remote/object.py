@@ -48,7 +48,7 @@ class RemoteHandler(object):
             else:
                 send = result
             self.channel.send(send)
-        except Exception, e :
+        except Exception:
             #XXX: py.execnet should pass callback exceptions
             import traceback
             import sys

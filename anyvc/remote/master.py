@@ -59,7 +59,6 @@ class RemoteCommit(object):
         pass
 
 
-
 class RemoteRepository(RemoteCaller):
     
     def get_commit(self, id):
@@ -134,7 +133,6 @@ class RemoteFile(MemoryFile):
 
     def __exit__(self, et, ev, tb):
         if et is None:
-            print self.path, self.getvalue()
             self.builder.write_file(self.path, self.getvalue())
 
 

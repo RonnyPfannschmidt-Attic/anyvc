@@ -15,7 +15,10 @@
 """
 from collections import defaultdict
 from os.path import join, dirname
-from StringIO import StringIO
+try:
+    from io import BytesIO as StringIO #XXX: epic mess
+except ImportError:
+    from StringIO import StringIO
 
 
 class MemoryFile(StringIO):
