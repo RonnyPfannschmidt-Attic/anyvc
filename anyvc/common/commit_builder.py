@@ -73,7 +73,7 @@ class RevisionBuilderPath( object):
     def rename(self , new_name):
         new = self.parent().join(new_name)
         assert self.path != '/' and new_name != '/'
-        self.builder.renames.append( (self.path, new.path))
+        self.builder.rename(self.path, new.path)
 
     def parent(self):
         return RevisionBuilderPath(self.commit, dirname(self.path), self.builder)

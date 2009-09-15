@@ -16,7 +16,7 @@ from os.path import join
 from anyvc.exc import NotFoundError
 from anyvc.util import cachedproperty
 from .object import RemoteCaller
-from anyvc.common.commit_builder import CommitBuilder
+from anyvc.common.commit_builder import CommitBuilder, FileBuilder, RevisionBuilderPath
 from anyvc.common.repository import MemoryFile
 from anyvc.metadata import backends
 
@@ -98,47 +98,11 @@ class RemoteWorkdir(RemoteCaller):
 
 class RemoteTransaction(RemoteCaller):
     def __enter__(self):
-        return RepoRepoPath(self, '')
+        #XXX: take remote commit into account
+        return RevisionBuilderPath(None, '', self)
     def __exit__(self, etype,  eval, tb):
         if etype is None:
             self.commit()
-
-
-class RepoRepoPath(object):
-    #XXX: kill for direct commit builder paths
-    def __init__(self, builder, path):
-        self.builder = builder
-        self.path = path
-
-    def join(self, path):
-        return RepoRepoPath(self.builder, join(self.path, path))
-
-    def open(self, mode=None):#XXX open mode
-        #XXX: dont grab old content, evil
-        return RemoteFile('', self.path, self.builder)
-
-    def write(self, data):
-        with self.open() as f:
-            f.write(data)
-
-    def rename(self, other):
-        #XXX: fix own path?
-        from os.path import dirname, isabs
-
-        if isabs(other):
-            self.builder.rename(self.path, other)
-        else:
-            self.builder.rename(self.path, join(dirname(self.path), other))
-
-
-class RemoteFile(MemoryFile):
-    def __init__(self, data, path, builder):
-        MemoryFile.__init__(self, data, path)
-        self.builder = builder
-
-    def __exit__(self, et, ev, tb):
-        if et is None:
-            self.builder.write(self.path, self.getvalue())
 
 
 class RemoteBackend(object):
