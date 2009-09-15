@@ -20,7 +20,7 @@ class CommitBuilder(object):
         self.repo = repo
         self.base_commit = base_commit
         self.extra = extra
-        self.files = {} #XXX: lossy painfull
+        self.contents = {}
         self.renames = []
 
         if time is None:
@@ -43,13 +43,9 @@ class CommitBuilder(object):
         #XXX: ignores daylight saving
         self.time_offset = unixtime.timezone
 
-    def create(self, path):
-        #XXX: broken model
-        if path not in self.files:
-            self.files[path] = FileBuilder(self.repo, self.base_commit, path)
+    def write(self, path, content):
+        self.contents[path] = content
 
-        return self.files[path]
-    filebuilder = create
     def remove(self, path):
         pass
 
@@ -90,23 +86,14 @@ class RevisionBuilderPath( object):
         if mode ==  'r':
             raise NotImplementedError
         elif mode == 'w':
-            return self.builder.filebuilder(self.path)
+            #XXX: test and implement all flavors of reopening
+            return FileBuilder(path=self)
 
     def write(self, data):
-        #XXX: implement directly
-        with self.open('w') as f:
-            f.write(data)
+        self.builder.write(self.path, data)
 
 
 class FileBuilder(MemoryFile):
-    def __init__(self, repo, base_commit, path):
-        MemoryFile.__init__(self, path=path)
-        self.repo = repo
-        self.base_commit = base_commit
-
-    def __enter__(self):
-        return self
-
     def __exit__(self, et, ev, tb):
         # subvertpy file data transfer doesn't seek back
-        self.seek(0)
+        self.path.write(self.getvalue())

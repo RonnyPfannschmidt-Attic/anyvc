@@ -58,18 +58,18 @@ class MercurialCommitBuilder(CommitBuilder):
             #XXX: copy sources
             #XXX: renames
             #XXX: deletes
-            if path in rn and path not in self.files:
+            if path in rn and path not in self.contents:
                 raise IOError()
             if path in rrn:
                 assert base is not None
                 parent = self.base_commit.rev[rrn[path]]
-                if path in self.files:
-                    data = self.files[path].getvalue()
+                if path in self.contents:
+                    data = self.contents[path]
                 else:
                     data = parent.data()
                 copyed = rrn[path]
             else:
-                data = self.files[path].getvalue()
+                data = self.contents[path]
                 copyed = False
 
             islink = False #XXX
@@ -82,7 +82,7 @@ class MercurialCommitBuilder(CommitBuilder):
         rrn = dict(reversed(x) for x in self.renames)
         #XXX: directory renames
 
-        files = set(self.files)
+        files = set(self.contents)
         files.update(rn.keys())
         files.update(rn.values())
 

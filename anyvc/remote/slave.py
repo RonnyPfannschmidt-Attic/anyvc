@@ -126,11 +126,8 @@ class TransactionHandler(RemoteHandler):
         self.repo = repo
         self.transaction.__enter__()
 
-    def write_file(self, path, data):
-        fb = self.transaction.create(path)
-        fb.seek(0)
-        fb.write(data)
-        fb.seek(0)
+    def write(self, path, data):
+        fb = self.transaction.write(path, data)
 
     def commit(self):
         self.transaction.__exit__(None, None, None)

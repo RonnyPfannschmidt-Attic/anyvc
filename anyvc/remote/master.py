@@ -138,7 +138,7 @@ class RemoteFile(MemoryFile):
 
     def __exit__(self, et, ev, tb):
         if et is None:
-            self.builder.write_file(self.path, self.getvalue())
+            self.builder.write(self.path, self.getvalue())
 
 
 class RemoteBackend(object):

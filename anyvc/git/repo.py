@@ -77,7 +77,7 @@ class GitCommitBuilder(CommitBuilder):
 
         r = self.repo.repo
         store = r.object_store
-        names = sorted(self.files)
+        names = sorted(self.contents)
         nametree = defaultdict(list)
         for name in names:
             base = name.strip('/')
@@ -100,11 +100,11 @@ class GitCommitBuilder(CommitBuilder):
             del tree[src]
 
 
-        for n in names:
+        for name in names:
             blob = Blob()
-            blob.data = self.files[n].getvalue()
+            blob.data = self.contents[name]
             store.add_object(blob)
-            tree.add(0555, os.path.basename(n), blob.id)
+            tree.add(0555, os.path.basename(name), blob.id)
         store.add_object(tree)
 
         commit = Commit()

@@ -99,14 +99,16 @@ class SvnCommitBuilder(CommitBuilder):
             file.close()
             root.delete_entry(src)
 
-        for file in self.files:
+        for file in self.contents:
             try:
                 svnfile = root.add_file(file)
             except:
                 svnfile = root.open_file(file)
             txhandler = svnfile.apply_textdelta()
+            from StringIO import StringIO
+            f = StringIO(self.contents[file])
             delta.send_stream(
-                    self.files[file],
+                    f,
                     txhandler)
             svnfile.close()
         root.close()

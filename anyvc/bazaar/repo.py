@@ -90,12 +90,11 @@ class BazaarCommitBuilder(CommitBuilder):
         if tree.path2id('') is None:
             tree.add('')
 
-        for file in self.files:
-            print file
-            if not tree.path2id(file):
-                tree.add(file)
-            id = tree.path2id(file)
-            tree.put_file_bytes_non_atomic(id, self.files[file].getvalue())
+        for name, content in self.contents.items():
+            if not tree.path2id(name):
+                tree.add(name)
+            id = tree.path2id(name)
+            tree.put_file_bytes_non_atomic(id, content)
 
         for old, new in self.renames:
             print old, '->', new
