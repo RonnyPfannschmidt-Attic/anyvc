@@ -80,7 +80,7 @@ class Bazaar(WorkDirWithParser):
 
         # paths -> renamed
         source, target = paths
-        result_path = target or source
+        result_path = target if isinstance(target, unicode) else source
 
         # versioned add/remove
         old, new = versioned
