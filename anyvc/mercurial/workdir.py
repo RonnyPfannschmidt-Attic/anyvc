@@ -99,24 +99,22 @@ class Mercurial(WorkDir):
         self.ui = self.repo.ui
 
     def status(self, paths=(), *k, **kw):
-        recursive = kw.get('recursive')
+        glob = '**' if kw.get('recursive') else '*'
         #XXX: merce conflicts ?!
         names = (
                 'modified', 'added', 'removed',
                 'missing', 'unknown', 'ignored', 'clean',
                 )
-        # create a list of files that we are interessted in
-        if not kw.get('recursive', True):
-            subdir = self.path[len(self.base_path)+1:]
-            files = [os.path.join(subdir, x) for x in os.listdir(self.path)]
-        else:
-            files = ()
 
-        files = () #XXX kill all preselection till i get the matcher interface
+        patterns = [ os.path.join(path, glob)
+                     if os.path.isdir(path)
+                     else path
+                    for path in paths]
 
-        if files:
+
+        if patterns:
         #XXX: investigate cwd arg
-            matcher = exact(self.repo.root, self.repo.root, files)
+            matcher = exact(self.repo.root, self.repo.root, patterns)
         else:
             matcher = always(self.repo.root, self.repo.root)
         state_files = self.repo.status(
