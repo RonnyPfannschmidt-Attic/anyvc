@@ -1,7 +1,5 @@
 # copyright 2008 by Ronny Pfannschmidt
 # license lgpl2 or later
-from .helpers import for_all
-from nose.tools import assert_equal
 import py.test
 from anyvc.exc import NotFoundError
 from anyvc.metadata import get_wd_impl
