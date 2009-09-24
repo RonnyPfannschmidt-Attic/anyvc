@@ -83,16 +83,16 @@ class BazaarCommitBuilder(CommitBuilder):
 
     def __enter__(self):
         self.tree.lock_write()
+        if self.tree.path2id('') is None:
+            self.tree.add([''])
         return super(BazaarCommitBuilder, self).__enter__()
 
     def commit(self):
         tree = self.tree
-        if tree.path2id('') is None:
-            tree.add('')
 
         for name, content in self.contents.items():
             if not tree.path2id(name):
-                tree.add(name)
+                tree.add([name])
             id = tree.path2id(name)
             tree.put_file_bytes_non_atomic(id, content)
 
@@ -107,6 +107,10 @@ class BazaarCommitBuilder(CommitBuilder):
                 timestamp=self.time_unix,
                 timezone=self.time_offset,
                 )
+
+    def mkdir(self, path):
+        #XXX: sanity checks?
+        self.tree.mkdir(path)
 
     def __exit__(self, et, ev, tb):
         super(BazaarCommitBuilder, self).__exit__(et, ev, tb)
@@ -154,7 +158,6 @@ class BazaarRepository(Repository):
 
 
     def push(self, *k, **kw):
-        print "bzr push", self.branch.get_parent()
         parent = self.branch.get_parent()
         remote = Branch.open(parent)
 

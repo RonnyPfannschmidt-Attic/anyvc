@@ -49,6 +49,10 @@ class CommitBuilder(object):
     def remove(self, path):
         pass
 
+    def mkdir(self, path):
+        #XXX: only relevant for vcs's that care
+        pass
+
     def rename(self, source, dest):
         self.renames.append((source, dest))
 
@@ -70,10 +74,15 @@ class RevisionBuilderPath( object):
         self.path = path
         self.builder = builder
 
+
+    def mkdir(self):
+        self.builder.mkdir(self.path)
+
     def rename(self , new_name):
         new = self.parent().join(new_name)
         assert self.path != '/' and new_name != '/'
         self.builder.rename(self.path, new.path)
+        #XXX: shoould self.path change?
 
     def parent(self):
         return RevisionBuilderPath(self.commit, dirname(self.path), self.builder)
