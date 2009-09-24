@@ -29,22 +29,20 @@ class SubversionRevision(Revision):
         #XXX: jump over irelevant id's
         if self.id == 1:
             return []
+        #XXX: try to care about mergeinfo
         return [SubversionRevision(self.repo, self.id -1)]
 
     def file_content(self, path):
         try:
-            ra = RemoteAccess(self.repo.path)
-            import os
             target = StringIO.StringIO()
-            ra.get_file(path.lstrip('/'), target, self.id)
+            self.repo.ra.get_file(path.lstrip('/'), target, self.id)
             return target.getvalue()
         except: #XXX: bad bad
             raise IOError('%r not found'%path)
 
 
     def path_info(self, path):
-        ra = RemoteAccess(self.repo.path)
-        return ra.check_path(path, self.id)
+        return self.repo.ra.check_path(path, self.id)
 
     def exists(self, path):
         kind = self.path_info(path.lstrip('/'))
@@ -53,16 +51,14 @@ class SubversionRevision(Revision):
 
     @property
     def message(self):
-        ra = RemoteAccess(self.repo.path)
-        return ra.rev_proplist(self.id).get('svn:log')
+        return self.repo.ra.rev_proplist(self.id).get('svn:log')
 
     def get_changed_files(self):
         files = []
-        ra = RemoteAccess(self.repo.path)
         def callback(paths, rev, props, childs=None):
             #XXX: take branch path into account?
             files.extend(paths)
-        ra.get_log(
+        self.repo.ra.get_log(
             start = self.id,
             end = self.id,
             callback = callback,
@@ -70,19 +66,13 @@ class SubversionRevision(Revision):
             discover_changed_paths=True)
         return files
 
-
-
-
     @property
     def author(self):
-        ra = RemoteAccess(self.repo.path)
-        return ra.rev_proplist(self.id).get('svn:author')
-        
+        return self.repo.ra.rev_proplist(self.id).get('svn:author')
 
     @property
     def time(self):
-        ra = RemoteAccess(self.repo.path)
-        date_str = ra.rev_proplist(self.id).get('svn:date')
+        date_str = self.repo.ra.rev_proplist(self.id).get('svn:date')
         timestamp = time_from_cstring(date_str)
         #XXX: subertpy uses a magic factor of 1000000
         return datetime.fromtimestamp(float(timestamp)/1000000)
