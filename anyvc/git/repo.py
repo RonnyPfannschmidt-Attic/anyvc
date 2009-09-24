@@ -59,6 +59,13 @@ class GitRevision(Revision):
         except KeyError:
             raise IOError('%r not found'%path)
 
+    def exists(self, path):
+        try:
+            self.resolve(path)
+            return True
+        except KeyError:
+            return False
+
     def get_changed_files(self):
         new = self.commit.tree
         if self.parents:
@@ -81,6 +88,7 @@ class GitCommitBuilder(CommitBuilder):
 
         r = self.repo.repo
         store = r.object_store
+        new_objects = []
         names = sorted(self.contents)
         nametree = defaultdict(list)
         for name in names:
@@ -107,10 +115,9 @@ class GitCommitBuilder(CommitBuilder):
         for name in names:
             blob = Blob()
             blob.data = self.contents[name]
-            store.add_object(blob)
+            new_objects.append((blob, name))
             tree.add(0555, os.path.basename(name), blob.id)
-        store.add_object(tree)
-
+        new_objects.append((tree, ''))
         commit = Commit()
         if self.base_commit:
             commit.parents = [self.base_commit.commit.id]
@@ -122,7 +129,8 @@ class GitCommitBuilder(CommitBuilder):
         commit.author = self.author
         commit.author_time = int(self.time_unix)
         commit.author_timezone = self.time_offset
-        store.add_object(commit)
+        new_objects.append((commit, ''))
+        store.add_objects(new_objects)
         self.repo.repo.refs['HEAD'] = commit.id
 
 class GitRepository(Repository):
