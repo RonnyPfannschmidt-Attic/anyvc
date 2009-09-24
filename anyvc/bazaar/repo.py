@@ -75,6 +75,11 @@ class BazaarRevision(Revision):
         finally:
             tree.unlock()
 
+    def exists(self, path):
+        tree = self.repo.branch.repository.revision_tree(self.bzrrev.revision_id)
+        return tree.path2id(path) is not None
+
+
 
 class BazaarCommitBuilder(CommitBuilder):
     def __init__(self, *k, **kw):

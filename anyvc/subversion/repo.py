@@ -6,6 +6,7 @@
 """
 import sys
 
+import subvertpy
 from subvertpy import repos, delta
 from subvertpy.ra import RemoteAccess, Auth, get_username_provider, SubversionException
 from anyvc.common.repository import Repository, Revision, join
@@ -21,7 +22,7 @@ from datetime import datetime
 class SubversionRevision(Revision):
     def __init__(self, repo, id):
         #XXX: branch subdirs
-        self.repo, self.id = repo, id
+         self.repo, self.id = repo, id
 
     @property
     def parents(self):
@@ -39,6 +40,16 @@ class SubversionRevision(Revision):
             return target.getvalue()
         except: #XXX: bad bad
             raise IOError('%r not found'%path)
+
+
+    def path_info(self, path):
+        ra = RemoteAccess(self.repo.path)
+        return ra.check_path(path, self.id)
+
+    def exists(self, path):
+        kind = self.path_info(path.lstrip('/'))
+        return kind in (subvertpy.NODE_FILE, subvertpy.NODE_DIR)
+
 
     @property
     def message(self):

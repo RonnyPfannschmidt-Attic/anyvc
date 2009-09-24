@@ -50,6 +50,19 @@ class MercurialRevision(Revision):
     def get_changed_files(self):
         return self.rev.files()
 
+    def isdir(self, path):
+        entries = list(self.rev)
+        if path[-1]!='/':
+            path+='/'
+        from bisect import bisect_right
+        entry = entries[bisect_right(entries, path)]
+        return path!=entry and path.startswith(entry)
+
+    def isfile(self, path):
+        return path in self.rev
+
+    def exists(self, path):
+        return self.isfile(path) or self.isdir(path)
 
 class MercurialCommitBuilder(CommitBuilder):
     def commit(self):
@@ -78,7 +91,7 @@ class MercurialCommitBuilder(CommitBuilder):
 
             return context.memfilectx(path, data, islink, isexec, copyed)
 
-        rn = dict(self.renames)
+        rn = dict((k, v) for k, v in self.renames if self.base_commit.exists(k))
         rrn = dict(reversed(x) for x in self.renames)
         #XXX: directory renames
 

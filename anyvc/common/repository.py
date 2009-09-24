@@ -34,15 +34,16 @@ class MemoryFile(StringIO):
 
 class Revision(object):
 
-    def get_parent_diff(self):
+    def get_parent_diff(self): 
         from anyvc.diff import diff_for_commit
         return diff_for_commit(self)
 
-    def __enter__(self):
+    def __enter__(self): 
        return RevisionView(self, '/')
 
-    def __exit__(self, et, ev, tb):
+    def __exit__(self, et, ev , tb):
         pass
+
 
 class RevisionView(object):
     def __init__(self, revision, path):
@@ -59,26 +60,14 @@ class RevisionView(object):
         return MemoryFile(self.read(), self.path)
 
     def isdir(self):
-        #XXX: sucks
-        try:
-            self.listdir()
-            return True
-        except (IOError, OSError):
-            return False
+        self.revision.isdir(self.path)
 
     def isfile(self):
-        #XXX: sucks
-        try:
-            self.open()
-            return True
-        except (IOError, OSError): #XXX: smarter
-            return False
+        return self.revisions.isfile(self.path)
 
     def exists(self):
-        #XXX: sucks
-        return self.isdir() or self.isfile()
+        return self.revision.exists(self.path)
 
-    exists = isfile #XXX: nasty hack, fix later
 
 
 class Repository(object):
