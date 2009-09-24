@@ -136,18 +136,16 @@ class SubversionRepository(Repository):
             repos.create(path)
         self.path = "file://"+path
         try:
-            RemoteAccess(self.path)
+            self.ra = RemoteAccess(self.path)
         except SubversionException:
             raise NotFoundError('subversion', self.path)
 
     def __len__(self):
-        ra = RemoteAccess(self.path)
-        return ra.get_latest_revnum()
+        return self.ra.get_latest_revnum()
 
     def get_default_head(self):
-        #XXX: correct paths !!!
-        ra = RemoteAccess(self.path)
-        last = ra.get_latest_revnum()
+        #XXX: correct paths !!!, grab trunk
+        last = len(self)
         if last == 0:
             return
         return SubversionRevision(self, last)
