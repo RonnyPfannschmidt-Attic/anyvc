@@ -44,13 +44,17 @@ class GitRevision(Revision):
     def message(self):
         return self.commit.message.rstrip()
 
+
+    def resolve(self, path):
+        repo = self.repo.repo
+        tree = repo[self.commit.tree]
+        #XXX: highly incorrect, should walk and check the type
+        return repo[tree[path.lstrip('/')][1]]
+
     def file_content(self, path):
         try:
-            repo = self.repo.repo
-            tree = repo[self.commit.tree]
             #XXX: highly incorrect, should walk and check the type
-            blob =repo[tree[path.lstrip('/')][1]]
-
+            blob = self.resolve(path)
             return blob.data
         except KeyError:
             raise IOError('%r not found'%path)
