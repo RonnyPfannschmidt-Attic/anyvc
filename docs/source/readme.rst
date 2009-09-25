@@ -18,3 +18,9 @@ To easy_install the latest tip using::
 
 The link is http://bitbucket.org/RonnyPfannschmidt/anyvc/get/tip.zip#egg=anyvc-dev
 
+Dependencies
+~~~~~~~~~~~~~~
+:mercurial: mercurial>=1.2
+:subversion: subvertpy
+:git: dulwich
+:bazaar: bzr>=1.16

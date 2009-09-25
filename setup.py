@@ -42,11 +42,7 @@ setup(
     name = 'anyvc',
     packages = [
         'anyvc',
-
-        # base apis
         'anyvc.common',
-
-        # subprocess and remote invocation
         'anyvc.remote',
 
         # backends
@@ -54,6 +50,14 @@ setup(
         'anyvc.git',
         'anyvc.subversion',
         'anyvc.bazaar',
+    ],
+
+    requires=[
+        #XXX: optional deps?!
+        'mercurial',
+        'bazaar',
+        'subvertpy',
+        'dulwich',
     ],
     scripts = ['bin/vc'],
 
