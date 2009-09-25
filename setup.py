@@ -44,7 +44,6 @@ setup(
         'anyvc',
 
         # base apis
-        'anyvc.workdir',
         'anyvc.common',
 
         # subprocess and remote invocation
