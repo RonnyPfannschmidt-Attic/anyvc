@@ -12,7 +12,7 @@ from subvertpy.ra import RemoteAccess, Auth, get_username_provider, SubversionEx
 from anyvc.common.repository import Repository, Revision, join
 from anyvc.common.commit_builder import CommitBuilder
 from subvertpy.properties import time_from_cstring, time_to_cstring
-import StringIO
+from StringIO import StringIO
 from ..exc import NotFoundError
 
 
@@ -26,15 +26,15 @@ class SubversionRevision(Revision):
 
     @property
     def parents(self):
-        #XXX: jump over irelevant id's
-        if self.id == 1:
+        #XXX: ignore irelevant revisions (no local change)
+        #XXX: use mergeinfo to figure additional parents
+        if self.id == 1: # rev 0 is the repo creation
             return []
-        #XXX: try to care about mergeinfo
         return [SubversionRevision(self.repo, self.id -1)]
 
     def file_content(self, path):
         try:
-            target = StringIO.StringIO()
+            target = StringIO()
             self.repo.ra.get_file(path.lstrip('/'), target, self.id)
             return target.getvalue()
         except: #XXX: bad bad
@@ -48,10 +48,12 @@ class SubversionRevision(Revision):
         kind = self.path_info(path.lstrip('/'))
         return kind in (subvertpy.NODE_FILE, subvertpy.NODE_DIR)
 
+    def prop(self, name):
+        return self.repo.ra.rev_proplist(self.id).get(name)
 
     @property
     def message(self):
-        return self.repo.ra.rev_proplist(self.id).get('svn:log')
+        return self.prop('svn:log')
 
     def get_changed_files(self):
         files = []
@@ -68,11 +70,11 @@ class SubversionRevision(Revision):
 
     @property
     def author(self):
-        return self.repo.ra.rev_proplist(self.id).get('svn:author')
+        return self.prop('svn:author')
 
     @property
     def time(self):
-        date_str = self.repo.ra.rev_proplist(self.id).get('svn:date')
+        date_str = self.prop('svn:date')
         timestamp = time_from_cstring(date_str)
         #XXX: subertpy uses a magic factor of 1000000
         return datetime.fromtimestamp(float(timestamp)/1000000)
@@ -106,11 +108,8 @@ class SvnCommitBuilder(CommitBuilder):
             except:
                 svnfile = root.open_file(file)
             txhandler = svnfile.apply_textdelta()
-            from StringIO import StringIO
             f = StringIO(self.contents[file])
-            delta.send_stream(
-                    f,
-                    txhandler)
+            delta.send_stream(f, txhandler)
             svnfile.close()
         root.close()
         editor.close()
