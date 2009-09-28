@@ -52,6 +52,9 @@ class RepositoryHandler(RemoteHandler):
     def commit_diff(self, id):
         return self.repo[id].get_parent_diff()
 
+    def commit_exists(self, id, path):
+        return self.repo[id].exists(path)
+
     def commit_file_content(self, id, path):
         try:
             return self.repo[id].file_content(path)

@@ -28,6 +28,9 @@ class RemoteCommit(object):
     def get_parent_diff(self):
         return self.repo.commit_diff(self.id)
 
+    def exists(self, path):
+        return self.repo.commit_exists(self.id, path)
+
     def file_content(self, path):
         data = self.repo.commit_file_content(self.id, path)
         if data is None:
