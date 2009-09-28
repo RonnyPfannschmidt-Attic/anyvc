@@ -15,3 +15,5 @@ def test_cached_property():
 
     assert t.prop == 0
     assert t.prop == 0
+    del t.prop
+    assert t.prop == 1
