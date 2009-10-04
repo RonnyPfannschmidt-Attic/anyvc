@@ -58,6 +58,7 @@ setup(
         'bazaar',
         'subvertpy',
         'dulwich',
+        'execnet',
     ],
     scripts = ['bin/vc'],
 

@@ -10,7 +10,7 @@
     :copyright: 2009 by Ronny Pfannschmidt
 
 """
-from py.execnet import makegateway
+from execnet import makegateway
 from os.path import join
 
 from anyvc.exc import NotFoundError
