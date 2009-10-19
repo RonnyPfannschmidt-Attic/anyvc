@@ -9,12 +9,11 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(id=backend, funcargs={'backend': backend})
 
 def test_end_popen_backend(backend):
-    backend = RemoteBackend('popen', backend)
+    backend = RemoteBackend(backend, backends[backend], 'popen')
     assert backend.active
     backend.stop()
     assert not backend.active
 
 def test_missing_backend_failure(monkeypatch):
-    monkeypatch.setitem(backends, 'testvc', '_missing_._module_')
     print backends
-    py.test.raises(ImportError, RemoteBackend, 'popen', 'testvc')
+    py.test.raises(ImportError, RemoteBackend, 'testvc', '_missing_', 'popen')

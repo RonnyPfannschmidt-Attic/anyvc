@@ -52,14 +52,15 @@ def get_backends(use=backends):
 
 
 def get_backend(vcs, use_remote=False):
+    module = backends[vcs]
+    if use_remote is True:
+        use_remote = 'popen'
     if use_remote:
-        if use_remote is True:
-            use_remote = 'popen'
         from anyvc.remote import RemoteBackend
-        return RemoteBackend(use_remote, vcs)
+        return RemoteBackend(vcs, module, use_remote)
     else:
         from anyvc.backend import Backend
-        return Backend(vcs, backends[vcs])
+        return Backend(vcs, module)
 
 def get_wd_impl(vcs):
     return get_backend(vcs).Workdir

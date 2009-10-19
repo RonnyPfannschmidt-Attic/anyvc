@@ -109,7 +109,7 @@ class RemoteTransaction(RemoteCaller):
 
 
 class RemoteBackend(object):
-    def __init__(self, spec, backend):
+    def __init__(self, backend, module, spec):
         self.spec = spec
         self.backend = backend
         self.gateway = makegateway(spec)
@@ -117,7 +117,6 @@ class RemoteBackend(object):
             from anyvc.remote.slave import start_controller
             start_controller(channel)
         """)
-        module = backends[backend]
         channel.send(backend)
         channel.send(module)
         self._channel = channel.receive()
