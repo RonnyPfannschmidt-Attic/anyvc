@@ -58,7 +58,8 @@ def get_backend(vcs, use_remote=False):
         from anyvc.remote import RemoteBackend
         return RemoteBackend(use_remote, vcs)
     else:
-        return __import__(backends[vcs], fromlist=['*'])
+        from anyvc.backend import Backend
+        return Backend(vcs, backends[vcs])
 
 def get_wd_impl(vcs):
     return get_backend(vcs).Workdir

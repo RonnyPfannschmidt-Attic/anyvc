@@ -118,6 +118,7 @@ class RemoteBackend(object):
             start_controller(channel)
         """)
         module = backends[backend]
+        channel.send(backend)
         channel.send(module)
         self._channel = channel.receive()
         if self._channel is None:

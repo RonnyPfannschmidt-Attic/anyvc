@@ -1,12 +1,11 @@
-from anyvc.metadata import get_backend
-
-
+from anyvc.backend import Backend
 from anyvc.remote.object import RemoteHandler
 
 def start_controller(channel):
+    vcs = channel.receive()
     backend_module = channel.receive()
     try:
-        backend = __import__(backend_module, fromlist=['*'])
+        backend = Backend(vcs, backend_module)
     except ImportError:
         channel.send(None) # magic value for 'i dont have it'
         return
