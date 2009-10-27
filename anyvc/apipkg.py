@@ -11,12 +11,14 @@ from types import ModuleType
 __version__ = "1.0b1"
 
 def initpkg(pkgname, exportdefs):
-    """ initialize given package from the export definitions. """
-    pkgmodule = sys.modules[pkgname]
+    """ initialize given package from the export definitions.
+        replace it in sys.modules
+    """
     mod = ApiModule(pkgname, exportdefs)
-    for name, value in mod.__dict__.items():
-         if name[:2] != "__" or name == "__all__":
-            setattr(pkgmodule, name, value)
+    mod.__replaced__ = sys.modules.get(pkgname)
+    if mod.__replaced__ is not None:
+        mod.__path__ = mod.__replaced__.__path__
+    sys.modules[pkgname]  = mod
 
 def importobj(importspec):
     """ return object specified by importspec."""
@@ -29,26 +31,24 @@ class ApiModule(ModuleType):
         self.__name__ = name
         self.__all__ = list(importspec)
         self.__map__ = {}
-        if parent:
-            fullname = parent.__fullname__ + "." + name
-            setattr(parent, name, self)
-        else:
-            fullname = name
-        self.__fullname__ = fullname
         for name, importspec in importspec.items():
             if isinstance(importspec, dict):
-                apimod = ApiModule(name, importspec, parent=self)
-                sys.modules[apimod.__fullname__] = apimod
+                package = '%s.%s'%(self.__name__, name)
+                apimod = ApiModule(package, importspec, parent=self)
+                sys.modules[package] = apimod
+                setattr(self, name, apimod)
             else:
                 if not importspec.count(":") == 1:
                     raise ValueError("invalid importspec %r" % (importspec,))
                 if name == '__doc__':
                     self.__doc__ = importobj(importspec)
                 else:
+                    if importspec[0] == '.':
+                        importspec = self.__name__ + importspec
                     self.__map__[name] = importspec
 
     def __repr__(self):
-        return '<ApiModule %r>' % (self.__fullname__,)
+        return '<ApiModule %r>' % (self.__name__,)
 
     def __getattr__(self, name):
         try:
