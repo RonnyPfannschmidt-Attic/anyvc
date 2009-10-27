@@ -2,7 +2,10 @@
 from __future__ import with_statement
 import os, sys
 from commands import getoutput
-from distutils.core import setup
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
 import time
 
 def read_readme():
