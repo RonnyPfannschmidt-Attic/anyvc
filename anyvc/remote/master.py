@@ -19,6 +19,8 @@ from .object import RemoteCaller
 from anyvc.common.commit_builder import CommitBuilder, FileBuilder, RevisionBuilderPath
 from anyvc.common.repository import MemoryFile
 from anyvc.metadata import backends
+import time
+import datetime
 
 class RemoteCommit(object):
     def __init__(self, repo, id):
@@ -56,7 +58,7 @@ class RemoteCommit(object):
 
     @cachedproperty
     def time(self):
-        return self.repo.commit_time(self.id)
+        return datetime.datetime.fromtimestamp(self.repo.commit_time(self.id))
 
     def __exit__(self, et, ev, tb):
         pass
@@ -72,6 +74,10 @@ class RemoteRepository(RemoteCaller):
         return self.get_commit(id)
 
     def transaction(self, *k, **kw):
+        t = kw.get('time')
+        if isinstance(t, datetime.datetime): #XXX: fragile
+            t = time.mktime(t.timetuple())
+            kw['time'] = t
         channel = self._call_remote('transaction', *k, **kw)
         return RemoteTransaction(channel)
 

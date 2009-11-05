@@ -25,11 +25,11 @@ class TestChannel(object):
         return hasattr(self, 'next')
 
     def send(self, val):
+        print val
         self.next = val
 
     def receive(self):
         result = self.next
-        print pickle.loads(result)
         del self.next #XXX: crude hack
         return result
 

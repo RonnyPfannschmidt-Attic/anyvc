@@ -1,5 +1,7 @@
 from anyvc.backend import Backend
 from anyvc.remote.object import RemoteHandler
+import time
+import datetime
 
 def start_controller(channel):
     vcs = channel.receive()
@@ -64,7 +66,7 @@ class RepositoryHandler(RemoteHandler):
         return [p.id for p in self.repo[id].parents]
 
     def commit_time(self, id):
-        return self.repo[id].time
+        return time.mktime(self.repo[id].time.timetuple())
 
     def commit_author(self, id):
         return self.repo[id].author
@@ -76,6 +78,9 @@ class RepositoryHandler(RemoteHandler):
         return len(self.repo)
 
     def transaction(self, **kw):
+        time = kw.get('time')
+        if time is not None:
+            kw['time'] = datetime.datetime.fromtimestamp(time)
         transaction = self.repo.transaction(**kw)
         channel = self.newchannel()
         TransactionHandler(channel, transaction, self.repo)
