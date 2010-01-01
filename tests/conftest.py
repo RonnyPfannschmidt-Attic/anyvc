@@ -33,5 +33,6 @@ def pytest_funcarg__mgr(request):
     r = spec or 'local'
     vcdir = request.config.ensuretemp('%s_%s'%(vc, r) )
     testdir = vcdir.mkdir(request.function.__name__)
-    return VcsMan(vc, testdir, spec, request.getfuncargvalue('backend'))
+    backend = request.getfuncargvalue('backend')
+    return VcsMan(vc, testdir, spec, backend)
 
