@@ -46,6 +46,15 @@ class CommitBuilder(object):
     def write(self, path, content):
         self.contents[path] = content
 
+    def read(self, path):
+        if path in self.contents:
+            return self.contens[path]
+        for source, dest in sorted(self.renames, reverse=True):
+            if path.startswith(dest):
+                path = path.replace(dest, source) #XXX: incorrect, 
+        return self.base_commit.file_content(path)
+
+
     def remove(self, path):
         pass
 
@@ -55,6 +64,10 @@ class CommitBuilder(object):
 
     def rename(self, source, dest):
         self.renames.append((source, dest))
+        for name, content in self.contents.items():
+            if name.startswith(source): #XXX: incorrect
+                self.contents[name.replace(source, dest)] = content
+                del self.contents[name]
 
 
     def commit(self):
@@ -100,6 +113,16 @@ class RevisionBuilderPath( object):
 
     def write(self, data):
         self.builder.write(self.path, data)
+
+    def read(self):
+        return self.builder.read(self.path)
+
+    def check(self):
+        try:
+            self.read() #XXX: less expensive?
+            return True
+        except IOError:
+            return False
 
 
 class FileBuilder(MemoryFile):
