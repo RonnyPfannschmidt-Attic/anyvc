@@ -51,7 +51,38 @@ class WorkDir(object):
     """
 
     def __init__(self, path, create=False, source=None):
-        self.path = path
+        self.path = os.path.normpath( os.path.abspath(path) )
+        if create:
+            if source:
+                self.create_from(source)
+            else:
+                assert create and source
+        self.base_path = self.find_basepath(self.path)
+        if self.base_path is None:
+            raise NotFoundError(self.__class__,self.path)
+
+    @classmethod
+    def find_basepath(cls, act_path):
+        detected_path = None
+        detected_sd = None
+        op = None
+        ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
+        while act_path != op:
+            if os.path.exists( os.path.join(act_path, cls.detect_subdir)):
+                if act_path in ignored_path:
+                    return None
+                detected_path = act_path
+                # continue cause some vcs's
+                # got the subdir in every path
+            op = act_path
+            act_path = os.path.dirname(act_path)
+        return detected_path
+
+    def process_paths(self, paths):
+        """
+        process paths for vcs's usefull for "relpath-bitches"
+        """
+        return list(paths)
 
     def status(self, paths=(), recursive=True):
         """
@@ -210,41 +241,9 @@ class CommandBased(WorkDirWithParser):
     """
     #TODO: set up the missing actions
 
-    def __init__(self, path, create=False, source=None):
-        self.path = os.path.normpath( os.path.abspath(path) )
-        if create:
-            if source:
-                self.create_from(source)
-            else:
-                assert create and source
-        self.base_path = self.find_basepath(self.path)
-        if self.base_path is None:
-            raise NotFoundError(self.__class__,self.path)
 
 
 
-    @classmethod
-    def find_basepath(cls, act_path):
-        detected_path = None
-        detected_sd = None
-        op = None
-        ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
-        while act_path != op:
-            if os.path.exists( os.path.join(act_path, cls.detect_subdir)):
-                if act_path in ignored_path:
-                    return None
-                detected_path = act_path
-                # continue cause some vcs's
-                # got the subdir in every path
-            op = act_path
-            act_path = os.path.dirname(act_path)
-        return detected_path
-
-    def process_paths(self, paths):
-        """
-        process paths for vcs's usefull for "relpath-bitches"
-        """
-        return list(paths)
 
     def execute_command(self, args, result_type=str, **kw):
         if not args:
