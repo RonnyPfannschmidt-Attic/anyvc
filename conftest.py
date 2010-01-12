@@ -14,6 +14,7 @@ test_on = {
 
 def pytest_addoption(parser):
     parser.addoption("--local-remoting", action="store_true", default=False)
+    parser.addoption("--vcs", action='store', default=None)
 
 def pytest_configure(config):
     if not config.getvalue('local_remoting'):
@@ -21,12 +22,22 @@ def pytest_configure(config):
             if '/' in key:
                 del test_on[key]
 
+    vcs = config.getvalue('vcs')
+    if vcs not in metadata.backends:
+        if vcs in metadata.aliases:
+            vcs = metadata.aliases[vcs]
+            config.option.vcs = vcs
+        else:
+            raise KeyError(vcs, 'not found')
+
 def pytest_generate_tests(metafunc):
     if 'mgr' not in metafunc.funcargnames:
         return
     for name in metadata.backends:
+        wanted = metafunc.config.getvalue('vcs')
+        if wanted is not None and name!=wanted:
+            continue
         for id, spec in test_on.items():
-            print repr(id), repr(name)
             metafunc.addcall(id=id%name, param=(name, spec))
 
 
