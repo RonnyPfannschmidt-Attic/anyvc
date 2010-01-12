@@ -23,6 +23,8 @@ def pytest_configure(config):
                 del test_on[key]
 
     vcs = config.getvalue('vcs')
+    if vcs is None:
+        return
     if vcs not in metadata.backends:
         if vcs in metadata.aliases:
             vcs = metadata.aliases[vcs]
