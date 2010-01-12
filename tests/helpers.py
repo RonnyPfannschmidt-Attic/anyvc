@@ -86,29 +86,32 @@ class WdWrap(object):
         if exact is true, additional states are ignored
         returns true if all supplied files have the asumed state
         """
+        __tracebackhide__ = True
         print mapping
         used = set()
         all = set()
         infos = list(self.status())
+        print infos
         for info in infos:
             all.add(info.relpath)
+            print info
             assert info.state in state_descriptions
             if info.relpath in mapping:
                 expected = mapping[info.relpath]
-                assert info.state==expected, "%s %s<>%s"%(
+                assert info.state==expected, "%s wanted %s but got %s"%(
                         info.relpath,
-                        info.state,
                         expected,
+                        info.state,
                         )
                 used.add(info.relpath)
 
+        untested = set(mapping) - used
 
-        if exact:
-            print infos
-            print 'all:', all
-            print 'used:', used
-            print 'missing?:', all - used
-            assert len(mapping) == len(used), 'not all excepted stated occured'
+        print 'all:', sorted(all)
+        print 'used:', sorted(used)
+        print 'missing?:', sorted(all - used)
+        print 'untested:', sorted(untested)
+        assert not untested , 'not all excepted stated occured'
 
 
 
