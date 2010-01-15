@@ -2,7 +2,7 @@ import os
 
 from anyvc.common.workdir import CommandBased, relative_to, WorkDirWithParser
 from subprocess import call
-from subvertpy import client, wc, ra
+from subvertpy import client, wc, ra, NODE_DIR
 
 from subvertpy.ra import RemoteAccess, Auth, get_username_provider, SubversionException
 
@@ -61,8 +61,12 @@ class SubVersionC(CommandBased):
         #TODO: handle paths with whitespace if ppl fall in that one
         return self.state_map[state], file
 
+
+
+
+
 class Subversion(WorkDirWithParser):
-    detect_subdir= '.svn/props'
+    detect_subdir= '.svn/entries'
     repository = None # no local repo
 
     def create_from(self, source):
@@ -86,8 +90,12 @@ class Subversion(WorkDirWithParser):
                 write_lock=True,
                 associated=None)
         for path in paths:
-            path = os.path.join(self.path, path)
-            w.add(path=path)
+            segments = path.split(os.path.sep)
+            p = self.path
+            for segment in segments:
+                p = os.path.join(p, segment)
+                print p, w.add(path=p)
+
         w.close()
 
     def commit(self, paths=None, message=None, user=None):
@@ -98,29 +106,35 @@ class Subversion(WorkDirWithParser):
         c = client.Client(auth=Auth([get_username_provider()]))
 
         def m(items):
+            print items
+            print message
             return message #XXX: encoding
+        c.log_msg_func = m
         c.commit(targets=targets, recurse=True)
 
-    def diff(self, *k, **kw):
-        #XXX bad hack
-        #XXX i was too lazy here
-        return SubVersionC(self.base_path).diff(*k, **kw)
-
-    def status_impl(self,paths=(), recursive=True):
-        #XXX:recurse!!!
-        w = wc.WorkingCopy(None, self.path)
+    def walk_status(self, parent, basename):
+        basepath = os.path.join(self.path, basename)
+        w = wc.WorkingCopy(parent, basepath)
         e = w.entries_read(True)
         print e.keys()
         for name, entry in e.items():
             if not name: #ignore root for now
                 continue 
-            yield name, entry
-        others = os.listdir(self.path)
+            yield os.path.join(basename, name), entry
+            if entry.kind == NODE_DIR:
+                for item in self.walk_status(w, os.path.join(basename, name)):
+                    yield item
+        others = os.listdir(basepath)
+
         for item in others:
-            if item=='.svn':
+            if item=='.svn' or item in e:
                 continue
             print item
-            yield item, None #unknown
+            yield os.path.join(basename, item), None #unknown
+
+
+    def status_impl(self,paths=(), recursive=True):
+        return self.walk_status(None, '') #xxx: set limits?
 
     def parse_status_item(self, item, cache):
         name, e = item
@@ -130,9 +144,41 @@ class Subversion(WorkDirWithParser):
         map = {
             wc.SCHEDULE_ADD: 'added',
             wc.SCHEDULE_DELETE: 'removed',
-            wc.SCHEDULE_NORMAL: 'normal',
+            wc.SCHEDULE_NORMAL: 'clean',
         }
+        state = map[e.schedule]
         full_path = os.path.join(self.base_path, name)
-        if not os.path.exists(full_path):
+        if not os.path.exists(full_path) and state!='removed':
             return 'missing', name
-        return map[e.schedule], name
+        print state, name
+        if state=='clean':
+            import hashlib
+            with open(os.path.join(self.base_path, name)) as f:
+                if hashlib.md5(f.read()).hexdigest()!=e.checksum:
+                    return 'modified', name
+
+        return state, name
+
+    
+    class pass_on_method(object):
+        #XXX: hack to use the old implementation when necessary
+        def __init__(self, name):
+            self.__name__ = name
+        def __get__(self, instance, owner):
+            if instance is None:
+                return owner
+            else:
+                return getattr(
+                        instance.SubVersionC(instance.base_path),
+                        self.__name__)
+
+    diff = pass_on_method('diff')
+    remove = pass_on_method('remove')
+    revert = pass_on_method('revert')
+    rename = pass_on_method('rename')
+
+
+#XXX: hack to deal with the dirty loader
+Subversion.SubVersionC = SubVersionC
+del SubVersionC
+
