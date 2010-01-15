@@ -111,7 +111,7 @@ class WorkDir(object):
         """
         raise NotImplementedError
 
-    def commit(self, paths=None, message=None, user=None):
+    def commit(self, paths=(), message=None, user=None):
         """
         :param path: the paths
         :param message: the commit message
@@ -139,8 +139,12 @@ class WorkDirWithParser(WorkDir):
 
     def parse_status_items(self, items, cache):
         """
-        redirect to parse_status_item
-        a more complex parser might need to overwrite
+        for each `item` in `items` invoke::
+        
+            self.parse_status_item(item, cache)
+
+        .. note::
+            a more complex parser might need to overwrite
         """
         for item in items:
             rv = self.parse_status_item(item, cache)
@@ -159,6 +163,7 @@ class WorkDirWithParser(WorkDir):
     def parse_status_item(self, item, cache):
         """
         parse a single status item
+        meant to be overridden
         """
         raise NotImplementedError
 

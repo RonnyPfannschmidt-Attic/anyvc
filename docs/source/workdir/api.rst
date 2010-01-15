@@ -1,5 +1,11 @@
 Workdir Api
 =============
 
-.. autoclass:: anyvc.workdir.bases.WorkDir
+.. currentmodule:: anyvc.common.workdir
+
+.. autoclass:: WorkDir
+  :members:
+
+.. autoclass:: WorkDirWithParser
+  :members:
 
