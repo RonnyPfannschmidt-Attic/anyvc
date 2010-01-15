@@ -180,5 +180,6 @@ class Subversion(WorkDirWithParser):
 
 #XXX: hack to deal with the dirty loader
 Subversion.SubVersionC = SubVersionC
-del SubVersionC
+#kill the new one to have anyvc work till i decide to fix it
+del Subversion
 
