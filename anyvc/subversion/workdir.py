@@ -6,7 +6,7 @@ from subvertpy import client, wc, ra, NODE_DIR
 
 from subvertpy.ra import RemoteAccess, Auth, get_username_provider, SubversionException
 
-class SubVersionC(CommandBased):
+class SubVersion(CommandBased):
     #XXX: disabled
     cmd = "svn"
     detect_subdir = ".svn/props"
@@ -65,7 +65,7 @@ class SubVersionC(CommandBased):
 
 
 
-class Subversion(WorkDirWithParser):
+class BrokenSubversion(object):  # workdir with parser
     detect_subdir= '.svn/entries'
     repository = None # no local repo
 
@@ -176,10 +176,4 @@ class Subversion(WorkDirWithParser):
     remove = pass_on_method('remove')
     revert = pass_on_method('revert')
     rename = pass_on_method('rename')
-
-
-#XXX: hack to deal with the dirty loader
-Subversion.SubVersionC = SubVersionC
-#kill the new one to have anyvc work till i decide to fix it
-del Subversion
 
