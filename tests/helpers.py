@@ -12,7 +12,6 @@ from os.path import join, dirname, exists
 from tempfile import mkdtemp
 from subprocess import call
 from shutil import rmtree
-from nose.tools import assert_equal
 from anyvc.metadata import get_backend
 from anyvc.remote import RemoteBackend
 
