@@ -21,7 +21,7 @@ if hgversion in ('1.0', '1.0.1', '1.0.2') or hgversion[0]=='0':
     raise ImportError('HG version too old, please update to a release >= 1.1')
 
 from mercurial import ui as hgui, hg, commands, util, cmdutil
-from mercurial.match import always, exact
+from mercurial.match import match, always
 
 __all__ = 'Mercurial',
 
@@ -106,17 +106,13 @@ class Mercurial(WorkDir):
                 'missing', 'unknown', 'ignored', 'clean',
                 )
 
-        patterns = [ os.path.join(path, glob)
-                     if os.path.isdir(path)
-                     else path
-                    for path in paths]
-
-
-        if patterns:
+        if paths:
         #XXX: investigate cwd arg
-            matcher = exact(self.repo.root, self.repo.root, patterns)
+            matcher = match(self.repo.root, self.repo.root, paths,
+                    default='relpath')
         else:
             matcher = always(self.repo.root, self.repo.root)
+
         state_files = self.repo.status(
             match=matcher,
             ignored=True,

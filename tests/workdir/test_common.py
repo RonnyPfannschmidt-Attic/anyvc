@@ -107,7 +107,29 @@ def test_diff_all(mgr):
 def test_file_missing(mgr):
     wd = initial(mgr, commit=True)
     wd.delete_files('test.py')
-    wd.check_states({'test.py':'missing'})
+    wd.check_states({'test.py': 'missing'})
+
+
+def test_status_subdir_only(mgr):
+    wd = initial(mgr, commit=True)
+    wd.put_files({
+        'subdir/a.py':'foo\n',
+        })
+    wd.add(paths=['subdir/a.py'])
+    wd.check_states({'subdir/a.py': 'added'})
+
+    print wd.commit(message='add some subdir')
+
+    wd.check_states({'subdir/a.py': 'clean'})
+    import time
+    wd.put_files({
+        'subdir/a.py':'bar\nfoo\n', #XXX: different size needed for hg status
+        })
+
+    stats = list(wd.status(paths=['subdir']))
+    assert any(s.relpath == 'subdir/a.py' for s in stats)
+
+    wd.check_states({'subdir/a.py': 'modified'})
 
 
 def test_handle_not_a_workdir(mgr):
