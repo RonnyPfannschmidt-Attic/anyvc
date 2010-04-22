@@ -18,7 +18,7 @@ import sys, os
 # absolute, like shown here.
 
 cur = os.path.abspath(__file__)
-base = os.path.dirname(os.path.dirname(os.path.dirname(cur)))
+base = os.path.dirname(os.path.dirname(cur))
 sys.path.insert(0, base)
 
 # General configuration

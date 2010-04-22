@@ -9,7 +9,7 @@ except:
 import time
 
 def read_readme():
-    with open('docs/source/readme.rst') as f:
+    with open('docs/readme.rst') as f:
         return f.read()
 
 #XXX: anyvc should do that itself
