@@ -13,8 +13,9 @@ test_on = {
 }
 
 def pytest_addoption(parser):
-    parser.addoption("--local-remoting", action="store_true", default=False)
-    parser.addoption("--vcs", action='store', default=None)
+    g = parser.addgroup('anyvc')
+    g.addoption("--local-remoting", action="store_true", default=False)
+    g.addoption("--vcs", action='store', default=None)
 
 def pytest_configure(config):
     if not config.getvalue('local_remoting'):
