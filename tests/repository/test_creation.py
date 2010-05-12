@@ -7,6 +7,8 @@ def test_repo_create(mgr):
     assert len(repo) in (0,1)
 
 def test_repo_default_head(mgr):
+    if mgr.vc == 'git':
+        py.test.skip('git default head messes on clone a bare')
     repo = mgr.make_repo('repo')
     wd = mgr.make_wd('repo', 'wd')
     wd.put_files({'test.py': "import sys\nprint sys.platform" })
