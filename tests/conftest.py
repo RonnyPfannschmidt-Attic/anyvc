@@ -13,7 +13,7 @@ test_on = {
 }
 
 def pytest_addoption(parser):
-    g = parser.addgroup('anyvc')
+    g = parser.getgroup('anyvc')
     g.addoption("--local-remoting", action="store_true", default=False)
     g.addoption("--vcs", action='store', default=None)
 
