@@ -23,37 +23,6 @@ def do(*args, **kw):
     call(args, stdin=None, **kw)
 
 
-def for_all(func):
-    return func
-
-    @wraps(func)
-    def single(vc):
-        with VcsMan(vc) as man:
-            func(man)
-
-    @wraps(func)
-    def test():
-        for vc in all_known:
-            yield single, vc
-    return test
-
-def generic(func):
-    """this is a dirty little dispatcher,
-    its in place cause most stuff only half works"""
-
-    @wraps(func)
-    def wrap(self, *k, **kw):
-        spec = '%s_%s'%(func.__name__, self.vc)
-        call = getattr(self, spec, None)
-        if call is None:
-            call = getattr(self, func.__name__ + '_generic', None)
-            assert call is not None, 'cant find function %s for %r'%(
-                    func.__name__,
-                    self.vc.__name__,
-                    )
-        return func(self, call, *k, **kw)
-    return wrap
-
 class WdWrap(object):
     """wraps a vcs"""
     def __init__(self, vc, path):

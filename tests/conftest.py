@@ -31,10 +31,13 @@ def pytest_configure(config):
             vcs = metadata.aliases[vcs]
             config.option.vcs = vcs
         else:
-            raise KeyError(vcs, 'not found')
+            raise KeyError(vcs, '%r not found' % vcs)
+
+
+funcarg_names = set(['mgr', 'repo', 'wd'])
 
 def pytest_generate_tests(metafunc):
-    if 'mgr' not in metafunc.funcargnames:
+    if not funcarg_names.intersection(metafunc.funcargnames):
         return
     for name in metadata.backends:
         wanted = metafunc.config.getvalue('vcs')
