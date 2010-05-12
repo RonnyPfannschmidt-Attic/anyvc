@@ -29,8 +29,8 @@ class WdWrap(object):
         self.__path = path
         self.__vc = vc
 
-    def __getattr__(self, key):
-        return getattr(self.__vc, key)
+    def __getattr__(self, name):
+        return getattr(self.__vc, name)
 
     def bpath(self, name):
         return self.__path.join(name)
@@ -45,9 +45,9 @@ class WdWrap(object):
         assert not missing, 'missing %s'%', '.join(missing)
         return not missing
 
-    def delete_files(self, *files):
-        for file in files:
-            self.bpath(file).remove()
+    def delete_files(self, *relpaths):
+        for path in relpaths:
+            self.bpath(path).remove()
 
     def check_states(self, mapping, exact=True):
         """takes a mapping of filename-> state
