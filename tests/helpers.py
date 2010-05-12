@@ -82,8 +82,6 @@ class WdWrap(object):
         assert not untested , 'not all excepted stated occured'
 
 
-
-
 class VcsMan(object):
     """controller over a tempdir for tests"""
     def __init__(self, vc, base, xspec, backend):
@@ -98,6 +96,20 @@ class VcsMan(object):
 
     def bpath(self, name):
         return self.base.join(name)
+
+    def create_wd(self, workdir):
+        path = self.bpath(workdir)
+        try:
+            wd = self.backend.Workdir(
+                str(path),
+                create=True)
+            return WdWrap(wd, path)
+        except: # svn (might also apply for monotone/fossil)
+            repo = workdir+'-repo'
+            self.make_repo(repo)
+            return self.make_wd(repo, workdir)
+
+
 
     def make_wd(self, repo, workdir):
         path = self.bpath(workdir)

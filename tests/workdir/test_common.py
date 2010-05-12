@@ -4,20 +4,15 @@ import py.test
 from anyvc.exc import NotFoundError
 from anyvc.metadata import get_wd_impl
 
-def initial(mgr, commit=False):
-    print mgr.make_repo('repo')
-    wd = mgr.make_wd('repo', 'wd')
-    wd.put_files({
+
+has_files = py.test.mark.files({
         'test.py':'print "test"',
         })
-    assert wd.has_files('test.py')
-    if commit:
-        wd.add(paths=['test.py'])
-        wd.commit(message='*')
-    return wd
 
-def test_workdir_add(mgr):
-    wd = initial(mgr)
+commited = py.test.mark.commit
+
+@has_files
+def test_workdir_add(wd):
     wd.check_states({
         'test.py': 'unknown',
         })
@@ -34,9 +29,7 @@ def test_workdir_add(mgr):
         'test.py': 'clean',
         })
 
-def test_subdir_state_add(mgr):
-    mgr.make_repo('repo')
-    wd = mgr.make_wd('repo', 'wd')
+def test_subdir_state_add(wd):
     wd.put_files({
         'subdir/test.py':'test',
     })
@@ -45,10 +38,10 @@ def test_subdir_state_add(mgr):
     wd.check_states({'subdir/test.py': 'added'}, exact=True)
 
 
+@has_files
+@commited
+def test_workdir_remove(wd):
 
-def test_workdir_remove(mgr):
-
-    wd = initial(mgr, commit=True)
     wd.check_states({
         'test.py': 'clean',
         })
@@ -60,9 +53,10 @@ def test_workdir_remove(mgr):
 
     py.test.raises(AssertionError,wd.check_states, {'test.py': 'clean'})
 
-def test_workdir_rename(mgr):
-    wd = initial(mgr, commit=True)
 
+@has_files
+@commited
+def test_workdir_rename(wd):
     wd.rename(source='test.py', target='test2.py')
     wd.check_states({
         'test.py': 'removed',
@@ -72,9 +66,10 @@ def test_workdir_rename(mgr):
     wd.commit(message='*')
     wd.check_states({'test2.py': 'clean'})
 
-def test_workdir_revert(mgr):
-    wd = initial(mgr, commit=True)
 
+@has_files
+@commited
+def test_workdir_revert(wd):
     wd.remove(paths=['test.py'])
     wd.check_states({'test.py': 'removed'})
 
@@ -90,8 +85,9 @@ def test_workdir_revert(mgr):
     wd.revert(paths=['test.py'])
     wd.check_states({'test.py':'clean'})
 
-def test_diff_all(mgr):
-    wd = initial(mgr)
+
+@has_files
+def test_diff_all(wd):
     wd.add(paths=['test.py'])
     wd.commit(message='*')
     wd.put_files({
@@ -104,14 +100,16 @@ def test_diff_all(mgr):
     assert 'print "test"' in diff
 
 
-def test_file_missing(mgr):
-    wd = initial(mgr, commit=True)
+@has_files
+@commited
+def test_file_missing(wd):
     wd.delete_files('test.py')
     wd.check_states({'test.py': 'missing'})
 
 
-def test_status_subdir_only(mgr):
-    wd = initial(mgr, commit=True)
+@has_files
+@commited
+def test_status_subdir_only(wd):
     wd.put_files({
         'subdir/a.py':'foo\n',
         })
@@ -137,8 +135,8 @@ def test_handle_not_a_workdir(mgr):
     py.test.raises( NotFoundError, WD,  "/does/not/exist/really")
 
 
-def test_handle_instanciate_from_subdir(mgr):
-    wd = initial(mgr, commit=True)
+@has_files
+@commited
+def test_handle_instanciate_from_subdir(wd, mgr):
     WD = get_wd_impl(mgr.vc)
     test = WD(str(wd.bpath('wd/test.py')))
-

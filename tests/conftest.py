@@ -64,6 +64,19 @@ def pytest_funcarg__mgr(request):
     return VcsMan(vc, testdir, spec, backend)
 
 
+def pytest_funcarg__wd(request):
+    mgr = request.getfuncargvalue('mgr')
+    wd = mgr.create_wd('wd')
+    if hasattr(request.function, 'files'):
+        files = request.function.files.args[0]
+        wd.put_files(files)
+        assert wd.has_files(*files)
+        if  hasattr(request.function, 'commit'):
+            wd.add(paths=list(files))
+            wd.commit(message='*')
+    return wd
+
+
 def pytest_collect_directory(path, parent):
     for compiled_module in path.listdir("*.pyc"):
         if not compiled_module.new(ext=".py").check():
