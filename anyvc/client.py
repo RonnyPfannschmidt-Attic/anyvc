@@ -164,9 +164,9 @@ def do_add(vc, opts, args):
 
 
 def do_push(vc, opts, args):
-    repo = vc.get_repository()
+    repo = vc.repository
     if repo is None:
-        print >>sys.stderr, ""
+        print >>sys.stderr, "cant find local repo to push from"
 
     if not repo.local:
         #XXX: better handling
