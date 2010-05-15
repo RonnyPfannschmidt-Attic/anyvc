@@ -4,5 +4,5 @@ from anyvc.metadata import backends, get_backend
 
 def test_get_backend(mgr):
     vcs = mgr.vc
-    mod = get_backend(vcs)
-    assert mod.__name__ == backends[vcs]
+    backend = get_backend(vcs)
+    assert backend.module.__name__ == backends[vcs]
