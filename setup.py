@@ -62,7 +62,7 @@ setup(
     install_requires=[
         #XXX: optional deps?!
         'mercurial',
-        'bazaar',
+        'bzr',
         'subvertpy',
         'dulwich',
         'execnet',
