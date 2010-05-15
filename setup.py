@@ -15,7 +15,11 @@ def read_readme():
 #XXX: anyvc should do that itself
 def getversion():
     if not os.path.exists('.hg'):
-        return None # not in a repository
+        try:
+            from anyvc.__version__ import version
+            return version
+        except ImportError:
+            return None # not in a repository
     try:
         l = getoutput('hg id -it').split()
     except OSError, e:
@@ -55,7 +59,7 @@ setup(
         'anyvc.bazaar',
     ],
 
-    requires=[
+    install_requires=[
         #XXX: optional deps?!
         'mercurial',
         'bazaar',
@@ -66,7 +70,7 @@ setup(
     scripts = ['bin/vc'],
 
     description='Library to access any version control system.',
-    license='GNU LGPL2 (or later) as published by the FSF',
+    license='GNU GPL2 (or later) as published by the FSF',
     url='http://www.bitbucket.org/RonnyPfannschmidt/anyvc/',
     author='Ronny Pfannschmidt',
     author_email='Ronny.Pfannschmidt@gmx.de',
