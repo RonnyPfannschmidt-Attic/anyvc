@@ -16,15 +16,23 @@ __all__ = ["all_known", "get_workdir_manager_for_path"]
 
 from .metadata import backends, get_backend
 
-all_known = []
+def fill(listing):
+    for backend in backends:
+        try:
+            b = get_backend(backend).Workdir
+            listing.append(b)
+        except: #XXX: diaper antipattern
+            pass
 
-for backend in backends:
-    try:
-        b = get_backend(backend).Workdir
-        all_known.append(b)
-    except: #XXX: diaper antipattern
-        pass
-    
+
+class LazyAllKnown(list):
+    def __iter__(self):
+        if not self:
+            fill(self)
+        return list.__iter__(self)
+
+all_known = LazyAllKnown()
+
 def get_workdir_manager_for_path(path):
     #XXX: this has to die
     found_vcm = None
