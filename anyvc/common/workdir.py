@@ -41,6 +41,21 @@ class StatedPath(object):
     def __str__(self):
         return self.relpath
 
+def find_basepath(act_path, wanted_subdir):
+    detected_path = None
+    detected_sd = None
+    op = None
+    ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
+    while act_path != op:
+        if os.path.exists( os.path.join(act_path, wanted_subdir)):
+            if act_path in ignored_path:
+                return None
+            detected_path = act_path
+            # continue cause some vcs's
+            # got the subdir in every path
+        op = act_path
+        act_path = os.path.dirname(act_path)
+    return detected_path
 
 class WorkDir(object):
     """
@@ -57,26 +72,9 @@ class WorkDir(object):
                 self.create_from(source)
             else:
                 assert create and source
-        self.base_path = self.find_basepath(self.path)
+        self.base_path = find_basepath(self.path, self.detect_subdir)
         if self.base_path is None:
             raise NotFoundError(self.__class__,self.path)
-
-    @classmethod
-    def find_basepath(cls, act_path):
-        detected_path = None
-        detected_sd = None
-        op = None
-        ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
-        while act_path != op:
-            if os.path.exists( os.path.join(act_path, cls.detect_subdir)):
-                if act_path in ignored_path:
-                    return None
-                detected_path = act_path
-                # continue cause some vcs's
-                # got the subdir in every path
-            op = act_path
-            act_path = os.path.dirname(act_path)
-        return detected_path
 
     def process_paths(self, paths):
         """
