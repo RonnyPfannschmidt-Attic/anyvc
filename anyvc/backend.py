@@ -27,6 +27,12 @@ class Backend(object):
         except (ImportError, AttributeError):
             raise ImportError(name)
 
+    @property
+    def workdir_control(self):
+        print self.module
+        print dir(self.module)
+        return self.module.workdir_control
+
     @cachedproperty
     def Repository(self):
         return self._import(self.module.repo_class)

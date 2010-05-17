@@ -141,9 +141,8 @@ def test_handle_instanciate_from_subdir(wd, mgr):
     WD = get_wd_impl(mgr.vc)
     test = WD(str(wd.bpath('wd/test.py')))
 
-@py.test.mark.xfail
 @has_files
 @commited
 def test_workdir_open(wd):
     import anyvc
-    anyvc.workdir.open(wd.bpath())
+    anyvc.workdir.open(wd.bpath(''))
