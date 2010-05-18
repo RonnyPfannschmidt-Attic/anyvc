@@ -1,3 +1,4 @@
+import py
 
 def test_rename_simple(mgr):
     repo = mgr.make_repo('repo')
@@ -18,9 +19,8 @@ def test_rename_simple(mgr):
         assert root.join('test_renamed.txt').exists()
 
 
+@py.test.mark.xfail(reason='not implemented')
 def test_rename_directory(mgr):
-    import py
-    py.test.skip("not implemented") #XXX
     repo = mgr.make_repo('repo')
 
     with repo.transaction(message='create', author='test') as root:
