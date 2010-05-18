@@ -145,4 +145,7 @@ def test_handle_instanciate_from_subdir(wd, mgr):
 @commited
 def test_workdir_open(wd):
     import anyvc
-    anyvc.workdir.open(wd.bpath(''))
+    wd2 = anyvc.workdir.open(wd.bpath(''))
+    #XXX evil
+    assert wd._WdWrap__vc.__class__ is wd2.__class__
+
