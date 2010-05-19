@@ -29,8 +29,6 @@ class Backend(object):
 
     @property
     def workdir_control(self):
-        print self.module
-        print dir(self.module)
         return self.module.workdir_control
 
     @cachedproperty
