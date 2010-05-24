@@ -59,16 +59,19 @@ setup(
         'anyvc.bazaar',
     ],
 
-    install_requires=[
-        #XXX: optional deps?!
-        'mercurial',
-        'bzr',
-        'subvertpy',
-        'dulwich',
-        'execnet',
-    ],
-    scripts = ['bin/vc'],
+    extras_require={
+        'mercurial': ['mercurial'],
+        'bazaar': ['bzr'],
+        'git': ['dulwich'],
+        'subversion': ['subvertpy'],
+        'remoting': ['execnet'],
+    },
 
+    entry_points={
+        'console.script':[
+            'vc = anyvc.client:main',
+        ],
+    },
     description='Library to access any version control system.',
     license='GNU GPL2 (or later) as published by the FSF',
     url='http://www.bitbucket.org/RonnyPfannschmidt/anyvc/',
