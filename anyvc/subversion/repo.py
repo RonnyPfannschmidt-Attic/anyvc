@@ -123,7 +123,7 @@ class SubversionRepository(Repository):
         #XXX: correct paths
         if create:
             repos.create(path)
-        self.path = "file://"+path
+        self.path = "file://%s" % path
         try:
             self.ra = RemoteAccess(self.path)
         except SubversionException:

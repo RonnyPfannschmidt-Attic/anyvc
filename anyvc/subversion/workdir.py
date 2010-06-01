@@ -22,7 +22,7 @@ class SubVersion(CommandBased):
 
 
     def create_from(self, source):
-        call(['svn', 'co', 'file://'+source, self.path])
+        call(['svn', 'co', 'file://'+source, str(self.path)])
 
     state_map = {
             "?": 'unknown',
