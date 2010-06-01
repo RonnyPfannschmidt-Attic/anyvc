@@ -3,8 +3,8 @@ About
 ==================
 
 
-Anyvc is a library to abstract common vcs operation.
-It was born in an effort to enhance vcs operations in the pida ide.
+`Anyvc` is a library to abstract common vcs operation.
+It was born in an effort to enhance vcs operations in PIDA_.
 
 The current version is mainly tailored to working with
 the working directories of the different vcs's and
@@ -13,7 +13,7 @@ showing differences to the current commit and creating new commits.
 
 Its still in the early stages of development,
 but has already proofed its practical value
-in the version control service of Pida.
+in the version control service of PIDA_.
 
 Future versions will gradually expand the scope
 from just workdir to interacting with history
@@ -23,4 +23,4 @@ Due to the differences in the vcs's
 not all operations are available on all vcs's,
 the abstraction will degrade/warn/error in those cases.
 
-
+.. _PIDA: http://pida.co.uk

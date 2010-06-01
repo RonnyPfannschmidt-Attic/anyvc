@@ -60,8 +60,14 @@ def get_workdir_manager_for_path(path):
 
 def open(path):
     """
-    open a workdir manager for the scm that controlls the given path
-    this might be a super
+    :param path:
+        a local path to the worktree
+        preferable a `py.path.local` instance
+
+    open a scm workdir
+
+    It uses the backend metadata to find the correct backend and
+    won't import unnecessary backends to keep the import time low
     """
     path = str(path) # so we can use py.path instances
     path = os.path.normpath(path)

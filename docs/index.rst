@@ -6,12 +6,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   workdir/index.rst
-   roadmap.rst
    about.rst
-
-Anyvc is supposed to abstract differences betwen various VCS's.
-
+   workdir/index.rst
+   repository/index.rst
+   roadmap.rst
 
 
 

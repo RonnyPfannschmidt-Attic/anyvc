@@ -1,7 +1,8 @@
 Workdir Operations
 ==================
 
-
+The workdir handling is accessible as api as well as a
+rather simple pretty much feature-free cli.
 
 .. toctree::
 

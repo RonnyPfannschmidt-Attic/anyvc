@@ -1,10 +1,7 @@
 ===========
-Workdir CLI
+Workdir commandline interface
 ===========
 
 
+Intentionally left empty
 
-.. program:: status
-
-.. cmdoption:: --flat
-   
