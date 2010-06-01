@@ -133,10 +133,10 @@ class BazaarRepository(Repository):
             self.branch = workdir.wt.branch
         elif create:
             assert path, 'create needs a path'
-            self.branch = BzrDir.create_branch_convenience(path)
+            self.branch = BzrDir.create_branch_convenience(str(path))
         else:
             try:
-                self.branch, rest = Branch.open_containing(path)
+                self.branch, rest = Branch.open_containing(str(path))
             except errors.NotBranchError:
                 raise NotFoundError('bzr', path)
 

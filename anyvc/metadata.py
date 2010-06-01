@@ -40,14 +40,18 @@ backends = {
     'subversion': 'anyvc.subversion'
 }
 
-def get_backends(use=backends):
+def get_backends(limit_to=None):
     """
+    :param limit_to: optional list of backends to try, will use all if use is none
+    :type limit_to: list of string or None
+
     a generator over all known backends
     """
+    use = limit_to or backends
     for backend in use:
         try:
             yield get_backend(backend)
-        except ImportError:
+        except ImportError, e:
             pass
 
 

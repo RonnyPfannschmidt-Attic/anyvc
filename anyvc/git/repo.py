@@ -11,6 +11,7 @@ from anyvc.common.commit_builder import CommitBuilder
 from ..exc import NotFoundError
 import subprocess
 import os
+from py.path import local
 from datetime import datetime
 from collections import defaultdict
 from dulwich.repo import Repo
@@ -139,19 +140,19 @@ class GitRepository(Repository):
     def __init__(self, path=None, workdir=None, create=False, bare=False):
         assert path or workdir
         if workdir:
-            assert workdir.path
             self.path = workdir.path
         else:
-            self.path = path
+            self.path = local(path)
         if create:
             #XXX: fragile
+            
             if not os.path.exists(path):
                 os.mkdir(path)
-            self.repo = Repo.init(path)
+            self.repo = Repo.init(str(path))
         else:
-            assert os.path.exists(self.path)
+            assert self.path.check(dir=True)
             try:
-                self.repo = Repo(self.path)
+                self.repo = Repo(str(self.path))
             except NotGitRepository:
                 raise NotFoundError('git', self.path)
 

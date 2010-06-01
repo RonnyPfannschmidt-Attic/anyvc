@@ -128,7 +128,7 @@ class MercurialRepository(Repository):
 
         elif path is not None:
             try:
-                repo = localrepo.localrepository(ui.ui(), path, create=create)
+                repo = localrepo.localrepository(ui.ui(), str(path), create=create)
             except error.RepoError:
                 raise NotFoundError('mercurial', path)
 
