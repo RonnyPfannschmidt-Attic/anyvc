@@ -44,10 +44,14 @@ class StatedPath(object):
 
 def find_basepath(act_path, wanted_subdir):
     """
+    :param act_path: starting dir
+    :param wanted_subdir: the wanted existing subdir
+
+    a helper function walks the directory tree up till it finds a 
+    directory that contains `wanted_subdir`
     """
 
     act_path = local(act_path)
-    ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
     #XXX: this logic kind of fails for svn, but who cares
     for part in act_path.parts(reverse=True):
         if part.join(wanted_subdir).check(exists=1, dir=1):
@@ -74,7 +78,7 @@ class WorkDir(object):
 
     def process_paths(self, paths):
         """
-        process paths for vcs's usefull for "relpath-bitches"
+        preprocess given paths
         """
         return list(paths)
 
@@ -133,8 +137,10 @@ class WorkDirWithParser(WorkDir):
 
     def parse_status_items(self, items, cache):
         """
+        default implementation
+
         for each `item` in `items` invoke::
-        
+
             self.parse_status_item(item, cache)
 
         .. note::
@@ -235,7 +241,8 @@ def relative_to(base_path):
 
 class CommandBased(WorkDirWithParser):
     """
-    Base class for all command based rcs's
+    common code + default method implementations
+    for subprocess based vcs's
     """
     #TODO: set up the missing actions
 
@@ -332,6 +339,7 @@ class CommandBased(WorkDirWithParser):
 
     def cache_impl(self, recursive, **kw):
         """
+        implement caching by running a subprocess
         only runs caching if it knows, how
         """
         args = self.get_cache_args(**kw)
