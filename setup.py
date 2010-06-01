@@ -27,7 +27,9 @@ setup(
         'anyvc.subversion',
         'anyvc.bazaar',
     ],
-
+    install_requires=[
+        'py>=1.3',
+    ],
     extras_require={
         'mercurial': ['mercurial'],
         'bazaar': ['bzr'],

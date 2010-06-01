@@ -6,6 +6,7 @@
     :copyright: 2008 Ronny Pfannschmidt
     :license: LGPL2 or later
 """
+from py.path import local
 from os.path import join
 
 from os.path import dirname, basename, join, normpath
@@ -28,7 +29,7 @@ class StatedPath(object):
         self.base = base
         self.state = intern(state)
         if base is not None:
-            self.abspath = join(base, name)
+            self.abspath = local(base).join(name)
         else:
             self.abspath = None
 
@@ -42,20 +43,15 @@ class StatedPath(object):
         return self.relpath
 
 def find_basepath(act_path, wanted_subdir):
-    detected_path = None
-    detected_sd = None
-    op = None
+    """
+    """
+
+    act_path = local(act_path)
     ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
-    while act_path != op:
-        if os.path.exists( os.path.join(act_path, wanted_subdir)):
-            if act_path in ignored_path:
-                return None
-            detected_path = act_path
-            # continue cause some vcs's
-            # got the subdir in every path
-        op = act_path
-        act_path = os.path.dirname(act_path)
-    return detected_path
+    #XXX: this logic kind of fails for svn, but who cares
+    for part in act_path.parts(reverse=True):
+        if part.join(wanted_subdir).check(exists=1, dir=1):
+            return part
 
 class WorkDir(object):
     """
@@ -227,14 +223,13 @@ def relative_to(base_path):
         will only work on paths below the base_path
         other paths will be unchanged
     """
-    base_path = os.path.normpath(base_path)
-    l = len(base_path)
-    def process_path(path):
-
-        if path.startswith(base_path):
-            return "." + path[l:]
+    base_path = local(base_path)
+    def process_path(child_path):
+        child_path = local(child_path)
+        if child_path.relto(base_path):
+            return base_path.bestrelpath(child_path)
         else:
-            return path
+            return child_path
     return process_path
 
 
@@ -252,10 +247,10 @@ class CommandBased(WorkDirWithParser):
         if not args:
             raise ValueError('need a valid command')
         ret = Popen(
-                [self.cmd] + args,
+                [self.cmd] + [str(x) for x in args],
                 stdout=PIPE,
                 stderr=STDOUT,
-                cwd=self.base_path,
+                cwd=str(self.base_path),
                 close_fds=True,
                 env=dict(os.environ, LANG='C',LANGUAGE='C', LC_All='C'),
                 )

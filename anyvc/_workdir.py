@@ -16,7 +16,7 @@ __all__ = ["all_known", "get_workdir_manager_for_path"]
 
 from .metadata import backends, get_backend
 import os
-
+from py.path import local
 from .common.workdir import find_basepath
 
 def fill(listing):

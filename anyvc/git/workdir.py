@@ -27,14 +27,11 @@ class Git(CommandBased):
         return GitRepository(workdir=self)
 
     def create_from(self, source):
-        call(['git', 'clone', source, self.path])
+        call(['git', 'clone', source, str(self.path)])
 
 
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--no-color'] + self.process_paths(paths)
-
-    def process_paths(self, paths):
-        return map(relative_to(self.base_path), paths)
 
     def get_commit_args(self, message, paths=(), **kw):
         if paths:
