@@ -18,15 +18,21 @@ def open(path, backends=None):
             #XXX: add metadata about the worktree base, use it
             return backend.Repository(path)
         except NotFoundError, e:
-            print e
+            pass
 
-def find(start, backends=None):
-    start = local(start)
-    backend = open(start, backends=backends)
+def find(root, backends=None):
+    """
+    :param root: the search root
+    :type  root: py.path.local or path string
+
+    find all repositories below :param:`root`
+    """
+    start = local(root)
+    backend = open(root, backends=backends)
     if backend is not None:
         yield backend
     else:
-        for subdir in start.listdir(lambda p: p.check(dir=1)):
+        for subdir in root.listdir(lambda p: p.check(dir=1)):
             for item in find(subdir, backends):
                 yield item
 
