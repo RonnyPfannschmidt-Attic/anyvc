@@ -14,3 +14,7 @@ Workdir Api
 .. autoclass:: WorkDirWithParser
   :members:
 
+.. currentmodule anyvc.common.statedpath
+
+.. autoclass:: StatedPath
+  :members:

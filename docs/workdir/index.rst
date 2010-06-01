@@ -7,4 +7,3 @@ rather simple pretty much feature-free cli.
 .. toctree::
 
     api.rst
-    cli.rst

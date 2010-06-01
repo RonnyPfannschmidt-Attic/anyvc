@@ -10,6 +10,8 @@ from py.path import local
 
 def open(path, backends=None):
     """
+    :param backends: optional list of backends to try
+
     open a repository backend at the given path
     """
     from anyvc.metadata import get_backends

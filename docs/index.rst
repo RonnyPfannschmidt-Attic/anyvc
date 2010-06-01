@@ -8,7 +8,7 @@ Contents:
 
    about.rst
    workdir/index.rst
-   repository/index.rst
+   repo/index.rst
    roadmap.rst
 
 
