@@ -62,19 +62,21 @@ class WorkDir(object):
     Basic Workdir API
 
     :param path: base path
+    :param create: 
     :raises NotFoundError: missing the correct vcs control dir
     """
 
     def __init__(self, path, create=False, source=None):
-        self.path = os.path.normpath( os.path.abspath(path) )
+        self.path = local(path)
         if create:
             if source:
                 self.create_from(source)
             else:
-                assert create and source
+                self.create()
+
         self.base_path = find_basepath(self.path, self.detect_subdir)
         if self.base_path is None:
-            raise NotFoundError(self.__class__,self.path)
+            raise NotFoundError(self.__class__, self.path)
 
     def process_paths(self, paths):
         """

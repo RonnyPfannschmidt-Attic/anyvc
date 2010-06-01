@@ -56,10 +56,7 @@ def _find_repo(path):
         cur = os.path.dirname(cur)
 
 class Mercurial(WorkDir):
-
-    @staticmethod
-    def make_repo(path): #XXX: bullshit here
-        return Mercurial(path, create=True)
+    detect_subdir = '.hg'
 
     @property
     def repository(self):
@@ -71,32 +68,22 @@ class Mercurial(WorkDir):
         Get a repo for a given path.
         If `create` is true, a new repo is created.
         """
-        self.path = os.path.normpath( os.path.abspath(path) )
         try:
-            ui = hgui.ui(interactive=False, verbose=True, debug=True)
+            self.ui = hgui.ui(interactive=False, verbose=True, debug=True)
         except TypeError: # hg >= 1.3 ui
-            ui = hgui.ui()
-            ui.setconfig('ui', 'interactive', 'off')
-        ignored_path = os.environ.get('ANYVC_IGNORED_PATHS', '').split(os.pathsep)
+            self.ui = hgui.ui()
+            self.ui.setconfig('ui', 'interactive', 'off')
 
-        if create:
-            #XXX: its not yet sure if create might fail
-            self.base_path = self.path
-            if not os.path.exists(self.path):
-                os.makedirs(self.path)
-
-            if source is not None:
-                hg.clone(cmdutil.remoteui(ui, {}),
-                         source, self.path)
-                create = False
-
-        else:
-            self.base_path = _find_repo(self.path)
-        if self.base_path is None or self.base_path in ignored_path:
-            raise NotFoundError(self.__class__, path)
-
-        self.repo = hg.repository(ui, self.base_path, create=create)
+        super(Mercurial, self).__init__(path, create, source)
+        self.repo = hg.repository(self.ui, str(self.base_path))
         self.ui = self.repo.ui
+
+    def create(self):
+        hg.repository(self.ui, self.path, create=True)
+
+    def create_from(self, source):
+        hg.clone(cmdutil.remoteui(self.ui, {}),
+                source, str(self.path))
 
     def status(self, paths=(), *k, **kw):
         glob = '**' if kw.get('recursive') else '*'

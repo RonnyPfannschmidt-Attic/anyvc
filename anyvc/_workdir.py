@@ -49,7 +49,7 @@ def get_workdir_manager_for_path(path):
     found_vcm = None
     for vcm in all_known:
         try:
-            vcm_instance = vcm(path) #TODO: this shouldnt need an exception
+            vcm_instance = vcm(str(path)) #TODO: this shouldnt need an exception
             if (not found_vcm 
                 or len(vcm_instance.base_path) > len(found_vcm.base_path)):
                 found_vcm = vcm_instance
