@@ -36,27 +36,6 @@ class LazyAllKnown(list):
 
 all_known = LazyAllKnown()
 
-def get_workdir_manager_for_path(path):
-    """
-    deprecate
-    """
-    import warnings
-    warnings.warn(
-            'get_workdir_manager_for_path is outdated,'
-            'please use anyvc.workdir.open',
-            DeprecationWarning,
-            stacklevel=2)
-    found_vcm = None
-    for vcm in all_known:
-        try:
-            vcm_instance = vcm(str(path)) #TODO: this shouldnt need an exception
-            if (not found_vcm 
-                or len(vcm_instance.base_path) > len(found_vcm.base_path)):
-                found_vcm = vcm_instance
-        except ValueError:
-            pass
-    return found_vcm
-
 
 def open(path):
     """
