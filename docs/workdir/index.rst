@@ -6,4 +6,5 @@ rather simple pretty much feature-free cli.
 
 .. toctree::
 
+    api_quickstart.rst
     api.rst
