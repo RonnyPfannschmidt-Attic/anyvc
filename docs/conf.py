@@ -21,6 +21,8 @@ cur = os.path.abspath(__file__)
 base = os.path.dirname(os.path.dirname(cur))
 sys.path.insert(0, base)
 
+import hgdistver
+
 # General configuration
 # ---------------------
 
@@ -44,11 +46,16 @@ copyright = u'2008, Pida Team'
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
-# The short X.Y version.
-version = '0.2'
 # The full version, including alpha/beta/rc tags.
-release = '0.2'
 
+os.chdir(base)
+version = hgdistver.get_version()
+os.chdir(os.path.dirname(cur))
+# The short X.Y version.
+if version:
+    release = '.'.join(version.split('.')[:3])
+else:
+    release = 'unknown'
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
 #today = ''
