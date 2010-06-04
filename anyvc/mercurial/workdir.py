@@ -46,17 +46,7 @@ def grab_output(func):
     return grabber
 
 
-def _find_repo(path):
-    last = None
-    cur = path
-    while cur!=last:
-        if os.path.exists(os.path.join(cur, '.hg')):
-            return cur
-        last = cur
-        cur = os.path.dirname(cur)
-
 class Mercurial(WorkDir):
-    detect_subdir = '.hg'
 
     @property
     def repository(self):
