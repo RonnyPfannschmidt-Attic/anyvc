@@ -33,6 +33,11 @@ class Backend(object):
     def is_repository(self, path):
         return self.module.is_repository(path)
 
+
+    @cachedproperty
+    def features(self):
+        return set(self.module.features)
+
     @cachedproperty
     def Repository(self):
         return self._import(self.module.repo_class)

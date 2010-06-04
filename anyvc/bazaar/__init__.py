@@ -1,6 +1,11 @@
 workdir_class = 'anyvc.bazaar.workdir:Bazaar'
 repo_class = 'anyvc.bazaar.repo:BazaarRepository'
 
+features = [
+#XXX: make wd without that?
+#    'dvcs',
+]
+
 def is_workdir(path):
     return path.join('.bzr/checkout').check(dir=1)
 

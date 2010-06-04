@@ -99,12 +99,10 @@ class VcsMan(object):
 
     def create_wd(self, workdir):
         path = self.bpath(workdir)
-        try:
-            wd = self.backend.Workdir(
-                path,
-                create=True)
+        if 'dvcs' in self.backend.features:
+            wd = self.backend.Workdir(path, create=True)
             return WdWrap(wd, path)
-        except: # svn (might also apply for monotone/fossil)
+        else:
             repo = workdir+'-repo'
             self.make_repo(repo)
             return self.make_wd(repo, workdir)

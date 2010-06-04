@@ -1,6 +1,11 @@
 repo_class = 'anyvc.git.repo:GitRepository'
 workdir_class = 'anyvc.git.workdir:Git'
 
+features = [
+    'dvcs',
+]
+
+
 base_dirs = [
     'objects',
     'hooks',
