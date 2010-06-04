@@ -22,7 +22,7 @@ class SubVersion(CommandBased):
 
 
     def create_from(self, source):
-        call(['svn', 'co', 'file://'+source, self.base_path.strpath])
+        call(['svn', 'co', 'file://'+source, self.path.strpath])
 
     state_map = {
             "?": 'unknown',
@@ -147,13 +147,13 @@ class BrokenSubversion(object):  # workdir with parser
             wc.SCHEDULE_NORMAL: 'clean',
         }
         state = map[e.schedule]
-        full_path = os.path.join(self.base_path, name)
+        full_path = os.path.join(self.path, name)
         if not os.path.exists(full_path) and state!='removed':
             return 'missing', name
         print state, name
         if state=='clean':
             import hashlib
-            with open(os.path.join(self.base_path, name)) as f:
+            with open(os.path.join(self.path, name)) as f:
                 if hashlib.md5(f.read()).hexdigest()!=e.checksum:
                     return 'modified', name
 

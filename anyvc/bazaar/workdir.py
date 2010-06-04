@@ -41,15 +41,15 @@ class Bazaar(WorkDirWithParser):
     def __init__(self, path, create=False, source=None):
 
 
-        self.base_path = path
+        self.path = path
 
         if create:
             assert source
-            source,r = Branch.open_containing(source)
+            source, _ = Branch.open_containing(source)
             source.bzrdir.sprout(path.strpath)
 
         try:
-            self.wt = WorkingTree.open(self.base_path.strpath)
+            self.wt = WorkingTree.open(path.strpath)
         except NotBranchError:
             raise NotFoundError(self.__class__, path)
 
@@ -141,8 +141,8 @@ class Bazaar(WorkDirWithParser):
     def rename(self, source, target):
         #XXX: again the relpath weird :(
         self.wt.rename_one(
-            self.wt.relpath(self.base_path.join(source).strpath),
-            self.wt.relpath(self.base_path.join(target).strpath))
+            self.wt.relpath(self.path.join(source).strpath),
+            self.wt.relpath(self.path.join(target).strpath))
 
     def revert(self, paths=None, missing=False):
 
@@ -156,7 +156,7 @@ class Bazaar(WorkDirWithParser):
 
     def _abspaths(self, paths):
         if paths is not None:
-            return [ self.base_path.join(path).strpath for path in paths]
+            return [ self.path.join(path).strpath for path in paths]
 
 """
 To-Do

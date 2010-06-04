@@ -19,7 +19,6 @@ class Git(CommandBased):
     data might be wrong in coner cases
     """
     cmd = 'git'
-    detect_subdir = '.git'
 
     @property
     def repository(self):
@@ -30,10 +29,10 @@ class Git(CommandBased):
         pass #XXX: actually unneded?
 
     def create_from(self, source):
-        call(['git', 'clone', source, self.base_path.strpath])
+        call(['git', 'clone', source, self.path.strpath])
 
     def create(self):
-        call(['git', 'init', self.base_path.strpath])
+        call(['git', 'init', self.path.strpath])
 
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--no-color'] + self.process_paths(paths)
@@ -72,7 +71,7 @@ class Git(CommandBased):
         def ls_files(args):
             files = self.execute_command([
                     'ls-files' ] + [
-                    '-%s'%c for c in args
+                    '-%s' % c for c in args
                 ]).splitlines()
 
             d = dict()

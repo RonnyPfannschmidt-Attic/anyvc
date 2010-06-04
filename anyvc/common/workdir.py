@@ -68,7 +68,7 @@ class WorkDir(object):
     """
 
     def __init__(self, path, create=False, source=None):
-        self.base_path = path
+        self.path = path
         if create:
             if source:
                 self.create_from(source)
@@ -156,10 +156,10 @@ class WorkDirWithParser(WorkDir):
                 #XXX: here renames get turned into ugly add/remove pairs
                 if state is None:
                     old, new = name
-                    yield StatedPath(old, 'removed', self.base_path)
-                    yield StatedPath(new, 'added', self.base_path)
+                    yield StatedPath(old, 'removed', self.path)
+                    yield StatedPath(new, 'added', self.path)
                 else:
-                    yield StatedPath(name, state, self.base_path)
+                    yield StatedPath(name, state, self.path)
 
 
     def parse_status_item(self, item, cache):
@@ -256,10 +256,10 @@ class CommandBased(WorkDirWithParser):
         if not args:
             raise ValueError('need a valid command')
         ret = Popen(
-                [self.cmd] + [str(x) for x in args],
+                [self.cmd] + [str(x) for x in args], # str is for py.path
                 stdout=PIPE,
                 stderr=STDOUT,
-                cwd=str(self.base_path),
+                cwd=self.path.strpath,
                 close_fds=True,
                 env=dict(os.environ, LANG='C',LANGUAGE='C', LC_All='C'),
                 )
