@@ -9,6 +9,7 @@ Contents:
    about.rst
    workdir/index.rst
    repo/index.rst
+   internals/index.rst
    roadmap.rst
 
 
