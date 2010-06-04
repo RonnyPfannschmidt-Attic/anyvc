@@ -17,8 +17,8 @@ from ..exc import NotFoundError
 
 from mercurial.__version__ import version as hgversion
 # no support for hg <= 1.0.2
-if hgversion in ('1.0', '1.0.1', '1.0.2') or hgversion[0]=='0':
-    raise ImportError('HG version too old, please update to a release >= 1.1')
+if hgversion < '1.2':
+    raise ImportError('HG version too old, please update to a release >= 1.2')
 
 from mercurial import ui as hgui, hg, commands, util, cmdutil
 from mercurial.match import match, always
@@ -121,7 +121,6 @@ class Mercurial(WorkDir):
             message=message,
             logfile=None,
             date=None,
-            addremove=False, # only hg 0.9.5 needs that explicit
 
             *self.joined(paths)
             )
