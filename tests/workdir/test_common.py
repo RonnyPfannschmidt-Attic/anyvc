@@ -130,17 +130,6 @@ def test_status_subdir_only(wd):
     wd.check_states({'subdir/a.py': 'modified'})
 
 
-def test_handle_not_a_workdir(mgr):
-    WD = get_wd_impl(mgr.vc)
-    py.test.raises( NotFoundError, WD,  "/does/not/exist/really")
-
-
-@has_files
-@commited
-def test_handle_instanciate_from_subdir(wd, mgr):
-    WD = get_wd_impl(mgr.vc)
-    test = WD(str(wd.bpath('wd/test.py')))
-
 @has_files
 @commited
 def test_workdir_open(wd):

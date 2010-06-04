@@ -140,7 +140,7 @@ class GitRepository(Repository):
     def __init__(self, path=None, workdir=None, create=False, bare=False):
         assert path or workdir
         if workdir:
-            self.path = workdir.path
+            self.path = workdir.base_path
         else:
             self.path = local(path)
         if create:

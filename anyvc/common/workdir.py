@@ -42,19 +42,20 @@ class StatedPath(object):
     def __str__(self):
         return self.relpath
 
-def find_basepath(act_path, wanted_subdir):
+
+def find_basepath(act_path, check):
     """
     :param act_path: starting dir
-    :param wanted_subdir: the wanted existing subdir
+    :param check: the test
 
-    a helper function walks the directory tree up till it finds a 
-    directory that contains `wanted_subdir`
+    a helper function walks the directory tree up till it finds dir
+    for wich the the check is true
     """
 
     act_path = local(act_path)
-    #XXX: this logic kind of fails for svn, but who cares
+    # this logic kind of fails for svn, but who cares
     for part in act_path.parts(reverse=True):
-        if part.join(wanted_subdir).check(exists=1, dir=1):
+        if check(part):
             return part
 
 class WorkDir(object):
@@ -67,16 +68,15 @@ class WorkDir(object):
     """
 
     def __init__(self, path, create=False, source=None):
-        self.path = local(path)
+        self.base_path = path
         if create:
             if source:
                 self.create_from(source)
             else:
                 self.create()
+        else:
+            pass #XXX
 
-        self.base_path = find_basepath(self.path, self.detect_subdir)
-        if self.base_path is None:
-            raise NotFoundError(self.__class__, self.path)
 
     def process_paths(self, paths):
         """

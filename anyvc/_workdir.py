@@ -13,6 +13,7 @@
 """
 __all__ = ["all_known", "get_workdir_manager_for_path"]
 
+import warnings
 
 from .metadata import backends, get_backend
 import os
@@ -48,20 +49,23 @@ def open(path):
     It uses the backend metadata to find the correct backend and
     won't import unnecessary backends to keep the import time low
     """
-    path = str(path) # so we can use py.path instances
-    path = os.path.normpath(path)
+    path = local(path)
     known_backends = [get_backend(bn) for bn in backends]
 
-    res = {}
-    for backend in known_backends:
-        #XXX: walkdown sould be iterate on same level instead
-        #     of walk all per backend
-        try:
-            base = find_basepath(path, backend.workdir_control)
+    
+    for part in path.parts(reverse=True):
+        for backend in known_backends:
+            applying = [ backend for backend in known_backends
+                         if backend.is_workdir(part) ]
+
+            if applying:
+                if len(applying) > 1:
+                    warnings.warn('found more than one backend below %s' % part)
+                return applying[0].Workdir(part)
+
+            base = find_basepath(path, backend.is_workdir)
             if base:
                 res[base] = backend
-        except AttributeError:
-            pass # backend is missing workdir_control
     if res:
         found_backend = res[max(res)] #max gives us the longest path
         return found_backend.Workdir(path)

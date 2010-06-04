@@ -101,7 +101,7 @@ class VcsMan(object):
         path = self.bpath(workdir)
         try:
             wd = self.backend.Workdir(
-                str(path),
+                path,
                 create=True)
             return WdWrap(wd, path)
         except: # svn (might also apply for monotone/fossil)
@@ -114,7 +114,7 @@ class VcsMan(object):
     def make_wd(self, repo, workdir):
         path = self.bpath(workdir)
         wd = self.backend.Workdir(
-                str(path),
+                path,
                 create=True,
                 source=str(self.bpath(repo)))
 

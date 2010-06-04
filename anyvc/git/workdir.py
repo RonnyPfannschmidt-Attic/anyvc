@@ -26,9 +26,14 @@ class Git(CommandBased):
         from .repo import GitRepository
         return GitRepository(workdir=self)
 
-    def create_from(self, source):
-        call(['git', 'clone', source, str(self.path)])
+    def setup(self):
+        pass #XXX: actually unneded?
 
+    def create_from(self, source):
+        call(['git', 'clone', source, self.base_path.strpath])
+
+    def create(self):
+        call(['git', 'init', self.base_path.strpath])
 
     def get_diff_args(self, paths=(), **kw):
         return ['diff', '--no-color'] + self.process_paths(paths)

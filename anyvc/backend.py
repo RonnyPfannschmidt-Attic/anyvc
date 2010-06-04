@@ -28,8 +28,8 @@ class Backend(object):
             raise ImportError(name)
 
     @property
-    def workdir_control(self):
-        return self.module.workdir_control
+    def is_workdir(self):
+        return self.module.is_workdir
 
     @cachedproperty
     def Repository(self):

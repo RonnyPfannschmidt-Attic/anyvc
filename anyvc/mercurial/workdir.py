@@ -79,11 +79,14 @@ class Mercurial(WorkDir):
         self.ui = self.repo.ui
 
     def create(self):
-        hg.repository(self.ui, self.path, create=True)
+        hg.repository(self.ui, self.base_path.strpath, create=True)
+
+    def setup(self):
+        pass #XXX unneded
 
     def create_from(self, source):
         hg.clone(cmdutil.remoteui(self.ui, {}),
-                source, str(self.path))
+                source, self.base_path.strpath)
 
     def status(self, paths=(), *k, **kw):
         glob = '**' if kw.get('recursive') else '*'
