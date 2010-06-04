@@ -34,7 +34,7 @@ def pytest_configure(config):
             raise KeyError(vcs, '%r not found' % vcs)
 
 
-funcarg_names = set(['mgr', 'repo', 'wd'])
+funcarg_names = set('mgr repo wd backend'.split())
 
 def pytest_generate_tests(metafunc):
     if not funcarg_names.intersection(metafunc.funcargnames):
