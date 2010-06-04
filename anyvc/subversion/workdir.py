@@ -159,21 +159,3 @@ class BrokenSubversion(object):  # workdir with parser
 
         return state, name
 
-    
-    class pass_on_method(object):
-        #XXX: hack to use the old implementation when necessary
-        def __init__(self, name):
-            self.__name__ = name
-        def __get__(self, instance, owner):
-            if instance is None:
-                return owner
-            else:
-                return getattr(
-                        instance.SubVersionC(instance.base_path),
-                        self.__name__)
-
-    diff = pass_on_method('diff')
-    remove = pass_on_method('remove')
-    revert = pass_on_method('revert')
-    rename = pass_on_method('rename')
-
