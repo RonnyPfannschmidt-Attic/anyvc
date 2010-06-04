@@ -64,7 +64,6 @@ class WorkDir(object):
 
     :param path: base path
     :param create: 
-    :raises NotFoundError: missing the correct vcs control dir
     """
 
     def __init__(self, path, create=False, source=None):
@@ -219,9 +218,6 @@ import re
 from subprocess import Popen, PIPE, STDOUT, call
 import os, os.path
 
-#TODO: more reviews
-
-from ..exc import NotFoundError
 
 def relative_to(base_path):
     """

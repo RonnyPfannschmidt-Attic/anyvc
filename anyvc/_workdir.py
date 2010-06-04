@@ -52,7 +52,7 @@ def open(path):
     path = local(path)
     known_backends = [get_backend(bn) for bn in backends]
 
-    
+
     for part in path.parts(reverse=True):
         for backend in known_backends:
             applying = [ backend for backend in known_backends
@@ -63,9 +63,3 @@ def open(path):
                     warnings.warn('found more than one backend below %s' % part)
                 return applying[0].Workdir(part)
 
-            base = find_basepath(path, backend.is_workdir)
-            if base:
-                res[base] = backend
-    if res:
-        found_backend = res[max(res)] #max gives us the longest path
-        return found_backend.Workdir(path)

@@ -14,7 +14,7 @@ from anyvc.common.workdir import WorkDir, WorkDirWithParser, CommandBased
 class Backend(object):
     def __init__(self, name, module_name):
         self.name = name
-        self.module = mod = __import__(module_name, fromlist=['*'])
+        self.module = __import__(module_name, fromlist=['*'])
 
     def __repr__(self):
         return '<anyvc backend %s>'%(self.name,)
@@ -27,9 +27,11 @@ class Backend(object):
         except (ImportError, AttributeError):
             raise ImportError(name)
 
-    @property
-    def is_workdir(self):
-        return self.module.is_workdir
+    def is_workdir(self, path):
+        return self.module.is_workdir(path)
+
+    def is_repository(self, path):
+        return self.module.is_repository(path)
 
     @cachedproperty
     def Repository(self):

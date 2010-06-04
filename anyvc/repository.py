@@ -16,11 +16,9 @@ def open(path, backends=None):
     """
     from anyvc.metadata import get_backends
     for backend in get_backends(backends):
-        try:
+        if backend.is_repository(path):
             #XXX: add metadata about the worktree base, use it
             return backend.Repository(path)
-        except NotFoundError, e:
-            pass
 
 def find(root, backends=None):
     """

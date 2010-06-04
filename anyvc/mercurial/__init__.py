@@ -6,4 +6,4 @@ def is_hg(path):
        and path.join('.hg/requires').check()
 
 
-is_repo = is_workdir = is_hg
+is_repository = is_workdir = is_hg
