@@ -142,17 +142,15 @@ class GitRepository(Repository):
         if workdir:
             self.path = workdir.path
         else:
-            self.path = local(path)
+            self.path = path
         if create:
             #XXX: fragile
-            
-            if not os.path.exists(path):
-                os.mkdir(path)
-            self.repo = Repo.init(str(path))
+            path.ensure(dir=1)
+            self.repo = Repo.init(path.strpath)
         else:
             assert self.path.check(dir=True)
             try:
-                self.repo = Repo(str(self.path))
+                self.repo = Repo(self.path.strpath)
             except NotGitRepository:
                 raise NotFoundError('git', self.path)
 

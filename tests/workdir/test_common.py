@@ -132,9 +132,9 @@ def test_status_subdir_only(wd):
 
 @has_files
 @commited
-def test_workdir_open(wd):
+def test_workdir_open(wd, backend):
     import anyvc
     wd2 = anyvc.workdir.open(wd.bpath(''))
-    #XXX evil
-    assert wd._WdWrap__vc.__class__ is wd2.__class__
+    assert backend.is_workdir(wd2.path)
+
 

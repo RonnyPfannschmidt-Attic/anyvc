@@ -122,7 +122,7 @@ class SubversionRepository(Repository):
     def __init__(self, path, create=False):
         #XXX: correct paths
         if create:
-            repos.create(path)
+            repos.create(path.strpath)
         self.path = "file://%s" % path
         try:
             self.ra = RemoteAccess(self.path)

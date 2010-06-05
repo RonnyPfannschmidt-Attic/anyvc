@@ -8,6 +8,7 @@ def start_controller(channel):
     backend_module = channel.receive()
     try:
         backend = Backend(vcs, backend_module)
+        backend.module # cause that one is lazy-loaded
     except ImportError:
         channel.send(None) # magic value for 'i dont have it'
         return
@@ -29,12 +30,20 @@ class SlaveBackend(RemoteHandler):
         RepositoryHandler(channel, repo)
         return channel
 
+    def is_repository(self, path):
+        return self.backend.is_repository(path)
+
+    def is_workdir(self, path):
+        return self.backend.is_workdir(path)
+
     def open_workdir(self, *k, **kw):
         workdir = self.backend.Workdir(*k, **kw)
         channel = self.newchannel()
         WorkdirHandler(channel, workdir)
         return channel
 
+    def features(self):
+        return self.backend.features
 
 class RepositoryHandler(RemoteHandler):
     def __init__(self, channel, repo):
@@ -93,13 +102,13 @@ class WorkdirHandler(RemoteHandler):
         self.workdir = workdir
 
     def path(self):
-        return self.workdir.path
+        return self.workdir.path.strpath
 
     def add(self, **kw):
         return self.workdir.add(**kw)
 
     def status(self, **kw):
-        return [(item.relpath, item.base, item.state)
+        return [(item.relpath, item.base.strpath, item.state)
                 for item in self.workdir.status(**kw)]
 
     def commit(self, **kw):

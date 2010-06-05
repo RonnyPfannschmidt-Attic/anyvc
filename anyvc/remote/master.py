@@ -102,7 +102,7 @@ class RemoteWorkdir(RemoteCaller):
 
     @cachedproperty
     def path(self):
-        return self._call_remote('path')
+        return local(self._call_remote('path'))
 
 
 class RemoteTransaction(RemoteCaller):
@@ -117,7 +117,8 @@ class RemoteTransaction(RemoteCaller):
 class RemoteBackend(object):
     def __init__(self, backend, module, spec):
         self.spec = spec
-        self.backend = backend
+        self.name = backend
+        self.module_name = module
         self.gateway = makegateway(spec)
         channel = self.gateway.remote_exec("""
             from anyvc.remote.slave import start_controller
@@ -127,7 +128,7 @@ class RemoteBackend(object):
         channel.send(module)
         self._channel = channel.receive()
         if self._channel is None:
-            raise ImportError('module %s not found on remote'%module)
+            raise ImportError('module %s not found on remote' % module)
         self._caller = RemoteCaller(self._channel)
         self.active = True
 
@@ -136,6 +137,16 @@ class RemoteBackend(object):
         self._channel.close()
         self.gateway.exit()
         self.active = False
+
+    @property
+    def features(self):
+        return self._caller.features()
+
+    def is_repository(self, path):
+        return self._caller.is_repository(path=path)
+
+    def is_workdir(self, path):
+        return self._caller.is_workdir(path=path)
 
     def Repository(self, **kw):
         newchan = self._caller.open_repo(**kw)

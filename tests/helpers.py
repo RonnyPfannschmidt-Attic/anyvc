@@ -120,7 +120,7 @@ class VcsMan(object):
 
     def make_repo(self, path):
         return self.backend.Repository(
-                path=str(self.bpath(path)),
+                path=self.bpath(path),
                 create=True)
 
     def make_wd_darcs(self, repo, workdir):

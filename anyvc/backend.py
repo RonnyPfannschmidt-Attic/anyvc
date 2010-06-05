@@ -14,7 +14,7 @@ from anyvc.common.workdir import WorkDir, WorkDirWithParser, CommandBased
 class Backend(object):
     def __init__(self, name, module_name):
         self.name = name
-        self.module = __import__(module_name, fromlist=['*'])
+        self.module_name = module_name
 
     def __repr__(self):
         return '<anyvc backend %s>'%(self.name,)
@@ -33,6 +33,9 @@ class Backend(object):
     def is_repository(self, path):
         return self.module.is_repository(path)
 
+    @cachedproperty
+    def module(self):
+        return __import__(self.module_name, fromlist=['*'])
 
     @cachedproperty
     def features(self):

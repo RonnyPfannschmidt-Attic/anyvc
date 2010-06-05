@@ -3,7 +3,7 @@ import py
 from anyvc.metadata import backends, get_backend
 
 def test_get_backend(backend, mgr):
-    assert backend.module.__name__ == backends[mgr.vc]
+    assert backend.module_name == backends[mgr.vc]
 
 
 def test_has_features(backend):

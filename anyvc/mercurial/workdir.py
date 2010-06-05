@@ -101,7 +101,7 @@ class Mercurial(WorkDir):
         )
         for state, files in zip(names, state_files):
             for file in files:
-                yield StatedPath(file, state, base=self.repo.root)
+                yield StatedPath(file, state, base=self.path)
 
 
 
