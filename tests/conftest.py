@@ -14,7 +14,10 @@ test_on = {
 
 def pytest_addoption(parser):
     g = parser.getgroup('anyvc')
-    g.addoption("--local-remoting", action="store_true", default=False)
+    g.addoption("--local-remoting", action="store_true", default=False,
+               help='test via execnet remoting')
+    g.addoption("--no-direct-api", action="store_true", default=False,
+                help='don\'t test the direct api')
     g.addoption("--vcs", action='store', default=None)
 
 def pytest_configure(config):
@@ -22,6 +25,12 @@ def pytest_configure(config):
         for key in list(test_on):
             if '/' in key:
                 del test_on[key]
+    if config.getvalue('no_direct_api'):
+        for key in list(test_on):
+            if '/' not in key:
+                del test_on[key]
+
+    assert test_on,  'you shouldnt disable all test variations'
 
     vcs = config.getvalue('vcs')
     if vcs is None:
