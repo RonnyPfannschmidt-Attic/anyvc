@@ -49,19 +49,21 @@ class WdWrap(object):
         for path in relpaths:
             self.bpath(path).remove()
 
-    def check_states(self, mapping, exact=True):
+    def check_states(self, exact=True, **kw):
         """takes a mapping of filename-> state
         if exact is true, additional states are ignored
         returns true if all supplied files have the asumed state
         """
         __tracebackhide__ = True
+        assert isinstance(exact, bool)
+        mapping = dict((rn, state) for state, rns in kw.items() for rn in rns)
         print mapping
         used = set()
         all = set()
         infos = list(self.status())
         print infos
         for info in infos:
-            all.add(info.relpath)
+            all.add(info.abspath)
             print info
             assert info.state in state_descriptions
             if info.relpath in mapping:
