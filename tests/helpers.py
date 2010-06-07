@@ -5,7 +5,6 @@ from __future__ import with_statement
 import os
 import sys
 
-from anyvc.workdir import all_known
 from anyvc.metadata import state_descriptions
 from functools import wraps, partial
 from os.path import join, dirname, exists
