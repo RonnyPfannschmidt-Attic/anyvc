@@ -12,8 +12,7 @@
 from anyvc import apipkg
 apipkg.initpkg(__name__,{
     'workdir':{
-        'all_known':'anyvc._workdir:all_known',
-        'get_workdir_manager_for_path':'anyvc._workdir:get_workdir_manager_for_path',
+        'clone':'anyvc._workdir:clone',
         'open':'anyvc._workdir:open',
         },
     })

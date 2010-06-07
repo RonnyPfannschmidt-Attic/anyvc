@@ -15,7 +15,7 @@ __all__ = ["all_known", "get_workdir_manager_for_path"]
 
 import warnings
 
-from .metadata import backends, get_backend
+from .metadata import get_backends
 import os
 from py.path import local
 from .common.workdir import find_basepath
@@ -36,7 +36,7 @@ def open(path):
 
 
     for part in path.parts(reverse=True):
-        applying = [ backend for backend in known_backends
+        applying = [ backend for backend in get_backends()
                      if backend.is_workdir(part) ]
 
         if applying:
@@ -44,3 +44,9 @@ def open(path):
                 warnings.warn('found more than one backend below %s' % part)
             return applying[0].Workdir(part)
 
+
+
+def clone(source, target):
+    for backend in get_backends():
+        if 'wd:heaby' in backend.features and backend.is_repository(source):
+            return backend.Workdir(target, create=True, source=Source)

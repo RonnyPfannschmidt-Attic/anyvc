@@ -3,6 +3,7 @@ workdir_class = 'anyvc.git.workdir:Git'
 
 features = [
     'dvcs',
+    'wd:heavy',
 ]
 
 

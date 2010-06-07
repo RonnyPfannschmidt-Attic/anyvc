@@ -3,6 +3,7 @@ workdir_class = 'anyvc.mercurial.workdir:Mercurial'
 
 features = [
     'dvcs',
+    'wd:heavy',
 ]
 
 
