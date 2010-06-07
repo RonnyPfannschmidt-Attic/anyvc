@@ -1,4 +1,4 @@
-
+import py
 from tests.helpers import  VcsMan
 
 from anyvc import metadata
@@ -70,6 +70,16 @@ def pytest_funcarg__mgr(request):
     vcdir = request.config.ensuretemp('%s_%s'%(vc, r) )
     testdir = vcdir.mkdir(request.function.__name__)
     backend = request.getfuncargvalue('backend')
+
+    required_features = getattr(request.function, 'feature', None)
+    
+    if required_features:
+        required_features = set(required_features.args)
+        difference = required_features.difference(backend.features)
+        print required_features
+        if difference:
+            py.test.skip('%s lacks features %r' % (vc, sorted(difference)))
+
     return VcsMan(vc, testdir, spec, backend)
 
 
