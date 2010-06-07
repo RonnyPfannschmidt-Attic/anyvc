@@ -11,8 +11,10 @@ def test_has_features(backend):
 
 
 def test_has_working_repository_check(repo, backend):
+    print repo.path
     assert backend.is_repository(repo.path)
 
 
 def test_has_working_workdir_check(wd, backend):
+    print wd.path
     assert backend.is_workdir(wd.path)

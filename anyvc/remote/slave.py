@@ -59,6 +59,9 @@ class RepositoryHandler(RemoteHandler):
     def commit_message(self, id):
         return self.repo[id].message
 
+    def path(self):
+        return str(self.repo.path)
+
     def commit_diff(self, id):
         return self.repo[id].get_parent_diff()
 
@@ -101,8 +104,8 @@ class WorkdirHandler(RemoteHandler):
         RemoteHandler.__init__(self, channel)
         self.workdir = workdir
 
-    def path(self):
-        return self.workdir.path.strpath
+    def get_path(self):
+        return str(self.workdir.path)
 
     def add(self, **kw):
         return self.workdir.add(**kw)

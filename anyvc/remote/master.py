@@ -21,6 +21,7 @@ from anyvc.common.repository import MemoryFile
 from anyvc.metadata import backends
 import time
 import datetime
+from py.path import local
 
 class RemoteCommit(object):
     def __init__(self, repo, id):
@@ -66,6 +67,10 @@ class RemoteCommit(object):
 
 class RemoteRepository(RemoteCaller):
     
+    @cachedproperty
+    def path(self):
+        return local(self._call_remote('path'))
+
     def get_commit(self, id):
         return RemoteCommit(self, id)
 
@@ -102,7 +107,7 @@ class RemoteWorkdir(RemoteCaller):
 
     @cachedproperty
     def path(self):
-        return local(self._call_remote('path'))
+        return local(self._call_remote('get_path'))
 
 
 class RemoteTransaction(RemoteCaller):
@@ -153,6 +158,8 @@ class RemoteBackend(object):
         return RemoteRepository(newchan)
 
     def Workdir(self, path, **kw):
-        kw['path'] = path
+        kw['path'] = str(path)
+        if 'source' in kw:
+            kw['source'] = str(kw['source'])
         newchan = self._caller.open_workdir(**kw)
         return RemoteWorkdir(newchan)
