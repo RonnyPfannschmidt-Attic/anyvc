@@ -36,12 +36,11 @@ def open(path):
 
 
     for part in path.parts(reverse=True):
-        for backend in known_backends:
-            applying = [ backend for backend in known_backends
-                         if backend.is_workdir(part) ]
+        applying = [ backend for backend in known_backends
+                     if backend.is_workdir(part) ]
 
-            if applying:
-                if len(applying) > 1:
-                    warnings.warn('found more than one backend below %s' % part)
-                return applying[0].Workdir(part)
+        if applying:
+            if len(applying) > 1:
+                warnings.warn('found more than one backend below %s' % part)
+            return applying[0].Workdir(part)
 
