@@ -20,24 +20,6 @@ import os
 from py.path import local
 from .common.workdir import find_basepath
 
-def fill(listing):
-    for backend in backends:
-        try:
-            b = get_backend(backend).Workdir
-            listing.append(b)
-        except: #XXX: diaper antipattern
-            pass
-
-
-class LazyAllKnown(list):
-    def __iter__(self):
-        if not self:
-            fill(self)
-        return list.__iter__(self)
-
-all_known = LazyAllKnown()
-
-
 def open(path):
     """
     :param path:
