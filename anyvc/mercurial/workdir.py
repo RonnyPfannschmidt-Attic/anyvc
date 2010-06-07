@@ -76,7 +76,7 @@ class Mercurial(WorkDir):
 
     def create_from(self, source):
         hg.clone(cmdutil.remoteui(self.ui, {}),
-                source, self.path.strpath)
+                str(source), self.path.strpath)
 
     def status(self, paths=(), *k, **kw):
         glob = '**' if kw.get('recursive') else '*'

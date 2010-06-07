@@ -82,7 +82,7 @@ class SubversionRevision(Revision):
 
 class SvnCommitBuilder(CommitBuilder):
     def commit(self):
-        ra = RemoteAccess(self.repo.path,
+        ra = RemoteAccess(self.repo.url,
                           auth=Auth([get_username_provider()]))
         editor = ra.get_commit_editor({
             'svn:log':self.extra['message'],
@@ -98,7 +98,7 @@ class SvnCommitBuilder(CommitBuilder):
             #XXX: directories
             src = src.lstrip('/')
             target = target.lstrip('/')
-            file = root.add_file(target, join(self.repo.path, src), 1)
+            file = root.add_file(target, join(self.repo.url, src), 1)
             file.close()
             root.delete_entry(src)
 
@@ -123,11 +123,9 @@ class SubversionRepository(Repository):
         #XXX: correct paths
         if create:
             repos.create(path.strpath)
-        self.path = "file://%s" % path
-        try:
-            self.ra = RemoteAccess(self.path)
-        except SubversionException:
-            raise NotFoundError('subversion', self.path)
+        self.path = path
+        self.url = "file://%s" % path
+        self.ra = RemoteAccess(self.url)
 
     def __len__(self):
         return self.ra.get_latest_revnum()

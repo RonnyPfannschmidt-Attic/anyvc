@@ -98,25 +98,22 @@ class VcsMan(object):
     def bpath(self, name):
         return self.base.join(name)
 
-    def create_wd(self, workdir):
+    def create_wd(self, workdir, source=None):
         path = self.bpath(workdir)
-        if 'dvcs' in self.backend.features:
+        if source is None:
             wd = self.backend.Workdir(path, create=True)
             return WdWrap(wd, path)
         else:
-            repo = workdir+'-repo'
-            self.make_repo(repo)
-            return self.make_wd(repo, workdir)
+            print source.path
+
+            path = getattr(source, 'path', source)
+            return self.make_wd(path, workdir)
 
 
 
     def make_wd(self, repo, workdir):
-        path = self.bpath(workdir)
-        wd = self.backend.Workdir(
-                path,
-                create=True,
-                source=str(self.bpath(repo)))
-
+        path =self.bpath(workdir)
+        wd = self.backend.Workdir(path, create=True, source=repo)
         return WdWrap(wd, path)
 
     def make_repo(self, path):

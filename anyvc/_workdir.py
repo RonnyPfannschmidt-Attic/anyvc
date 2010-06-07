@@ -31,11 +31,8 @@ def open(path):
     It uses the backend metadata to find the correct backend and
     won't import unnecessary backends to keep the import time low
     """
-    path = local(path)
-    known_backends = [get_backend(bn) for bn in backends]
 
-
-    for part in path.parts(reverse=True):
+    for part in local(path).parts(reverse=True):
         applying = [ backend for backend in get_backends()
                      if backend.is_workdir(part) ]
 
@@ -47,6 +44,16 @@ def open(path):
 
 
 def clone(source, target):
+    #XXX: remote support
     for backend in get_backends():
-        if 'wd:heaby' in backend.features and backend.is_repository(source):
-            return backend.Workdir(target, create=True, source=Source)
+        if 'wd:heavy' in backend.features and backend.is_repository(source):
+            return backend.Workdir(target, create=True, source=source)
+
+
+def checkout(source, target):
+    #XXX: remote support
+    for backend in get_backends():
+        if 'wd:light' in backend.features and backend.is_repository(source):
+            #XXX: there should be an actual argument
+            #     to keep heavy and light apart
+            return backend.Workdir(target, create=True, source=source)

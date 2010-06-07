@@ -6,10 +6,9 @@ def test_repo_create(mgr):
     default_branch = repo.prepare_default_structure()
     assert len(repo) in (0,1)
 
-def test_repo_default_head(mgr):
+def test_repo_default_head(wd, mgr):
     if mgr.vc == 'subversion':
         py.test.skip('default head won\'t matter for svn')
-    wd = mgr.create_wd('wd')
     repo = wd.repository
     wd.put_files({'test.py': "import sys\nprint sys.platform" })
     wd.add(paths=['test.py'])

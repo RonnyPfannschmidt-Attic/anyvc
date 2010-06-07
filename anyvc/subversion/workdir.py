@@ -12,6 +12,10 @@ class SubVersion(CommandBased):
     detect_subdir = ".svn/props"
     repository = None # no local repo
 
+
+    def create(self):
+        raise NotImplementedError('no havy workdirs')
+
     def get_status_args(self, recursive, paths, **kw):
         #TODO: figure a good way to deal with changes in external
         # (maybe use the svn python api to do that)
@@ -22,7 +26,7 @@ class SubVersion(CommandBased):
 
 
     def create_from(self, source):
-        call(['svn', 'co', 'file://'+source, self.path.strpath])
+        call(['svn', 'co', 'file://%s' % source, self.path.strpath])
 
     state_map = {
             "?": 'unknown',

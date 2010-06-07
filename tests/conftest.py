@@ -82,10 +82,17 @@ def pytest_funcarg__mgr(request):
 
     return VcsMan(vc, testdir, spec, backend)
 
+def pytest_funcarg__repo(request):
+    return request.getfuncargvalue('mgr').make_repo('repo')
 
 def pytest_funcarg__wd(request):
     mgr = request.getfuncargvalue('mgr')
-    wd = mgr.create_wd('wd')
+    if 'wd:heavy' not in mgr.backend.features:
+        repo = request.getfuncargvalue('repo')
+        wd = mgr.create_wd('wd', repo)
+    else:
+        wd = mgr.create_wd('wd')
+
     if hasattr(request.function, 'files'):
         files = request.function.files.args[0]
         wd.put_files(files)

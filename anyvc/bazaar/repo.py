@@ -128,6 +128,7 @@ class BazaarRepository(Repository):
 
     #XXX: this whole thing is broken and messed
     def __init__(self, path=None, workdir=None, create=False):
+        self.path = path or workdir.path
         if workdir:
             assert not path and not create
             self.branch = workdir.wt.branch

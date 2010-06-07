@@ -45,7 +45,7 @@ class Bazaar(WorkDirWithParser):
 
         if create:
             assert source
-            source, _ = Branch.open_containing(source)
+            source, _ = Branch.open_containing(str(source))
             source.bzrdir.sprout(path.strpath)
 
         try:

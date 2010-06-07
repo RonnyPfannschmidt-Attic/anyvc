@@ -4,12 +4,12 @@ import anyvc
 @py.test.mark.files({'setup.py': 'pass'})
 @py.test.mark.commit
 @py.test.mark.feature('wd:light')
-def test_checkout_local(wd, mgr):
+def test_checkout_local(repo, wd, mgr):
     path = mgr.bpath('checkout')
 
-    wd2 = anyvc.workir.checkout(
+    wd2 = anyvc.workdir.checkout(
         target=path,
-        source=wd.path,
+        source=repo.path,
         )
 
 

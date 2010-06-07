@@ -29,7 +29,7 @@ class Git(CommandBased):
         pass #XXX: actually unneded?
 
     def create_from(self, source):
-        call(['git', 'clone', source, self.path.strpath])
+        call(['git', 'clone', str(source), self.path.strpath])
 
     def create(self):
         call(['git', 'init', self.path.strpath])
