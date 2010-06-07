@@ -1,8 +1,8 @@
 import py
+from datetime import datetime
 
 
-def test_build_first_commit(mgr):
-    repo = mgr.make_repo('repo')
+def test_build_first_commit(repo):
     with repo.transaction(message='initial', author='test') as root:
         with root.join('test.txt').open('w') as f:
             f.write("text")
@@ -13,9 +13,7 @@ def test_build_first_commit(mgr):
             assert content == 'text'
 
 
-def test_generate_commit_chain(mgr):
-    from datetime import datetime
-    repo = mgr.make_repo('repo')
+def test_generate_commit_chain(repo):
     for i in range(1,11):
         with repo.transaction(
                 message='test%s'%i,
@@ -43,12 +41,9 @@ def test_generate_commit_chain(mgr):
                 assert data == 'test%s'%(i+1)
 
 
-def test_create_commit_at_time(mgr):
+def test_create_commit_at_time(mgr, repo):
     if mgr.vc == 'subversion':
         py.test.skip('currently no support for setting the commit time on svn')
-
-    from datetime import datetime
-    repo = mgr.make_repo('repo')
 
     time = datetime(2000, 1, 1, 10, 0, 0)
 

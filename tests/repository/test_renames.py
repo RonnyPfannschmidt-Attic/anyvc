@@ -1,7 +1,6 @@
 import py
 
-def test_rename_simple(mgr):
-    repo = mgr.make_repo('repo')
+def test_rename_simple(repo):
 
     with repo.transaction(message='create', author='test') as root:
         with root.join('test.txt').open('w') as f:
@@ -20,8 +19,7 @@ def test_rename_simple(mgr):
 
 
 @py.test.mark.xfail(reason='not implemented')
-def test_rename_directory(mgr):
-    repo = mgr.make_repo('repo')
+def test_rename_directory(repo):
 
     with repo.transaction(message='create', author='test') as root:
         dir = root.join('testdir')

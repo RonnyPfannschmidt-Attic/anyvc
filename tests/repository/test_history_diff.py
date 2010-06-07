@@ -1,7 +1,6 @@
 
 
-def test_diff_create_simple(mgr):
-    repo = mgr.make_repo('repo')
+def test_diff_create_simple(repo):
 
     with repo.transaction(author='test', message='test') as root:
         with root.join('test.txt').open('w') as f:
