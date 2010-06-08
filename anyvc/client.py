@@ -17,7 +17,7 @@ from optparse import OptionParser
 # XXX Translations
 _ = lambda s: s
 
-from .workdir import get_workdir_manager_for_path
+from . import workdir
 
 
 def create_option_parser():
@@ -203,7 +203,7 @@ def main(argv=sys.argv):
 
     logging.debug('Using working directory: %s' % cwd)
 
-    vc = get_workdir_manager_for_path(cwd)
+    vc = workdir.open(cwd)
 
     if vc is None:
         logging.error(_('Cannot detect version control system in %(cwd)s' %
