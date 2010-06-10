@@ -6,6 +6,10 @@ Workdir Api
 
 .. autofunction:: open
 
+.. autofunction:: checkout
+
+.. autofunction:: clone
+
 .. currentmodule:: anyvc.common.workdir
 
 .. autoclass:: WorkDir

@@ -44,6 +44,9 @@ def open(path):
 
 
 def clone(source, target):
+    """
+    create a heavy checkout/clone of the given source
+    """
     #XXX: remote support
     for backend in get_backends():
         if 'wd:heavy' in backend.features and backend.is_repository(source):
@@ -51,6 +54,9 @@ def clone(source, target):
 
 
 def checkout(source, target):
+    """
+    create a light checkout of the given source
+    """
     #XXX: remote support
     for backend in get_backends():
         if 'wd:light' in backend.features and backend.is_repository(source):
