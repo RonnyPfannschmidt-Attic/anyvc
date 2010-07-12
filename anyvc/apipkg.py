@@ -8,15 +8,17 @@ see http://pypi.python.org/pypi/apipkg
 import sys
 from types import ModuleType
 
-__version__ = "1.0b3"
+__version__ = "1.0b6"
 
 def initpkg(pkgname, exportdefs):
     """ initialize given package from the export definitions. """
     mod = ApiModule(pkgname, exportdefs, implprefix=pkgname)
     oldmod = sys.modules[pkgname]
     mod.__file__ = getattr(oldmod, '__file__', None)
-    mod.__version__ = getattr(oldmod, '__version__', None)
-    mod.__path__ = getattr(oldmod, '__path__', None)
+    mod.__version__ = getattr(oldmod, '__version__', '0')
+    for name in ('__path__', '__loader__'):
+        if hasattr(oldmod, name):
+            setattr(mod, name, getattr(oldmod, name))
     sys.modules[pkgname]  = mod
 
 def importobj(modpath, attrname):
@@ -55,14 +57,7 @@ class ApiModule(ModuleType):
         return '<ApiModule %r>' % (self.__name__,)
 
     def __makeattr(self, name):
-        '''
-        load the attribute `name`
-        assign it to self and return is
-
-        also aliased to __getattr__
-        the name __makeattr__ is used
-        '''
-
+        """lazily compute value for name or raise AttributeError if unknown."""
         target = None
         if '__onfirstaccess__' in self.__map__:
             target = self.__map__.pop('__onfirstaccess__')
@@ -77,10 +72,13 @@ class ApiModule(ModuleType):
         else:
             result = importobj(modpath, attrname)
             setattr(self, name, result)
-            del self.__map__[name]
+            try:
+                del self.__map__[name]
+            except KeyError:
+                pass # in a recursive-import situation a double-del can happen
             return result
 
-    __getattr__ = __makeattr # support getattr by aliasing
+    __getattr__ = __makeattr
 
     def __dict__(self):
         # force all the content of the module to be loaded when __dict__ is read
@@ -89,7 +87,6 @@ class ApiModule(ModuleType):
         if dict is not None:
             hasattr(self, 'some')
             for name in self.__all__:
-                # force attribute load, ignore errors
                 try:
                     self.__makeattr(name)
                 except AttributeError:
