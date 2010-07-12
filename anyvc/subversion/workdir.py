@@ -2,9 +2,9 @@ import os
 
 from anyvc.common.workdir import CommandBased, relative_to, WorkDirWithParser
 from subprocess import call
-from subvertpy import client, wc, ra, NODE_DIR
+#from subvertpy import client, wc, ra, NODE_DIR
 
-from subvertpy.ra import RemoteAccess, Auth, get_username_provider, SubversionException
+#from subvertpy.ra import RemoteAccess, Auth, get_username_provider, SubversionException
 
 class SubVersion(CommandBased):
     #XXX: disabled
