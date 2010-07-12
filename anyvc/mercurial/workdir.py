@@ -22,6 +22,10 @@ if hgversion < '1.2':
 
 from mercurial import ui as hgui, hg, commands, util, cmdutil
 from mercurial.match import match, always
+try:
+    remoteui = cmdutil.remoteui
+except AttributeError:
+    remoteui = hg.remoteui
 
 __all__ = 'Mercurial',
 
@@ -75,7 +79,7 @@ class Mercurial(WorkDir):
         pass #XXX unneded
 
     def create_from(self, source):
-        hg.clone(cmdutil.remoteui(self.ui, {}),
+        hg.clone(remoteui(self.ui, {}),
                 str(source), self.path.strpath)
 
     def status(self, paths=(), *k, **kw):
