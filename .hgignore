@@ -1,6 +1,7 @@
 .*\.swp
 .*\.pyc
 \.rope.*
+\.tox
 docs/build
 ^build
 ^dist
