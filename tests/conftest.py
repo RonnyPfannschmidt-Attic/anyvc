@@ -33,6 +33,7 @@ def pytest_configure(config):
     assert test_on,  'you shouldnt disable all test variations'
 
     vcs = config.getvalue('vcs')
+    vcs = vcs.split('-')[0]
     if vcs is None:
         return
     if vcs not in metadata.backends:
