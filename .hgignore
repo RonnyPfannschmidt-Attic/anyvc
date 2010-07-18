@@ -4,7 +4,7 @@
 \.tox
 docs/build
 ^build
-^dist
+^(deb_)?dist
 ^MANIFEST
 anyvc/__version__.py
 anyvc.egg-info
