@@ -146,10 +146,9 @@ class BazaarRepository(Repository):
         return "<Bzr 'repo' at %s>"%self.branch.base
 
     def __len__(self):
-        #XXX: crap
-        revs = self.branch.iter_merge_sorted_revisions()
-
-        return sum(1 for i in revs)
+        repo = self.branch.repository
+        stats = repo.gather_stats()
+        return stats['revisions']
 
     def get_default_head(self):
         id = self.branch.last_revision()
