@@ -135,10 +135,7 @@ def do_diff(vc, opts, args):
         has_pygments = False
         logging.debug('Pygments is not available.')
 
-    paths = args
-    if not paths:
-        paths = None
-
+    paths = tuple(args)
     diff = vc.diff(paths=paths).strip()
 
     if (not opts.no_color 
