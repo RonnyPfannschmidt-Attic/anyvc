@@ -1,5 +1,6 @@
 import py
 from tests.helpers import  VcsMan
+import os
 
 from anyvc import metadata
 
@@ -33,9 +34,9 @@ def pytest_configure(config):
     assert test_on,  'you shouldnt disable all test variations'
 
     vcs = config.getvalue('vcs')
-    vcs = vcs.split('-')[0]
     if vcs is None:
         return
+    vcs = vcs.split('-')[0]
     if vcs not in metadata.backends:
         if vcs in metadata.aliases:
             vcs = metadata.aliases[vcs]
@@ -43,6 +44,8 @@ def pytest_configure(config):
         else:
             raise KeyError(vcs, '%r not found' % vcs)
 
+
+    os.environ['BZR_EMAIL'] = 'Test <test@example.com>'
 
 funcarg_names = set('mgr repo wd backend'.split())
 

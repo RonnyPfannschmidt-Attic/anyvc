@@ -18,7 +18,7 @@ def test_rename_simple(repo):
         assert root.join('test_renamed.txt').exists()
 
 
-@py.test.mark.xfail(reason='not implemented')
+@py.test.mark.xfail(reason='not implemented', run=False)
 def test_rename_directory(repo):
 
     with repo.transaction(message='create', author='test') as root:
