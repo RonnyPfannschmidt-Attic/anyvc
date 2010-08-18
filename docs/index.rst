@@ -11,6 +11,7 @@ Contents:
    repo/index.rst
    internals/index.rst
    roadmap.rst
+   testing/index.rst
 
 
 

@@ -1,0 +1,33 @@
+Testing Utilities
+==================
+
+
+
+.. currentmodule:: tests.helpers
+
+.. autoclass:: VcsMan
+  :members:
+
+  .. attribute:: base
+
+    :type: :class:`py.path.local`
+
+    the base directory
+
+  .. attribute:: vc
+
+    the name of the managed vcs
+
+  .. attribute:: backend
+
+    :type: :class:`anyvc.backend.Backend`
+
+    the backend instance giving access to the currently tested vcs
+
+  .. attribute:: remote
+
+    boolean telling if the remoting support is used
+
+  .. attribute:: xspec
+
+    a :class:`execnet.XSpec` telling remote python if remoting is used

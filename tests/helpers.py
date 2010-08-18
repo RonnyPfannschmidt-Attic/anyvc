@@ -84,7 +84,10 @@ class WdWrap(object):
 
 
 class VcsMan(object):
-    """controller over a tempdir for tests"""
+    """
+    utility class to manage the creation of repositories and workdirs
+    inside of a specific path (usually the tmpdir funcarg of a test)
+    """
     def __init__(self, vc, base, xspec, backend):
         self.remote = xspec is not None
         self.vc = vc
@@ -96,9 +99,21 @@ class VcsMan(object):
         return '<VcsMan %(vc)s %(base)r>'%vars(self)
 
     def bpath(self, name):
+        """
+        :returns: path joined with :attr:`base`
+        :rtype: py.path.local
+        """
         return self.base.join(name)
 
     def create_wd(self, workdir, source=None):
+        """
+        :param workdir: name of the target workdir
+        :type workdir: str
+        :param source: name of a source repository
+        :type source: str or None
+
+        create a workdir if `source` is given, use it as base
+        """
         path = self.bpath(workdir)
         if source is None:
             wd = self.backend.Workdir(path, create=True)
