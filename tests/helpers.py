@@ -7,29 +7,26 @@ from anyvc.metadata import state_descriptions
 
 class WdWrap(object):
     """wraps a vcs"""
-    def __init__(self, vc, path):
-        self.__path = path
+    def __init__(self, vc):
         self.__vc = vc
 
     def __getattr__(self, name):
         return getattr(self.__vc, name)
 
-    def bpath(self, name):
-        return self.__path.join(name)
 
     def put_files(self, mapping):
         for name, content in mapping.items():
-            path = self.__path.ensure(name)
+            path = self.path.ensure(name)
             path.write(content.rstrip() + '\n')
 
     def has_files(self, *files):
-        missing = [name for name in map(self.bpath, files) if not name.check()]
+        missing = [name for name in map(self.path.join, files) if not name.check()]
         assert not missing, 'missing %s'%', '.join(missing)
         return not missing
 
     def delete_files(self, *relpaths):
         for path in relpaths:
-            self.bpath(path).remove()
+            self.path.join(path).remove()
 
     def check_states(self, exact=True, **kw):
         """takes a mapping of filename-> state
@@ -93,7 +90,7 @@ class VcsMan(object):
         path = self.base/workdir
         source_path = getattr(source, 'path', None)
         wd = self.backend.Workdir(path, create=True, source=source_path)
-        return WdWrap(wd, path)
+        return WdWrap(wd)
 
     def make_repo(self, name):
         """

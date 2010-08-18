@@ -123,7 +123,7 @@ def test_status_subdir_only(wd):
 @commited
 def test_workdir_open(wd, backend):
     import anyvc
-    wd2 = anyvc.workdir.open(wd.bpath(''))
+    wd2 = anyvc.workdir.open(wd.path)
     assert backend.is_workdir(wd2.path)
 
 
