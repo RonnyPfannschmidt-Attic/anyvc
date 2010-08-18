@@ -119,9 +119,14 @@ class VcsMan(object):
         wd = self.backend.Workdir(path, create=True, source=source_path)
         return WdWrap(wd, path)
 
-    def make_repo(self, path):
+    def make_repo(self, name):
+        """
+        :param name: name of the repository to create
+
+        create a repository usin the giv
+        """
         return self.backend.Repository(
-                path=self.bpath(path),
+                path=self.bpath(name),
                 create=True)
 
     def make_wd_darcs(self, repo, workdir):
