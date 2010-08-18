@@ -81,13 +81,6 @@ class VcsMan(object):
     def __repr__(self): 
         return '<VcsMan %(vc)s %(base)r>'%vars(self)
 
-    def bpath(self, name):
-        """
-        :returns: path joined with :attr:`base`
-        :rtype: py.path.local
-        """
-        return self.base.join(name)
-
     def create_wd(self, workdir, source=None):
         """
         :param workdir: name of the target workdir
@@ -97,7 +90,7 @@ class VcsMan(object):
 
         create a workdir if `source` is given, use it as base
         """
-        path = self.bpath(workdir)
+        path = self.base/workdir
         source_path = getattr(source, 'path', None)
         wd = self.backend.Workdir(path, create=True, source=source_path)
         return WdWrap(wd, path)
@@ -106,9 +99,7 @@ class VcsMan(object):
         """
         :param name: name of the repository to create
 
-        create a repository usin the giv
+        create a repository using the given name
         """
-        return self.backend.Repository(
-                path=self.bpath(name),
-                create=True)
+        return self.backend.Repository(path=self.base/name, create=True)
 

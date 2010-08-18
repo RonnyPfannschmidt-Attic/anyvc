@@ -5,7 +5,7 @@ import anyvc
 @py.test.mark.commit
 @py.test.mark.feature('wd:light')
 def test_checkout_local(repo, wd, mgr):
-    path = mgr.bpath('checkout')
+    path = mgr.base/'checkout'
 
     wd2 = anyvc.workdir.checkout(
         target=path,
@@ -18,7 +18,7 @@ def test_checkout_local(repo, wd, mgr):
 @py.test.mark.feature('wd:heavy')
 def test_clone(wd, mgr):
 
-    path = mgr.bpath('clone')
+    path = mgr.base/'clone'
 
     wd2 = anyvc.workdir.clone(
         target=path,
