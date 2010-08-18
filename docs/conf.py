@@ -48,9 +48,7 @@ copyright = u'2008, Pida Team'
 #
 # The full version, including alpha/beta/rc tags.
 
-os.chdir(base)
-version = hgdistver.get_version()
-os.chdir(os.path.dirname(cur))
+version = hgdistver.get_version(root=base)
 # The short X.Y version.
 if version:
     release = '.'.join(version.split('.')[:3])
