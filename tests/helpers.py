@@ -110,25 +110,13 @@ class VcsMan(object):
         :param workdir: name of the target workdir
         :type workdir: str
         :param source: name of a source repository
-        :type source: str or None
+        :type source: repo or None
 
         create a workdir if `source` is given, use it as base
         """
         path = self.bpath(workdir)
-        if source is None:
-            wd = self.backend.Workdir(path, create=True)
-            return WdWrap(wd, path)
-        else:
-            print source.path
-
-            path = getattr(source, 'path', source)
-            return self.make_wd(path, workdir)
-
-
-
-    def make_wd(self, repo, workdir):
-        path =self.bpath(workdir)
-        wd = self.backend.Workdir(path, create=True, source=repo)
+        source_path = getattr(source, 'path', None)
+        wd = self.backend.Workdir(path, create=True, source=source_path)
         return WdWrap(wd, path)
 
     def make_repo(self, path):
