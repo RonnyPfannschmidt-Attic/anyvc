@@ -97,13 +97,14 @@ def pytest_funcarg__wd(request):
     else:
         wd = mgr.create_wd('wd')
 
-    if hasattr(request.function, 'files'):
-        files = request.function.files.args[0]
+    fp = request.function
+    if hasattr(fp, 'files'):
+        files = fp.files.args[0]
         wd.put_files(files)
         assert wd.has_files(*files)
-        if  hasattr(request.function, 'commit'):
+        if  hasattr(fp, 'commit'):
             wd.add(paths=list(files))
-            wd.commit(message='*')
+            wd.commit(message='initial commit')
     return wd
 
 
