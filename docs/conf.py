@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-# anyvc documentation build configuration file, created by
-# sphinx-quickstart on Wed Nov 12 11:20:23 2008.
-#
-# This file is execfile()d with the current directory set to its containing dir.
 #
 # The contents of this file are pickled, so don't put values in the namespace
 # that aren't pickleable (module imports are okay, they're removed automatically).
@@ -21,7 +17,6 @@ cur = os.path.abspath(__file__)
 base = os.path.dirname(os.path.dirname(cur))
 sys.path.insert(0, base)
 
-import hgdistver
 
 # General configuration
 # ---------------------
@@ -48,6 +43,7 @@ copyright = u'2008, Pida Team'
 #
 # The full version, including alpha/beta/rc tags.
 
+import hgdistver
 version = hgdistver.get_version(root=base)
 # The short X.Y version.
 if version:
@@ -61,7 +57,10 @@ else:
 today_fmt = '%B %d, %Y'
 
 # List of documents that shouldn't be included in the build.
-#unused_docs = []
+exclude_patterns = [
+    'workdir/cli.rst', #XXX:
+    'readme.rst', #XXX:
+]
 
 # List of directories, relative to source directories, that shouldn't be searched
 # for source files.
@@ -69,22 +68,9 @@ exclude_trees = [
     'draco',
 ]
 
-# The reST default role (used for this markup: `text`) to use for all documents.
-#default_role = None
+# dont show the module names for class specs
+add_module_names = False
 
-# If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
-
-# If true, the current module name will be prepended to all description
-# unit titles (such as .. function::).
-#add_module_names = True
-
-# If true, sectionauthor and moduleauthor directives will be shown in the
-# output. They are ignored by default.
-#show_authors = False
-
-# The name of the Pygments (syntax highlighting) style to use.
-# pygments_style = 'sphinx'
 
 
 # Options for HTML output
