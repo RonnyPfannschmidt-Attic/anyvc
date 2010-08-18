@@ -2,25 +2,8 @@
 # license lgpl3 or later
 
 from __future__ import with_statement
-import os
-import sys
 
 from anyvc.metadata import state_descriptions
-from functools import wraps, partial
-from os.path import join, dirname, exists
-from tempfile import mkdtemp
-from subprocess import call
-from shutil import rmtree
-from anyvc.metadata import get_backend
-from anyvc.remote import RemoteBackend
-
-def do(*args, **kw):
-    args = map(str, args)
-    print args
-    if 'cwd' in kw:
-        kw['cwd'] = str(kw['cwd'])
-    call(args, stdin=None, **kw)
-
 
 class WdWrap(object):
     """wraps a vcs"""
@@ -129,10 +112,3 @@ class VcsMan(object):
                 path=self.bpath(name),
                 create=True)
 
-    def make_wd_darcs(self, repo, workdir):
-        do('darcs', 'get', repo, workdir)
-        workdir.join('_darcs/prefs/author').write('test')
-
-    def make_repo_darcs(self, path):
-        path.ensure(dir=True)
-        do('darcs', 'initialize', '--darcs-2', cwd=path)
