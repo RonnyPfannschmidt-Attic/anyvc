@@ -2,6 +2,36 @@ Testing Utilities
 ==================
 
 
+additional py.test options
+---------------------------
+
+
+
+.. program:: py.test
+
+.. option:: --vcs {name}
+
+  limit the testing for backends to the given vcs
+
+.. option:: --local-remoting
+
+  if given also test the local remoting
+
+.. option:: --no-direct-api
+
+  don't run the normal local testing,
+  usefull for remote-only
+
+
+pytest funcargs
+-----------------
+
+.. automodule:: tests.conftest
+  :members:
+
+
+Utility Classes
+-----------------
 
 .. currentmodule:: tests.helpers
 

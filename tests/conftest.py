@@ -61,6 +61,10 @@ def pytest_generate_tests(metafunc):
 
 
 def pytest_funcarg__backend(request):
+    """
+    create a cached backend instance that is used the whole session
+    makes instanciating backend cheap
+    """
     vc, spec = request.param
     return request.cached_setup(
             lambda: metadata.get_backend(vc, spec),
@@ -69,6 +73,13 @@ def pytest_funcarg__backend(request):
 
 
 def pytest_funcarg__mgr(request):
+    """
+    create a preconfigured :class:`tests.helplers.VcsMan` instance
+    pass the currently tested backend 
+    and create a tmpdir for the vcs/test combination
+
+    auto-check for the vcs features and skip if necessary
+    """
     vc, spec = request.param
     r = spec or 'local'
     vcdir = request.config.ensuretemp('%s_%s'%(vc, r) )
@@ -76,7 +87,7 @@ def pytest_funcarg__mgr(request):
     backend = request.getfuncargvalue('backend')
 
     required_features = getattr(request.function, 'feature', None)
-    
+
     if required_features:
         required_features = set(required_features.args)
         difference = required_features.difference(backend.features)
@@ -87,9 +98,16 @@ def pytest_funcarg__mgr(request):
     return VcsMan(vc, testdir, spec, backend)
 
 def pytest_funcarg__repo(request):
+    """
+    create a repo below mgf called 'repo'
+    """
     return request.getfuncargvalue('mgr').make_repo('repo')
 
 def pytest_funcarg__wd(request):
+    """
+    create a workdir below mgr called 'wd'
+    if the feature "wd:heavy" is not supported use repo as help
+    """
     mgr = request.getfuncargvalue('mgr')
     if 'wd:heavy' not in mgr.backend.features:
         repo = request.getfuncargvalue('repo')

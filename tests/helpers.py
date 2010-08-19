@@ -49,10 +49,12 @@ class WdWrap(object):
     def check_states(self, exact=True, **kw):
         """
         .. better listing of the states!
+
         :param bool exact: if true, ignore additional states
         :keyword $statename: state name for that particular file list
         :type $statename: list of relative path
         :returns: True if all supplied files have the asumed state
+
         """
         __tracebackhide__ = True
         assert isinstance(exact, bool)
