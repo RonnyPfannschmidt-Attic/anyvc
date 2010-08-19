@@ -31,3 +31,7 @@ Testing Utilities
   .. attribute:: xspec
 
     a :class:`execnet.XSpec` telling remote python if remoting is used
+
+
+.. autoclass:: WdWrap
+  :members:

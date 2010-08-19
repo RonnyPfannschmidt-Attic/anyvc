@@ -6,32 +6,53 @@ from __future__ import with_statement
 from anyvc.metadata import state_descriptions
 
 class WdWrap(object):
-    """wraps a vcs"""
-    def __init__(self, vc):
-        self.__vc = vc
+    """
+    :param wd: the workdir to wrap
+    :type wd: subclass of :class:`anyvc.common.workdir.Workdir`
+
+    decorator for a vcs workdir instance
+    adds testing utility functions and proxies the other methods/attributes
+    to the real instance
+    """
+    def __init__(self, wd):
+        self.__wd = wd
 
     def __getattr__(self, name):
-        return getattr(self.__vc, name)
+        return getattr(self.__wd, name)
 
 
     def put_files(self, mapping):
+        """
+        :type mapping: dict of (filename, text content)
+
+        the text content will be rstripped and get a newline appended
+        """
         for name, content in mapping.items():
             path = self.path.ensure(name)
             path.write(content.rstrip() + '\n')
 
     def has_files(self, *files):
+        """
+        :arg files: a listing of filenames that shsould exist
+        """
         missing = [name for name in map(self.path.join, files) if not name.check()]
         assert not missing, 'missing %s'%', '.join(missing)
         return not missing
 
     def delete_files(self, *relpaths):
+        """
+        :arg relpaths: listing of files to remove
+        """
         for path in relpaths:
             self.path.join(path).remove()
 
     def check_states(self, exact=True, **kw):
-        """takes a mapping of filename-> state
-        if exact is true, additional states are ignored
-        returns true if all supplied files have the asumed state
+        """
+        .. better listing of the states!
+        :param bool exact: if true, ignore additional states
+        :keyword $statename: state name for that particular file list
+        :type $statename: list of relative path
+        :returns: True if all supplied files have the asumed state
         """
         __tracebackhide__ = True
         assert isinstance(exact, bool)
