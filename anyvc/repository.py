@@ -25,7 +25,7 @@ def find(root, backends=None):
     :param root: the search root
     :type  root: py.path.local or path string
 
-    find all repositories below :param:`root`
+    find all repositories below `root`
     """
     start = local(root)
     backend = open(root, backends=backends)
