@@ -9,6 +9,6 @@ the details of the general test running process as well as the specific testcase
 .. toctree::
   :maxdepth: 2
 
-  utils.rst
-  worktree.rst
+  workdir
+  utils
 
