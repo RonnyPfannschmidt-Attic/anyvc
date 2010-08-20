@@ -28,6 +28,7 @@ setup(
         'anyvc.bazaar',
     ],
     install_requires=[
+        'apipkg',
         'py>=1.3',
     ],
     extras_require={

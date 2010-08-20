@@ -9,7 +9,7 @@
 """
 
 
-from anyvc import apipkg
+import apipkg
 apipkg.initpkg(__name__,{
     'workdir':{
         'clone':'anyvc._workdir:clone',
