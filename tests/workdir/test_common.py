@@ -153,3 +153,24 @@ def test_workdir_open(wd, backend):
     assert backend.is_workdir(wd2.path)
 
 
+
+
+@has_files
+@commited
+def test_workdir_open_honors_ANYVC_IGNORED_WORKDIRS(monkeypatch, wd):
+    import anyvc
+    assert anyvc.workdir.open(wd.path) is not None
+    monkeypatch.setenv('ANYVC_IGNORED_WORKDIRS', wd.path)
+    assert anyvc.workdir.open(wd.path) is None
+
+
+def test_disallowed_paths(monkeypatch):
+    from anyvc._workdir import _disallowd_workdirs
+    monkeypatch.setenv('ANYVC_IGNORED_WORKDIRS', '/a:/b')
+    dirs = _disallowd_workdirs()
+    assert '/a' in dirs
+    assert '/b' in dirs
+    monkeypatch.setenv('ANYVC_IGNORED_WORKDIRS', '~')
+    dirs = _disallowd_workdirs()
+    assert py.std.os.environ['HOME'] in dirs
+
