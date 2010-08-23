@@ -40,11 +40,12 @@ def open(path):
     """
     dont_try = _disallowd_workdirs()
     for part in local(path).parts(reverse=True):
+        if part in dont_try:
+            continue
+
         applying = [ backend for backend in get_backends()
                      if backend.is_workdir(part) ]
 
-        if part in dont_try:
-            continue
         if applying:
             if len(applying) > 1:
                 warnings.warn('found more than one backend below %s' % part)
