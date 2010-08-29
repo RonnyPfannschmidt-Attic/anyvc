@@ -1,22 +1,58 @@
-import os
-import sys
-import subprocess
-def getoutput(cmd, cwd='.'):
-    p = subprocess.Popen(cmd,
-                         shell=True,
-                         stdout=subprocess.PIPE,
-                         cwd=cwd,
-                        )
-    out, _ = p.communicate()
-    return out.decode() # will kill us sometimes
+"""
+:copyright: 2010 by Ronny Pfannschmidt
+:license: MIT
 
+"""
+import re
+import os
+import subprocess
 
 def hg(args, cwd='.'):
-    return getoutput('hg ' + args, cwd).strip()
+    p = subprocess.Popen(
+        'hg ' + args,
+        shell=True,
+        stdout=subprocess.PIPE,
+        cwd=cwd,
+        env=dict(os.environ,
+                 # try to disable i18n
+                 LC_ALL='C',
+                 LANGUAGE='',
+                 HGPLAIN='1',
+                )
+    )
+    out, _ = p.communicate()
+    return out.strip().decode()  # will kill us on hg lacking HGPLAIN support
+
+# extended pep 386 regex
+# see http://www.python.org/dev/peps/pep-0386/#the-new-versioning-algorithm
+version_re = r"""^
+(?P<prefix>\w+-?)?         # any text, may have a dash
+                              # custom to deal with tag prefixes
+(?P<version>\d+\.\d+)         # minimum 'N.N'
+(?P<extraversion>(?:\.\d+)*)  # any number of extra '.N' segments
+(?P<prerelfullversion>
+(:?
+    (?P<prerel>[abc]|rc)         # 'a' = alpha, 'b' = beta
+                                 # 'c' or 'rc' = release candidate
+    (?P<prerelversion>\d+(?:\.\d+)*)
+)?)
+# we dont mach those, its our job to generate them
+##(?P<postdev>(\.post(?P<post>\d+))?(\.dev(?P<dev>\d+))?)?
+$"""
+
+def tag_to_version(tag):
+    match = re.match(version_re, tag, re.VERBOSE)
+    if match is not None:
+        return ''.join(match.group(
+            'version', 'extraversion','prerelfullversion',
+        ))
+
+def tags_to_versions(tags):
+    return list(filter(None, map(tag_to_version, tags)))
 
 def version_from_cachefile(root, cachefile=None):
     #XXX: for now we ignore root
-    if not cachefile:
+    if not cachefile or not os.path.exists(cachefile):
         return
     #replaces 'with open()' from py2.6
     fd = open(cachefile)
@@ -36,19 +72,15 @@ def version_from_hg_id(root, cachefile=None):
     """stolen logic from mercurials setup.py as well"""
     l = hg('id -i -t', root).split()
     node = l.pop(0)
-    for tag in l:
-        #XXX: find better guess if version-number logic
-        if tag[0].isdigit():
-            version = tag
-            if node[-1] == '+':  # propagate the dirty status to the tag
-                version += '+'
-            return version
+    tags = tags_to_versions(l)
+    if tags:
+        return tags[0] + node[12:] # '' or '+'
 
 
 def version_from_hg15_parents(root, cachefile=None):
     node = hg('id -i', root)
     if node.strip('+') == '000000000000':
-        return '0.0.dev0-' + node
+        return '0.0.post0-' + node
 
     cmd = 'parents --template "{latesttag} {latesttagdistance}"'
     out = hg(cmd, root)
@@ -56,7 +88,7 @@ def version_from_hg15_parents(root, cachefile=None):
         tag, dist = out.split()
         if tag == 'null':
             tag = '0.0'
-        return '%s.dev%s-%s' % (tag, dist, node)
+        return '%s.post%s-%s' % (tag, dist, node)
     except ValueError:
         pass  # unpacking failed, old hg
 
@@ -75,11 +107,11 @@ def version_from_hg_log_with_tags(root, cachefile=None):
 
     for dist, line in enumerate(proc.stdout):
         line = line.decode()
-        tags = [t for t in line.split() if not t.isalpha()]
+        tags = tags_to_versions(line.split())
         if tags:
-            return '%s.dev%s-%s' % (tags[0], dist, node)
+            return '%s.post%s-%s' % (tags[0], dist, node)
 
-    return  '0.0.dev%s-%s' % (dist + 1, node)
+    return  '0.0.post%s-%s' % (dist + 1, node)
 
 
 def version_from_hg(root, cachefile=None):
@@ -98,12 +130,13 @@ def version_from_hg(root, cachefile=None):
     else:
         return version_from_hg15_parents(root)
 
+
 def _archival_to_version(data):
     """stolen logic from mercurials setup.py"""
     if 'tag' in data:
-        return data['tag']
+        return tag_to_version(data['tag'])
     elif 'latesttag' in data:
-        return '%(latesttag)s.dev%(latesttagdistance)s-%(node).12s' % data
+        return '%(latesttag)s.post%(latesttagdistance)s-%(node).12s' % data
     else:
         return data.get('node', '')[:12]
 
@@ -124,7 +157,7 @@ def version_from_archival(root, cachefile=None):
 
 def version_from_sdist_pkginfo(root, cachefile=None):
     pkginfo = os.path.join(root, 'PKG-INFO')
-    if cachefile is None and os.path.exists(pkginfo):
+    if os.path.exists(pkginfo):
         data = _data_from_archival(pkginfo)
         version = data.get('Version')
         if version != 'UNKNOWN':
