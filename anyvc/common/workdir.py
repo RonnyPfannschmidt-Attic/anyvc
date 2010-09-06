@@ -135,6 +135,11 @@ class WorkDir(object):
 
 
 class WorkDirWithParser(WorkDir):
+    """
+    extension of the workdir class to support
+    parsing needs
+    """
+
 
     def parse_status_items(self, items, cache):
         """
