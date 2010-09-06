@@ -20,6 +20,7 @@ Git
 
 The Git backend is split.
 Workdir support is implemented in terms of the git CLI because Dulwich has no complete support.
+Workdirs are still agnostic to the existence of the git index.
 Repository support is implemented in terms of Dulwich, cause its supported and the better 'api'.
 
 
