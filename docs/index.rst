@@ -7,11 +7,12 @@ Contents:
    :maxdepth: 2
 
    about.rst
-   workdir/index.rst
-   repo/index.rst
-   internals/index.rst
-   roadmap.rst
-   testing/index.rst
+   workdir/index
+   repo/index
+   backends/index
+   internals/index
+   roadmap
+   testing/index
 
 
 
