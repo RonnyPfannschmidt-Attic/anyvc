@@ -5,7 +5,7 @@ Roadmap
 wanted features
 ---------------
 
-wordir controll
+wordir control
   common ops to change the state of the workingtree
 workdir status
   get the file states of the worktree

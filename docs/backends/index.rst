@@ -2,7 +2,7 @@ VCS Abstraction Backends
 =========================
 
 
-currently anyvc ships with support for
+Currently anyvc ships with support for
 
 
 .. tableofcontents::
@@ -11,7 +11,7 @@ currently anyvc ships with support for
 Mercurial
 ---------
 
-The Mercurial backend is implemented in Terms of the basic merucrial api.
+The Mercurial backend is implemented in Terms of the basic Merucrial api.
 It does not support extension discovery or extensions.
 
 
@@ -34,6 +34,7 @@ Subversion
 -----------
 
 The Subversion backend is split as well.
-The workdir part is implemented in terms of the cli,
-because the subversion checkout api requires complicated locking patterns.
+The workdir part is implemented in terms of the CLI,
+because the Subversion checkout api requires complicated locking patterns.
 The Repository support is implemented in terms of subvertpy.
+

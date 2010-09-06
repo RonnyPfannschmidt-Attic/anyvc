@@ -1,7 +1,7 @@
 Internal Details
 ==================
 
-Following is supposed to be helfull information for debugging.
+Following is supposed to be helful information for debugging.
 
 
 .. toctree::

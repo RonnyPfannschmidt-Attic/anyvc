@@ -19,8 +19,8 @@ additional py.test options
 
 .. option:: --no-direct-api
 
-  don't run the normal local testing,
-  usefull for remote-only
+  Don't run the normal local testing,
+  useful for remote-only
 
 
 pytest funcargs
@@ -46,13 +46,13 @@ Utility Classes
 
   .. attribute:: vc
 
-    the name of the managed vcs
+    The name of the managed vcs
 
   .. attribute:: backend
 
     :type: :class:`anyvc.backend.Backend`
 
-    the backend instance giving access to the currently tested vcs
+    The backend instance giving access to the currently tested vcs
 
   .. attribute:: remote
 
@@ -60,7 +60,7 @@ Utility Classes
 
   .. attribute:: xspec
 
-    a :class:`execnet.XSpec` telling remote python if remoting is used
+    A :class:`execnet.XSpec` telling remote python if remoting is used
 
 
 .. autoclass:: WdWrap
