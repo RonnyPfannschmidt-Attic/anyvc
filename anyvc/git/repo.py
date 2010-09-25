@@ -10,6 +10,7 @@ from anyvc.common.repository import Repository, Revision
 from anyvc.common.commit_builder import CommitBuilder
 from ..exc import NotFoundError
 import subprocess
+import stat
 import os
 from py.path import local
 from datetime import datetime
@@ -49,8 +50,12 @@ class GitRevision(Revision):
     def resolve(self, path):
         repo = self.repo.repo
         tree = repo[self.commit.tree]
-        #XXX: highly incorrect, should walk and check the type
-        return repo[tree[path.lstrip('/')][1]]
+        loc, name = os.path.split(path.lstrip('/'))
+        for part in loc.split(os.sep):
+            if not part:
+                continue
+            tree = repo[tree[part][1]]
+        return repo[tree[name][1]]
 
     def file_content(self, path):
         try:
@@ -179,17 +184,19 @@ class GitRepository(Repository):
 
 
 def walk_tree_object(repo, tree, path=''):
-    #XXX: recursion
     for mode, name, sha in tree.entries():
-        print name, sha
-        yield name, sha
+        if stat.S_IFDIR & mode:
+            for name, sha in walk_tree(repo, sha, name):
+                yield os.path.join(path, name), sha
+        else:
+            yield os.path.join(path, name), sha
 
-def walk_tree(repo, tree_id):
+def walk_tree(repo, tree_id, path=''):
     if tree_id is None:
         return ()
     tree = repo.get_object(tree_id)
     assert tree.__class__ is Tree
-    return walk_tree_object(repo, tree)
+    return walk_tree_object(repo, tree, path)
 
 
 def diff_tree(repo, old, new):
