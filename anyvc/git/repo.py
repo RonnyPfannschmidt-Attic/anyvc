@@ -39,7 +39,7 @@ class GitRevision(Revision):
 
     @property
     def parents(self):
-        return [GitRevision(self.repo, self.repo.repo.commit(id))
+        return [GitRevision(self.repo, self.repo.repo[id])
                 for id in self.commit.parents]
 
     @property
