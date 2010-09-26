@@ -206,7 +206,6 @@ def diff_tree(repo, old, new):
     new_set = set(new_sha)
     old_set = set(old_sha)
 
-    print new_set, old_set
     added = new_set - old_set
     removed = old_set - new_set
 
