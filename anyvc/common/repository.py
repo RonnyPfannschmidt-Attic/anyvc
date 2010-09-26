@@ -63,7 +63,7 @@ class RevisionView(object):
         self.revision.isdir(self.path)
 
     def isfile(self):
-        return self.revisions.isfile(self.path)
+        return self.revision.isfile(self.path)
 
     def exists(self):
         return self.revision.exists(self.path)
