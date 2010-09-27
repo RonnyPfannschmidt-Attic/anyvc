@@ -21,11 +21,8 @@ class Backend(object):
 
     def _import(self, name):
         module, attr = name.split(':')
-        try:
-            impl_module = __import__(module, fromlist=['*'])
-            return getattr(impl_module, attr)
-        except (ImportError, AttributeError):
-            raise ImportError(name)
+        impl_module = __import__(module, fromlist=['*'])
+        return getattr(impl_module, attr)
 
     def is_workdir(self, path):
         return self.module.is_workdir(path)
