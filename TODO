@@ -1,0 +1,26 @@
+* py.test based integration testing on multiple vcs versions via
+
+  * virtualenv
+  * vsp 
+
+* a way to select the vcs to choose for init of repo/workdir
+* history view
+* fs branches <> clones
+
+  * shared data support ( bzr ? )
+
+* semantic branches <> bookmarks/git branches
+* checkouts of semantic branches in repos
+* pull/push granularity repo vs set of branches vs branch
+* merge granularity
+
+  * fs branches
+  * semantic branches
+
+
+* how the heck will svn fit
+
+  * fs branches 
+
+* deal with different orders of disconnections/existences 
+  of the different repo/brach/workdir models

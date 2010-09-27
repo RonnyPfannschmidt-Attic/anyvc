@@ -1,0 +1,11 @@
+.*\.swp
+.*\.pyc
+\.rope.*
+\.tox
+docs/build
+^build
+^(deb_)?dist
+^MANIFEST
+anyvc/__version__.py
+anyvc.egg-info
+\.commithero
