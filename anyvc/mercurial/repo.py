@@ -22,7 +22,7 @@ class MercurialRevision(Revision):
     
     @property
     def id(self):
-        return self.rev.node()
+        return self.rev.hex()
 
     @property
     def author(self):

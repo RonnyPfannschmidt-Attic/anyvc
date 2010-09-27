@@ -7,11 +7,15 @@ def test_build_first_commit(repo):
         with root.join('test.txt').open('w') as f:
             f.write("text")
 
-    with repo.get_default_head() as root:
+    head = repo.get_default_head()
+    with head as root:
         with root.join("test.txt").open() as f:
             content = f.read()
             assert content == 'text'
 
+    if not isinstance(head.id, int):
+        hre = py.std.re.compile('\w+')
+        assert hre.match(head.id), 'rev id is messed goo %r'%head.id
 
 def test_generate_commit_chain(repo):
     for i in range(1,11):
