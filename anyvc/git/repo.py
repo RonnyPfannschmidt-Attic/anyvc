@@ -35,7 +35,7 @@ class GitRevision(Revision):
     @property
     def time(self):
         #XXX distinct author and commiters?
-        return datetime.fromtimestamp(self.commit.commit_time)
+        return datetime.fromtimestamp(self.commit.author_time)
 
     @property
     def parents(self):
