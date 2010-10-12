@@ -159,7 +159,7 @@ class RemoteBackend(object):
 
     def Workdir(self, path, **kw):
         kw['path'] = str(path)
-        if 'source' in kw:
+        if kw.get('source'): # might be none
             kw['source'] = str(kw['source'])
         newchan = self._caller.open_workdir(**kw)
         return RemoteWorkdir(newchan)
