@@ -10,7 +10,7 @@ test_in_interpreters = 'python2', 'python3', 'jython', 'pypy'
 
 test_on = {
     '%s': None,
-    'remote/%s': 'popen//python=python2',
+    'remote/%s': 'popen',
 }
 
 def pytest_addoption(parser):
