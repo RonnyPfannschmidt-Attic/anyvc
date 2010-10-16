@@ -82,8 +82,7 @@ def pytest_funcarg__mgr(request):
     """
     vc, spec = request.param
     r = spec or 'local'
-    vcdir = request.config.ensuretemp('%s_%s'%(vc, r) )
-    testdir = vcdir.mkdir(request.function.__name__)
+    testdir = request.getfuncargvalue('tmpdir')
     backend = request.getfuncargvalue('backend')
 
     required_features = getattr(request.function, 'feature', None)

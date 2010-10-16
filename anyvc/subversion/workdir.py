@@ -26,6 +26,8 @@ class SubVersion(CommandBased):
 
 
     def create_from(self, source):
+        from urllib import quote
+        source = quote(str(source))
         call(['svn', 'co', 'file://%s' % source, self.path.strpath])
 
     state_map = {
