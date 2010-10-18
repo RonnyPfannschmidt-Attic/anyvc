@@ -61,7 +61,9 @@ class BazaarRevision(Revision):
 
     @property
     def author(self):
-        return self.bzrrev.get_apparent_author()
+        authors = self.bzrrev.get_apparent_authors()
+        if authors:
+            return authors[0]
 
     def file_content(self, path):
         tree = self.repo.branch.repository.revision_tree(self.bzrrev.revision_id)
