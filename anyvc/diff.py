@@ -33,7 +33,7 @@ def diff_for_commit(commit):
     changed_files = commit.get_changed_files()
 
     return ''.join(
-            itertools.chain.from_iterable(
-                diff_for_file(commit, file)
+                item
                 for file in changed_files
-            ))
+                for item in diff_for_file(commit, file)
+            )

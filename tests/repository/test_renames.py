@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import py
 
 def test_rename_simple(repo):

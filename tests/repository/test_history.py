@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import py
 from datetime import datetime
 

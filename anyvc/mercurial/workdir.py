@@ -15,10 +15,14 @@ from functools import wraps
 from anyvc.common.workdir import WorkDir, StatedPath
 from ..exc import NotFoundError
 
-from mercurial.__version__ import version as hgversion
-# no support for hg <= 1.0.2
-if hgversion < '1.2':
-    raise ImportError('HG version too old, please update to a release >= 1.2')
+try:
+    from mercurial.__version__ import version as hgversion
+except ImportError:
+    pass  #omg, cant figure
+else:
+    # no support for hg <= 1.0.2
+    if hgversion < '1.2':
+        raise ImportError('HG version too old, please update to a release >= 1.2')
 
 from mercurial import ui as hgui, hg, commands, util, cmdutil
 from mercurial.match import match, always

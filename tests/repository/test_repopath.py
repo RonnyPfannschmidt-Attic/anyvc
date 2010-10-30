@@ -1,3 +1,4 @@
+from __future__ import with_statement
 
 def test_write_direct(repo):
     with repo.transaction(author='test', message='test') as root:
