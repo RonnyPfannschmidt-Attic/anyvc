@@ -12,7 +12,7 @@ from anyvc.common.commit_builder import CommitBuilder
 from .workdir import grab_output
 from datetime import datetime
 from mercurial import commands, localrepo, ui, context
-from mercurial import error
+from mercurial import error, encoding
 from ..exc import NotFoundError
 
 
@@ -26,7 +26,7 @@ class MercurialRevision(Revision):
 
     @property
     def author(self):
-        return self.rev.user()
+        return encoding.fromlocal(self.rev.user())
 
     @property
     def time(self):
@@ -39,7 +39,7 @@ class MercurialRevision(Revision):
 
     @property
     def message(self):
-        return self.rev.description()
+        return encoding.fromlocal(self.rev.description())
 
     def file_content(self, path):
         try:
