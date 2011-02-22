@@ -6,6 +6,7 @@ features = [
     'wd:heavy',
 ]
 
+required_tools = ['git']
 
 base_dirs = [
     'objects',

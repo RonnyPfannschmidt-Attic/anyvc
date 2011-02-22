@@ -6,6 +6,8 @@ features = [
 #    'dvcs',
 ]
 
+required_tools = []
+
 def is_workdir(path):
     return path.join('.bzr/checkout').check(dir=1)
 

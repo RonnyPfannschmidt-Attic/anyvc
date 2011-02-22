@@ -5,6 +5,7 @@ features = [
     'wd:light',
 ]
 
+required_tools = ['svn']
 
 def is_workdir(path):
     svn = path.join('.svn')

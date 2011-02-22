@@ -10,6 +10,7 @@
 from anyvc.util import cachedproperty
 from anyvc.common.repository import Repository
 from anyvc.common.workdir import WorkDir, WorkDirWithParser, CommandBased
+import py
 
 class Backend(object):
     def __init__(self, name, module_name):
@@ -45,3 +46,12 @@ class Backend(object):
     @cachedproperty
     def Workdir(self):
         return self._import(self.module.workdir_class)
+
+    @property
+    def required_tools(self):
+        return self.module.required_tools
+
+    def missing_tools(self):
+        return [tool for tool in self.required_tools
+                if not py.path.local.sysfind(tool)]
+

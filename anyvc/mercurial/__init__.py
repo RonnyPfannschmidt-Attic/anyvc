@@ -6,6 +6,7 @@ features = [
     'wd:heavy',
 ]
 
+required_tools = []
 
 
 def is_hg(path):
