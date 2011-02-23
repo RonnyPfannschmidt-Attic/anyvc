@@ -7,6 +7,7 @@ features = [
 ]
 
 required_tools = ['git']
+required_modules = ['dulwich']
 
 base_dirs = [
     'objects',

@@ -5,13 +5,17 @@ features = [
     'wd:light',
 ]
 
+
 required_tools = ['svn']
+required_modules = ['subvertpy']
+
 
 def is_workdir(path):
     svn = path.join('.svn')
     return svn.join('entries').check() \
        and svn.join('props').check(dir=1) \
        and svn.join('text-base').check(dir=1)
+
 
 def is_repository(path):
     return path.join('format').check() \

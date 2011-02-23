@@ -7,7 +7,7 @@ features = [
 ]
 
 required_tools = []
-
+required_modules = ['mercurial']
 
 def is_hg(path):
     return path.join('.hg/store').check(dir=1) \

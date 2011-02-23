@@ -7,6 +7,7 @@ features = [
 ]
 
 required_tools = []
+required_modules = ['bzrlib']
 
 def is_workdir(path):
     return path.join('.bzr/checkout').check(dir=1)

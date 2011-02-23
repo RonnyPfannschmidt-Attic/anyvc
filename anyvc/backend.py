@@ -55,3 +55,16 @@ class Backend(object):
         return [tool for tool in self.required_tools
                 if not py.path.local.sysfind(tool)]
 
+    @property
+    def required_modules(self):
+        return self.module.required_modules
+
+    def missing_modules(self):
+        def tryimport(name):
+            try:
+                return __import__(name)
+            except ImportError:
+                pass
+
+        return [module for module in self.required_modules
+                if not tryimport(module)]

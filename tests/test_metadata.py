@@ -26,3 +26,9 @@ def test_required_tools(backend):
 
     assert not backend.missing_tools()
 
+def test_required_modules(backend):
+    # just to cause failures on missing data
+    backend.required_modules
+
+    assert not backend.missing_modules()
+
