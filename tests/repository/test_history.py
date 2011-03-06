@@ -83,3 +83,18 @@ def test_create_commit_with_author(mgr):
     print repr(head.author)
     assert head.author == 'test author' #whitespace gone
 
+def test_isdir(repo):
+    with repo.transaction(
+            message='test',
+            author='test') as root:
+        with root.join('testdir/test.txt').open('w') as f:
+            f.write("test")
+
+    head = repo.get_default_head()
+    assert head.isfile("/testdir/test.txt")
+    assert not head.isfile("/not_test.txt")
+    assert head.isdir("/")
+    assert head.isdir("/testdir")
+    # None-existant directories alphabetically before and after /testdir:
+    assert not head.isdir("/aaa")
+    assert not head.isdir("/xxx")
