@@ -10,10 +10,10 @@
 
 
 import apipkg
-apipkg.initpkg(__name__,{
-    'workdir':{
-        'clone':'anyvc._workdir:clone',
+apipkg.initpkg(__name__, {
+    'workdir': {
+        'clone': 'anyvc._workdir:clone',
         'checkout': 'anyvc._workdir:checkout',
-        'open':'anyvc._workdir:open',
+        'open': 'anyvc._workdir:open',
         },
     })

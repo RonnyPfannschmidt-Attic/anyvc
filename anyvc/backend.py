@@ -7,10 +7,8 @@
     :copyright: 2009 by Ronny Pfannschmidt
 """
 
-from anyvc.util import cachedproperty
-from anyvc.common.repository import Repository
-from anyvc.common.workdir import WorkDir, WorkDirWithParser, CommandBased
 import py
+from anyvc.util import cachedproperty
 
 class Backend(object):
     def __init__(self, name, module_name):
@@ -18,7 +16,7 @@ class Backend(object):
         self.module_name = module_name
 
     def __repr__(self):
-        return '<anyvc backend %s>'%(self.name,)
+        return '<anyvc backend %s>' % (self.name,)
 
     def _import(self, name):
         module, attr = name.split(':')

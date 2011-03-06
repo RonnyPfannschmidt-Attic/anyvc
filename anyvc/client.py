@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 """
     Command line client for anyvc.
@@ -57,9 +57,9 @@ def create_option_parser():
 
 def setup_logger(verbose):
     if verbose:
-        level=logging.DEBUG
+        level = logging.DEBUG
     else:
-        level=logging.INFO
+        level = logging.INFO
     logging.basicConfig(level=level, stream=sys.stderr, format='%(levelname)s: %(message)s')
 
 
@@ -94,9 +94,9 @@ def do_status(vc, opts, args):
     def output_state(st):
         output = list_letters.get(st.state, '*').ljust(2)
         color = list_colors.get(st.state)
-        if (sys.stdout.isatty() 
-            and console 
-            and color 
+        if (sys.stdout.isatty()
+            and console
+            and color
             and not opts.no_color
             and os.environ.get('TERM') != "dumb"):
             output = console.ansiformat(color, output)
@@ -138,9 +138,9 @@ def do_diff(vc, opts, args):
     paths = tuple(args)
     diff = vc.diff(paths=paths).strip()
 
-    if (not opts.no_color 
-        and has_pygments 
-        and sys.stdout.isatty() 
+    if (not opts.no_color
+        and has_pygments
+        and sys.stdout.isatty()
         and os.environ.get('TERM') != 'dumb'):
         diff = highlight(diff, get_lexer_by_name('diff'), TerminalFormatter())
 
@@ -163,15 +163,14 @@ def do_add(vc, opts, args):
 def do_push(vc, opts, args):
     repo = vc.repository
     if repo is None:
-        print >>sys.stderr, "cant find local repo to push from"
+        print >> sys.stderr, "cant find local repo to push from"
 
     if not repo.local:
         #XXX: better handling
-        print >>sys.stderr, "can't push from a non-local", repo.__class__.__name__
+        print >> sys.stderr, "can't push from a non-local", repo.__class__.__name__
         exit(1)
     location = args[0] if args else None
     print repo.push(location, opts.revision)
-
 
 
 # The available commands

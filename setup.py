@@ -1,12 +1,6 @@
 #!/usr/bin/python
 from __future__ import with_statement
-import os, sys
-from commands import getoutput
-try:
-    from setuptools import setup
-except:
-    from distutils.core import setup
-import time
+from setuptools import setup
 import hgdistver
 
 def read_readme():
@@ -14,9 +8,9 @@ def read_readme():
         return f.read()
 
 setup(
-    version = hgdistver.get_version(cachefile='anyvc/__version__.py'),
-    name = 'anyvc',
-    packages = [
+    version=hgdistver.get_version(cachefile='anyvc/__version__.py'),
+    name='anyvc',
+    packages=[
         'anyvc',
         'anyvc.common',
         'anyvc.remote',
@@ -48,7 +42,7 @@ setup(
     author='Ronny Pfannschmidt',
     author_email='Ronny.Pfannschmidt@gmx.de',
     long_description=read_readme(),
-    classifiers = [
+    classifiers=[
         'Intended Audience :: Developers',
     ],
 )
