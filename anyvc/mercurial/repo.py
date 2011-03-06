@@ -52,11 +52,15 @@ class MercurialRevision(Revision):
 
     def isdir(self, path):
         entries = list(self.rev)
-        if path[-1]!='/':
+        if not path.endswith('/'):
             path+='/'
+
         from bisect import bisect_right
-        entry = entries[bisect_right(entries, path)]
-        return path!=entry and path.startswith(entry)
+        point = bisect_right(entries, path)
+        if point >= len(entries):
+            return False
+        entry = entries[point]
+        return path!=entry and entry.startswith(path)
 
     def isfile(self, path):
         return path in self.rev
