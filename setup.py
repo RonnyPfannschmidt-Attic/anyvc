@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from __future__ import with_statement
 from setuptools import setup
-import hgdistver
+from anyvc import hgdistver
 
 def read_readme():
     with open('docs/readme.rst') as f:
