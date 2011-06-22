@@ -45,7 +45,7 @@ def test_clone_remote(mgr):
     )
 
 @py.test.mark.feature('wd:light')
-def test_checkout_remote(backend):
+def test_checkout_remote(backend, mgr):
 
     path = mgr.base/'checkout'
     wd = anyvc.workdir.checkout(
