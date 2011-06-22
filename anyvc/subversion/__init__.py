@@ -18,6 +18,14 @@ def is_workdir(path):
 
 
 def is_repository(path):
+    if not isinstance(path, py.path.local):
+        if path.startswith('svn://'):
+            return True
+        elif path.startswith('http+svn'):
+            return True
+
+    path = py.path.local(path)
+
     return path.join('format').check() \
        and path.join('hooks').check(dir=1) \
        and path.join('locks').check(dir=1) \
