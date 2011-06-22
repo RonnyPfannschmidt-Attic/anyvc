@@ -1,0 +1,11 @@
+Source: python-anyvc
+Section: devel
+Priority: optional
+Maintainer: ronny.pfannschmidt@gmx.de
+Build-Depends: debhelper, python-support (>= 0.5.3)
+Standards-Version: 3.8.2
+
+Package: python-anyvc
+Architecture: all
+Depends: mercurial, python
+Description: vcs abstraction for python
