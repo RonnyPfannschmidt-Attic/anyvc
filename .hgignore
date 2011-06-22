@@ -9,3 +9,4 @@ docs/build
 anyvc/__version__.py
 anyvc.egg-info
 \.commithero
+debian/python-
