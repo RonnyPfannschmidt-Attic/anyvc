@@ -49,18 +49,15 @@ class GitRevision(Revision):
 
     def resolve(self, path):
         repo = self.repo.repo
-        tree = repo[self.commit.tree]
-        loc, name = os.path.split(path.lstrip('/'))
-        for part in loc.split(os.sep):
-            if not part:
-                continue
-            tree = repo[tree[part][1]]
-        return repo[tree[name][1]]
+        tree = repo.get_object(self.commit.tree)
+        result = tree.lookup_path(repo.get_object, path)
+        return repo[result[1]]
 
     def file_content(self, path):
         try:
             #XXX: highly incorrect, should walk and check the type
             blob = self.resolve(path)
+            assert blob.__class__ is Blob
             return blob.data
         except KeyError:
             raise IOError('%r not found'%path)
@@ -69,6 +66,12 @@ class GitRevision(Revision):
         try:
             self.resolve(path)
             return True
+        except KeyError:
+            return False
+
+    def isfile(self, path):
+        try:
+            return self.resolve(path).__class__ is Blob
         except KeyError:
             return False
 
