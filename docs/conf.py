@@ -49,7 +49,7 @@ copyright = u'2008, Pida Team'
 #
 # The full version, including alpha/beta/rc tags.
 
-import hgdistver
+from anyvc import hgdistver
 version = hgdistver.get_version(root=base)
 # The short X.Y version.
 if version:
