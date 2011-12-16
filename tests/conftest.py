@@ -8,10 +8,7 @@ pytest_plugins = "doctest"
 
 test_in_interpreters = 'python2', 'python3', 'jython', 'pypy'
 
-test_on = {
-    '%s': None,
-    'remote/%s': 'popen',
-}
+
 
 def pytest_addoption(parser):
     g = parser.getgroup('anyvc')
@@ -22,17 +19,6 @@ def pytest_addoption(parser):
     g.addoption("--vcs", action='store', default=None)
 
 def pytest_configure(config):
-    if not config.getvalue('local_remoting'):
-        for key in list(test_on):
-            if '/' in key:
-                del test_on[key]
-    if config.getvalue('no_direct_api'):
-        for key in list(test_on):
-            if '/' not in key:
-                del test_on[key]
-
-    assert test_on,  'you shouldnt disable all test variations'
-
     vcs = config.getvalue('vcs')
     if vcs is None:
         return
@@ -52,23 +38,32 @@ funcarg_names = set('mgr repo wd backend'.split())
 def pytest_generate_tests(metafunc):
     if not funcarg_names.intersection(metafunc.funcargnames):
         return
-    for name in metadata.backends:
-        wanted = metafunc.config.getvalue('vcs')
-        if wanted is not None and name!=wanted:
-            continue
-        for id, spec in test_on.items():
-            metafunc.addcall(id=id%name, param=(name, spec))
+    specs = []
+    if not metafunc.config.getvalue('no_direct_api'):
+        specs.append(('direct', None))
+    if metafunc.config.getvalue('local_remoting'):
+        specs.append(('remote', 'popen'))
+    #XXX: ssh?
 
+    ids, values = zip(*specs)
+    metafunc.parametrize('spec', values, ids=ids)
+    wanted = metafunc.config.getvalue('vcs')
+    if wanted:
+        backends =[x for x in metadata.backends if x==wanted]
+    else:
+        backends = list(metadata.backends)
+    metafunc.parametrize('vcs', backends)
 
 def pytest_funcarg__backend(request):
     """
     create a cached backend instance that is used the whole session
     makes instanciating backend cheap
     """
-    vc, spec = request.param
+    vcs = request.getfuncargvalue('vcs')
+    spec = request.getfuncargvalue('spec')
     return request.cached_setup(
-            lambda: metadata.get_backend(vc, spec),
-            extrakey=request.param,
+            lambda: metadata.get_backend(vcs, spec),
+            extrakey=(vcs, spec),
             scope='session')
 
 
