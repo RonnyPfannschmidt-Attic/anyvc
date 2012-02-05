@@ -75,7 +75,7 @@ def pytest_funcarg__mgr(request):
 
     auto-check for the vcs features and skip if necessary
     """
-    vc, spec = request.param
+    spec = request.getfuncargvalue('spec')
     r = spec or 'local'
     testdir = request.getfuncargvalue('tmpdir')
     backend = request.getfuncargvalue('backend')
@@ -87,9 +87,9 @@ def pytest_funcarg__mgr(request):
         difference = required_features.difference(backend.features)
         print required_features
         if difference:
-            py.test.skip('%s lacks features %r' % (vc, sorted(difference)))
+            py.test.skip('%s lacks features %r' % (backend, sorted(difference)))
 
-    return VcsMan(vc, testdir, spec, backend)
+    return VcsMan(backend.name, testdir, spec, backend)
 
 def pytest_funcarg__repo(request):
     """
