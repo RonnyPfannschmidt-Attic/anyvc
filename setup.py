@@ -1,14 +1,12 @@
 #!/usr/bin/python
 from __future__ import with_statement
 from setuptools import setup
-from anyvc import hgdistver
 
 def read_readme():
     with open('docs/readme.rst') as f:
         return f.read()
 
 setup(
-    version=hgdistver.get_version(cachefile='anyvc/__version__.py'),
     name='anyvc',
     packages=[
         'anyvc',
@@ -20,6 +18,9 @@ setup(
         'anyvc.git',
         'anyvc.subversion',
         'anyvc.bazaar',
+    ],
+    setup_requires=[
+        'hgdistver',
     ],
     install_requires=[
         'apipkg',
@@ -42,6 +43,7 @@ setup(
     author='Ronny Pfannschmidt',
     author_email='Ronny.Pfannschmidt@gmx.de',
     long_description=read_readme(),
+    use_version_from_hg=True,
     classifiers=[
         'Intended Audience :: Developers',
     ],
