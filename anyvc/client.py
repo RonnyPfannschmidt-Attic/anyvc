@@ -14,6 +14,8 @@ import os, sys, logging
 
 from optparse import OptionParser
 
+from py.io import TerminalWriter
+
 # XXX Translations
 _ = lambda s: s
 
@@ -85,25 +87,13 @@ list_colors = {
 
 
 def do_status(vc, opts, args):
-
-    try:
-        from pygments import console
-    except ImportError:
-        console = None
+    tw = TerminalWriter()
 
     def output_state(st):
         output = list_letters.get(st.state, '*').ljust(2)
         color = list_colors.get(st.state)
-        if (sys.stdout.isatty()
-            and console
-            and color
-            and not opts.no_color
-            and os.environ.get('TERM') != "dumb"):
-            output = console.ansiformat(color, output)
-        sys.stdout.write(output)
-        sys.stdout.write(st.relpath)
-        sys.stdout.write('\n')
-        sys.stdout.flush()
+        tw.write(output, bold=True, **{color:True, })
+        tw.line(st.relpath)
 
     hidden_states = []
 
@@ -126,26 +116,17 @@ def do_status(vc, opts, args):
 
 
 def do_diff(vc, opts, args):
-    try:
-        from pygments import highlight
-        from pygments.lexers import get_lexer_by_name
-        from pygments.formatters import TerminalFormatter
-        has_pygments = True
-    except:
-        has_pygments = False
-        logging.debug('Pygments is not available.')
-
+    tw = TerminalWriter()
     paths = tuple(args)
     diff = vc.diff(paths=paths).strip()
+    for line in diff.splitlines():
+        kw=dict(
+            red=line[0] == '-',
+            green=line[0] == '+',
+            bold=line.split(' ', 1)[0] in ('diff','+++', '---'),
+        )
+        tw.line(line, **kw)
 
-    if (not opts.no_color
-        and has_pygments
-        and sys.stdout.isatty()
-        and os.environ.get('TERM') != 'dumb'):
-        diff = highlight(diff, get_lexer_by_name('diff'), TerminalFormatter())
-
-    sys.stdout.write(diff)
-    sys.stdout.flush()
 
 def do_commit(vc, opts, args):
     out = vc.commit(
