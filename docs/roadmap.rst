@@ -25,7 +25,6 @@ Status
 VCS      Workdir Repo    histbrowse branchman
 ======== ======= ======= ========== =========
 hg       yes     partial no         no
-bzr      yes     partial no         no
 svn      yes     partial no         no
 git      messy   partial no         no
 ======== ======= ======= ========== =========

@@ -28,7 +28,6 @@ setup(
     ],
     extras_require={
         'mercurial': ['mercurial'],
-        'bazaar': ['bzr'],
         'git': ['dulwich'],
         'subversion': ['subvertpy'],
         'remoting': ['execnet'],

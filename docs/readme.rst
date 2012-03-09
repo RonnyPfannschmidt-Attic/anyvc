@@ -23,4 +23,3 @@ Dependencies
 :mercurial: mercurial>=1.2
 :subversion: subvertpy
 :git: dulwich
-:bazaar: bzr>=1.16

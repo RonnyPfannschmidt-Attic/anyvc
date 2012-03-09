@@ -7,8 +7,6 @@
 * history view
 * fs branches <> clones
 
-  * shared data support ( bzr ? )
-
 * semantic branches <> bookmarks/git branches
 * checkouts of semantic branches in repos
 * pull/push granularity repo vs set of branches vs branch

@@ -2,7 +2,6 @@ import py
 import anyvc
 
 example_remotes = {
-    'bzr': 'lp:vellum',
     'mercurial': 'http://bitbucket.org/hpk42/apipkg/',
     'git': 'git://github.com/',
     'subversion': 'http+svn://bitbucket.org/hpk42/apipkg/trunk',

@@ -24,13 +24,6 @@ Workdirs are still agnostic to the existence of the git index.
 Repository support is implemented in terms of Dulwich, cause its supported and the better 'api'.
 
 
-Bazaar
--------
-
-The Bazaar backend is implemented in terms of bzrlib.
-It is to be considered as 'passes the tests' not as first class citizen
-
-
 Subversion
 -----------
 
