@@ -1,6 +1,6 @@
 import py
-import urllib2
 
+from anyvc.util import http_code_content
 
 repo_class = 'anyvc.mercurial.repo:MercurialRepository'
 workdir_class = 'anyvc.mercurial.workdir:Mercurial'
@@ -28,9 +28,9 @@ def is_repository(path):
         return is_hg(path)
     else:
         if path[:4] == 'http':
-            res = urllib2.urlopen(path+'?cmd=capabilities')
-            if res.code == 200:
-                return 'unbundle=' in res.read()
+            code, content = http_code_content(path+'?cmd=capabilities')
+            if code == 200:
+                return 'unbundle=' in content
         elif path[:4] == 'ssh':
             return False
             raise RuntimeError('ssh check not propperly implemented')

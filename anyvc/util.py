@@ -5,6 +5,18 @@
     some utility classes that help with metadata
 """
 
+import logging
+
+def http_code_content(path):
+    try:
+        res = urllib.urlopen(path)
+        return res.code, res.read()
+    except Exception, e: # diaper
+        logging.error('no data for path %s', path)
+        return -1, ''
+
+
+
 class cachedproperty(object):
     def __init__(self, func):
         self.func = func
