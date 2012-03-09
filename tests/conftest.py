@@ -46,13 +46,19 @@ def pytest_generate_tests(metafunc):
     #XXX: ssh?
 
     ids, values = zip(*specs)
-    metafunc.parametrize('spec', values, ids=ids)
+    metafunc.parametrize('spec', values, ids=ids, indirect=True)
     wanted = metafunc.config.getvalue('vcs')
     if wanted:
         backends =[x for x in metadata.backends if x==wanted]
     else:
         backends = list(metadata.backends)
-    metafunc.parametrize('vcs', backends)
+    metafunc.parametrize('vcs', backends, indirect=True)
+
+def pytest_funcarg__spec(request):
+    return request.param
+
+def pytest_funcarg__vcs(request):
+    return request.param
 
 def pytest_funcarg__backend(request):
     """
