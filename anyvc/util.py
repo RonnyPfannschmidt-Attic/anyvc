@@ -11,8 +11,8 @@ def http_code_content(path):
     try:
         res = urllib.urlopen(path)
         return res.code, res.read()
-    except Exception, e: # diaper
-        logging.error('no data for path %s', path)
+    except Exception as e: # diaper
+        logging.error('no data for path %s, error %s', path, e)
         return -1, ''
 
 

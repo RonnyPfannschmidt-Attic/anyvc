@@ -2,6 +2,20 @@
 from __future__ import with_statement
 from setuptools import setup
 
+
+
+from setuptools.command.test import test
+
+class pytest(test):
+    def finalize_options(self):
+        test.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+    def run_tests(self):
+        import pytest
+        pytest.main([])
+
+
 def read_readme():
     with open('docs/readme.rst') as f:
         return f.read()
@@ -17,7 +31,6 @@ setup(
         'anyvc.mercurial',
         'anyvc.git',
         'anyvc.subversion',
-        'anyvc.bazaar',
     ],
     setup_requires=[
         'hgdistver',
@@ -46,4 +59,5 @@ setup(
     classifiers=[
         'Intended Audience :: Developers',
     ],
+    cmdclass = {'test': pytest}
 )

@@ -13,7 +13,6 @@ from anyvc.common.repository import Repository, Revision, join
 from anyvc.common.commit_builder import CommitBuilder
 from subvertpy.properties import time_from_cstring, time_to_cstring
 from StringIO import StringIO
-from ..exc import NotFoundError
 
 
 from datetime import datetime
@@ -91,7 +90,7 @@ class SvnCommitBuilder(CommitBuilder):
             #XXX: subversion cant set a commit date on commit, sucker
             #'svn:date':time_to_cstring(self.time_unix*1000000),
             })
-        print self.time
+
         root = editor.open_root()
 
         for src, target in self.renames:
@@ -105,7 +104,7 @@ class SvnCommitBuilder(CommitBuilder):
         for file in self.contents:
             try:
                 svnfile = root.add_file(file)
-            except:
+            except Exception as e:
                 svnfile = root.open_file(file)
             txhandler = svnfile.apply_textdelta()
             f = StringIO(self.contents[file])
