@@ -49,24 +49,18 @@ def get_backends(limit_to=None):
     for backend in use:
         try:
             yield get_backend(backend)
-        except ImportError, e:
+        except ImportError:
             pass
 
 
 def get_backend(vcs, use_remote=False):
     module = backends[vcs]
-    if use_remote is True:
-        use_remote = 'popen'
+
     if use_remote:
+        if use_remote is True:
+            use_remote = 'popen'
         from anyvc.remote import RemoteBackend
         return RemoteBackend(vcs, module, use_remote)
     else:
         from anyvc.backend import Backend
         return Backend(vcs, module)
-
-def get_wd_impl(vcs):
-    return get_backend(vcs).Workdir
-
-
-def get_repo_impl(vcs):
-    return get_backend(vcs).Repository
