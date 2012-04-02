@@ -4,8 +4,6 @@
     :license: LGPL 2 or later
     :copyright: 2009 by Ronny Pfannschmidt
 """
-import os
-from anyvc.exc import NotFoundError
 from py.path import local
 
 def open(path, backends=None):

@@ -8,8 +8,6 @@
 # copyright 2008 by Ronny Pfannschmidt
 # license lgpl2 or later
 import py
-from anyvc.exc import NotFoundError
-from anyvc.metadata import get_wd_impl
 
 
 has_files = py.test.mark.files({
