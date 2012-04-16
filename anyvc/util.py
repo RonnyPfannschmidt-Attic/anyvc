@@ -9,6 +9,7 @@ import logging
 
 def http_code_content(path):
     try:
+        import urllib
         res = urllib.urlopen(path)
         return res.code, res.read()
     except Exception as e: # diaper
