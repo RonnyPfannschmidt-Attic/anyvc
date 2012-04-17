@@ -178,5 +178,9 @@ class Mercurial(WorkDir):
                 *self.joined(paths))
 
 
+    @grab_output
+    def update(self, paths=None, revision=None):
+        assert paths is None
+        commands.update(self.ui, self.repo, rev=revision)
 
 
