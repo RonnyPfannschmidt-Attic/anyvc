@@ -5,6 +5,7 @@ from 0.3.6 to 0.3.7
 -------------------
 
 * fix documentation building
+* temporary removal of the draco theme
 
 from 0.3.5 to 0.3.6
 --------------------
