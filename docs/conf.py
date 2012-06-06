@@ -87,8 +87,9 @@ add_module_names = False
 # given in html_static_path.
 # html_style = 'default.css'
 
-html_theme_path = ['.']
-html_theme = 'draco'
+#XXX: get the draco theme back
+#html_theme_path = ['.']
+#html_theme = 'draco'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
