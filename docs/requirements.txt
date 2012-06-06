@@ -1,0 +1,6 @@
+# for readthedocs
+hgdistver
+subvertpy
+dulwich
+py
+mercurial
