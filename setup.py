@@ -55,7 +55,7 @@ setup(
     author='Ronny Pfannschmidt',
     author_email='Ronny.Pfannschmidt@gmx.de',
     long_description=read_readme(),
-    use_version_from_hg=True,
+    get_version_from_scm=True,
     classifiers=[
         'Intended Audience :: Developers',
     ],
