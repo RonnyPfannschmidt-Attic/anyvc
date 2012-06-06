@@ -1,6 +1,11 @@
 Changelog
 ==========
 
+from 0.3.6 to 0.3.7
+-------------------
+
+* fix documentation building
+
 from 0.3.5 to 0.3.6
 --------------------
 
