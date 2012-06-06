@@ -17,8 +17,11 @@ class pytest(test):
 
 
 def read_readme():
-    with open('docs/readme.rst') as f:
-        return f.read()
+    result = []
+    for fname in ('docs/readme.rst', 'docs/changelog.rst'):
+        with open(fname) as f:
+            result.append(f.read())
+    return '\n'.join(result)
 
 setup(
     name='anyvc',
