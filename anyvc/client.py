@@ -75,25 +75,27 @@ list_letters = {
     'ignored': 'I',
 }
 
+# XXX: todo / steal color coding from pygments terminal writer
 list_colors = {
-    'clean': None,
-    'unknown': '*teal*',
+    #'clean': '',
+    'unknown': 'purple',
     'modified': 'red',
     'added': 'blue',
-    'removed': 'fuscia',
+    'removed': 'blue',
     'deleted': 'yellow',
-    'ignored': 'turquoise',
+    #'ignored': 'grey',
 }
 
 
+def output_state(tw, st):
+    output = list_letters.get(st.state, '*').ljust(2)
+    color = list_colors.get(st.state)
+    kw = {color:True} if color else {}
+    tw.write(output, bold=True, **kw)
+    tw.line(st.relpath)
+
 def do_status(vc, opts, args):
     tw = TerminalWriter()
-
-    def output_state(st):
-        output = list_letters.get(st.state, '*').ljust(2)
-        color = list_colors.get(st.state)
-        tw.write(output, bold=True, **{color:True, })
-        tw.line(st.relpath)
 
     hidden_states = []
 
@@ -110,7 +112,7 @@ def do_status(vc, opts, args):
 
     for st in vc.status(recursive=not opts.list_nonrecursive):
         if st.state not in hidden_states:
-            output_state(st)
+            output_state(tw, st)
 
     return 0
 
