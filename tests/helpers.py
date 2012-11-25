@@ -92,7 +92,7 @@ class VcsMan(object):
     inside of a specific path (usually the tmpdir funcarg of a test)
     """
     def __init__(self, vc, base, xspec, backend):
-        self.remote = xspec is not None
+        self.remote = not xspec.direct
         self.vc = vc
         self.base = base.ensure(dir=True)
         self.xspec = xspec

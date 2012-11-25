@@ -1,4 +1,5 @@
 import py
+import pytest
 from tests.helpers import  VcsMan
 import os
 
@@ -33,47 +34,38 @@ def pytest_configure(config):
 
     os.environ['BZR_EMAIL'] = 'Test <test@example.com>'
 
-funcarg_names = set('mgr repo wd backend'.split())
 
-def pytest_generate_tests(metafunc):
-    if not funcarg_names.intersection(metafunc.funcargnames):
-        return
-    specs = []
-    if not metafunc.config.getvalue('no_direct_api'):
-        specs.append(('direct', None))
-    if metafunc.config.getvalue('local_remoting'):
-        specs.append(('remote', 'popen'))
-    #XXX: ssh?
+@pytest.fixture(scope='session', params=['direct', 'popen'])
+def spec(request):
+    if request.config.getvalue('no_direct_api') \
+       and request.param == 'direct':
+        pytest.skip('no direct api testing')
+    if not request.config.getvalue('local_remoting') \
+       and request.param != 'direct':
+        pytest.skip('no remote testing')
+    from execnet.xspec import XSpec
+    return XSpec(request.param)
 
-    ids, values = zip(*specs)
-    metafunc.parametrize('spec', values, ids=ids, indirect=True)
-    wanted = metafunc.config.getvalue('vcs')
-    if wanted:
-        backends =[x for x in metadata.backends if x==wanted]
-    else:
-        backends = list(metadata.backends)
-    metafunc.parametrize('vcs', backends, indirect=True)
 
-def pytest_funcarg__spec(request):
+@pytest.fixture(scope='session', params=metadata.backends)
+def vcs(request):
+    wanted = request.config.getvalue('vcs')
+    if wanted and testcontext.param != wanted:
+        pytest.skip('%s not wanted for this test run' % testcontext.param)
     return request.param
 
-def pytest_funcarg__vcs(request):
-    return request.param
-
-def pytest_funcarg__backend(request):
+@pytest.fixture(scope='session')
+def backend(vcs, spec):
     """
     create a cached backend instance that is used the whole session
     makes instanciating backend cheap
     """
-    vcs = request.getfuncargvalue('vcs')
-    spec = request.getfuncargvalue('spec')
-    return request.cached_setup(
-            lambda: metadata.get_backend(vcs, spec),
-            extrakey=(vcs, spec),
-            scope='session')
+    if spec.direct:
+        spec = None
+        return metadata.get_backend(vcs, spec)
 
-
-def pytest_funcarg__mgr(request):
+@pytest.fixture()
+def mgr(spec, backend, tmpdir, request):
     """
     create a preconfigured :class:`tests.helplers.VcsMan` instance
     pass the currently tested backend 
@@ -81,11 +73,6 @@ def pytest_funcarg__mgr(request):
 
     auto-check for the vcs features and skip if necessary
     """
-    spec = request.getfuncargvalue('spec')
-    r = spec or 'local'
-    testdir = request.getfuncargvalue('tmpdir')
-    backend = request.getfuncargvalue('backend')
-
     required_features = getattr(request.function, 'feature', None)
 
     if required_features:
@@ -95,22 +82,24 @@ def pytest_funcarg__mgr(request):
         if difference:
             py.test.skip('%s lacks features %r' % (backend, sorted(difference)))
 
-    return VcsMan(backend.name, testdir, spec, backend)
+    return VcsMan(backend.name, tmpdir, spec, backend)
 
-def pytest_funcarg__repo(request):
+@pytest.fixture()
+def repo(mgr):
     """
     create a repo below mgf called 'repo'
     """
-    return request.getfuncargvalue('mgr').make_repo('repo')
+    return mgr.make_repo('repo')
 
-def pytest_funcarg__wd(request):
+@pytest.fixture()
+def wd(mgr, repo, request):
+    #XXX: repo only needed when light backends
     """
     create a workdir below mgr called 'wd'
     if the feature "wd:heavy" is not supported use repo as help
     """
-    mgr = request.getfuncargvalue('mgr')
     if 'wd:heavy' not in mgr.backend.features:
-        repo = request.getfuncargvalue('repo')
+        #repo = testcontext.getfuncargvalue('repo')
         wd = mgr.create_wd('wd', repo)
     else:
         wd = mgr.create_wd('wd')
