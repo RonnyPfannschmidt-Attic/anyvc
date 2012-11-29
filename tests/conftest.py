@@ -50,8 +50,8 @@ def spec(request):
 @pytest.fixture(scope='session', params=metadata.backends)
 def vcs(request):
     wanted = request.config.getvalue('vcs')
-    if wanted and testcontext.param != wanted:
-        pytest.skip('%s not wanted for this test run' % testcontext.param)
+    if wanted and request.param != wanted:
+        pytest.skip('%s not wanted for this test run' % request.param)
     return request.param
 
 @pytest.fixture(scope='session')
@@ -99,24 +99,22 @@ def wd(mgr, repo, request):
     if the feature "wd:heavy" is not supported use repo as help
     """
     if 'wd:heavy' not in mgr.backend.features:
-        #repo = testcontext.getfuncargvalue('repo')
         wd = mgr.create_wd('wd', repo)
     else:
         wd = mgr.create_wd('wd')
+    return wd
 
+@pytest.fixture(autouse=True)
+def prepared_files(request):
+    print request, dir(request)
     fp = request.function
     if hasattr(fp, 'files'):
+        wd = request.getfuncargvalue('wd')
         files = fp.files.args[0]
         wd.put_files(files)
         assert wd.has_files(*files)
         if  hasattr(fp, 'commit'):
             wd.add(paths=list(files))
             wd.commit(message='initial commit')
-    return wd
 
-
-def pytest_collect_directory(path, parent):
-    for compiled_module in path.listdir("*.pyc"):
-        if not compiled_module.new(ext=".py").check():
-            compiled_module.remove()
 
