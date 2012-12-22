@@ -1,9 +1,10 @@
 .*\.swp
 .*\.pyc
 \.rope.*
-\.tox
+\.tox/
+\.cache/
 docs/build
-^build
+^build/
 ^(deb_)?dist
 ^MANIFEST
 anyvc/__version__.py
