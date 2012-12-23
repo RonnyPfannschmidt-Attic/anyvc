@@ -10,6 +10,7 @@ from subvertpy import repos, delta
 from subvertpy.ra import (
     RemoteAccess, Auth,
     get_username_provider,
+    SubversionException,
 )
 from anyvc.common.repository import Repository, Revision, join
 from anyvc.common.commit_builder import CommitBuilder
@@ -42,11 +43,19 @@ class SubversionRevision(Revision):
             raise IOError('%r not found' % path)
 
     def path_info(self, path):
-        return self.repo.ra.check_path(path, self.id)
+        return self.repo.ra.check_path(path.lstrip('/'), self.id)
 
     def exists(self, path):
-        kind = self.path_info(path.lstrip('/'))
+        kind = self.path_info(path)
         return kind in (subvertpy.NODE_FILE, subvertpy.NODE_DIR)
+
+    def isfile(self, path):
+        kind = self.path_info(path)
+        return kind == subvertpy.NODE_FILE
+
+    def isdir(self, path):
+        kind = self.path_info(path)
+        return kind == subvertpy.NODE_DIR
 
     def prop(self, name):
         return self.repo.ra.rev_proplist(self.id).get(name)
@@ -102,18 +111,21 @@ class SvnCommitBuilder(CommitBuilder):
             file = root.add_file(target, join(self.repo.url, src), 1)
             file.close()
             root.delete_entry(src)
-        
+
         def add_file(file):
             parts = file.split('/')
             for i in range(1, len(parts)):
                 try:
                     root.add_directory('/'.join(parts[:i])).close()
-                except Exception as e:
+                except SubversionException as e:
                     pass
+                if e.args[-1] != 160020:
+                    raise
             try:
                 return root.add_file(file)
-            except Exception as e:
-                print e
+            except SubversionException as e:
+                if e.args[-1] != 160020:
+                    raise
                 return root.open_file(file)
 
         for file in self.contents:
