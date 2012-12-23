@@ -110,7 +110,6 @@ def wd(mgr, repo, request):
 
 @pytest.fixture(autouse=True)
 def prepared_files(request):
-    print request, dir(request)
     fp = request.function
     if hasattr(fp, 'files'):
         wd = request.getfuncargvalue('wd')
