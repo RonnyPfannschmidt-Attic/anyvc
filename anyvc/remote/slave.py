@@ -3,14 +3,15 @@ from anyvc.remote.object import RemoteHandler
 import time
 import datetime
 
+
 def start_controller(channel):
     vcs = channel.receive()
     backend_module = channel.receive()
     try:
         backend = Backend(vcs, backend_module)
-        backend.module # cause that one is lazy-loaded
+        backend.module  # cause that one is lazy-loaded
     except ImportError:
-        channel.send(None) # magic value for 'i dont have it'
+        channel.send(None)  # magic value for 'i dont have it'
         return
 
     workchan = channel.gateway.newchannel()
@@ -23,8 +24,7 @@ class SlaveBackend(RemoteHandler):
         RemoteHandler.__init__(self, channel)
         self.backend = backend
 
-
-    def open_repo(self, *k,**kw):
+    def open_repo(self, *k, **kw):
         repo = self.backend.Repository(*k, **kw)
         channel = self.newchannel()
         RepositoryHandler(channel, repo)
@@ -45,7 +45,9 @@ class SlaveBackend(RemoteHandler):
     def features(self):
         return self.backend.features
 
+
 class RepositoryHandler(RemoteHandler):
+
     def __init__(self, channel, repo):
         RemoteHandler.__init__(self, channel)
         self.repo = repo
@@ -146,11 +148,10 @@ class TransactionHandler(RemoteHandler):
         self.transaction.__enter__()
 
     def write(self, path, data):
-        fb = self.transaction.write(path, data)
+        self.transaction.write(path, data)
 
     def commit(self):
         self.transaction.__exit__(None, None, None)
 
     def rename(self, source, dest):
         self.transaction.rename(source, dest)
-

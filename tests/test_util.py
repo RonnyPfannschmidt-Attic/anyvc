@@ -1,6 +1,7 @@
 from anyvc.util import cachedproperty
 from itertools import count
 
+
 def test_cached_property():
     # kinda stupid
     class test(object):

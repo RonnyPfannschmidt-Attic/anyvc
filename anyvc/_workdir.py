@@ -21,8 +21,9 @@ from py.path import local
 def _disallowd_workdirs():
     return set(
         local(os.path.expanduser(x))
-        for x in os.environ.get('ANYVC_IGNORED_WORKDIRS',
-                                '/').split(os.pathsep))
+        for x in os.environ.get(
+            'ANYVC_IGNORED_WORKDIRS', '').split(os.pathsep))
+
 
 def open(path):
     """
@@ -41,7 +42,7 @@ def open(path):
             continue
 
         applying = [backend for backend in get_backends()
-                    if backend.is_workdir(part) ]
+                    if backend.is_workdir(part)]
 
         if applying:
             if len(applying) > 1:

@@ -1,6 +1,6 @@
 from execnet import makegateway
-import pickle
 from anyvc.remote.object import RemoteCaller
+
 
 def test_remote_object():
     gw = makegateway('popen')
@@ -16,7 +16,7 @@ def test_remote_object():
     """)
     caller = RemoteCaller(channel.receive())
     result = caller.test(a=1)
-    assert result == {'a':1}
+    assert result == {'a': 1}
 
 
 class TestChannel(object):
@@ -30,8 +30,9 @@ class TestChannel(object):
 
     def receive(self):
         result = self.next
-        del self.next #XXX: crude hack
+        del self.next  # XXX: crude hack
         return result
+
 
 def test_caller():
 

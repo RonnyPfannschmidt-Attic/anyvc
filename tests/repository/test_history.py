@@ -16,15 +16,16 @@ def test_build_first_commit(repo):
 
     if not isinstance(head.id, int):
         hre = py.std.re.compile('\w+')
-        assert hre.match(head.id), 'rev id is messed goo %r'%head.id
+        assert hre.match(head.id), 'rev id is messed goo %r' % head.id
+
 
 def test_generate_commit_chain(repo):
-    for i in range(1,11):
+    for i in range(1, 11):
         with repo.transaction(
-                message='test%s'%i,
+                message='test%s' % i,
                 author='test') as root:
             with root.join('test.txt').open('w') as f:
-                f.write("test%s"%i)
+                f.write('test%s' % i)
 
     assert len(repo) == 10
 
@@ -43,7 +44,7 @@ def test_generate_commit_chain(repo):
         with rev as root:
             with root.join('test.txt').open() as f:
                 data = f.read()
-                assert data == 'test%s'%(i+1)
+                assert data == 'test%s' % (i + 1)
 
 
 def test_create_commit_at_time(mgr, repo):
@@ -54,7 +55,8 @@ def test_create_commit_at_time(mgr, repo):
 
     with repo.transaction(
             message='test',
-            author='test',#XXX: author should be optional
+            #XXX: author should be optional
+            author='test',
             time=datetime(2000, 1, 1, 10, 0, 0)) as root:
         with root.join('test.txt').open('w') as f:
                 f.write('test')
@@ -68,20 +70,22 @@ def test_create_commit_at_time(mgr, repo):
 
 def test_create_commit_with_author(mgr):
     if mgr.vc == 'subversion':
-        py.test.skip('currently no support for setting the commit author on svn')
+        py.test.skip('currently no support for '
+                     'setting the commit author on svn')
 
     repo = mgr.make_repo('repo')
 
     with repo.transaction(
             message='test',
-            author='test author ', #with whitespace
-            ) as root:
+            author='test author ',  # with whitespace
+    ) as root:
         with root.join('test.txt').open('w') as f:
                 f.write('test')
 
     head = repo.get_default_head()
     print repr(head.author)
-    assert head.author == 'test author' #whitespace gone
+    assert head.author == 'test author'  # whitespace gone
+
 
 def test_isdir(repo):
     with repo.transaction(

@@ -13,12 +13,14 @@ features = [
 required_tools = []
 required_modules = ['mercurial']
 
+
 def is_hg(path):
-    return path.join('.hg/store').check(dir=1) \
-       and path.join('.hg/requires').check()
+    return (path.join('.hg/store').check(dir=1) and
+            path.join('.hg/requires').check())
 
 
 is_workdir = is_hg
+
 
 def is_repository(path):
     if isinstance(path, py.path.local) \
@@ -28,7 +30,7 @@ def is_repository(path):
         return is_hg(path)
     else:
         if path[:4] == 'http':
-            code, content = http_code_content(path+'?cmd=capabilities')
+            code, content = http_code_content(path + '?cmd=capabilities')
             if code == 200:
                 return 'unbundle=' in content
         elif path[:4] == 'ssh':
@@ -37,4 +39,3 @@ def is_repository(path):
         else:
             return False
             raise RuntimeError('unknown kind of path ' + str(path))
-

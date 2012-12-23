@@ -12,12 +12,12 @@ from ..exc import NotFoundError
 import subprocess
 import stat
 import os
-from py.path import local
 from datetime import datetime
 from collections import defaultdict
 from dulwich.repo import Repo
 from dulwich.objects import Blob, Tree, Commit
 from dulwich.errors import NotGitRepository
+
 
 class GitRevision(Revision):
 
@@ -46,7 +46,6 @@ class GitRevision(Revision):
     def message(self):
         return self.commit.message.rstrip()
 
-
     def resolve(self, path):
         repo = self.repo.repo
         tree = repo.get_object(self.commit.tree)
@@ -60,7 +59,7 @@ class GitRevision(Revision):
             assert blob.__class__ is Blob
             return blob.data
         except KeyError:
-            raise IOError('%r not found'%path)
+            raise IOError('%r not found' % path)
 
     def exists(self, path):
         try:
@@ -85,16 +84,15 @@ class GitRevision(Revision):
         added, removed, changed = diff_tree(self.repo.repo, old, new)
         return sorted(added | removed | changed)
 
+
 class GitCommitBuilder(CommitBuilder):
 
     def commit(self):
-        #XXX: evidence for the rest of 
+        #XXX: evidence for the rest of
         # this functions is supposed not to exist
-        # yes, its that 
-
-        #XXX: generate all objects at once and 
+        # yes, its that
+        #XXX: generate all objects at once and
         #     add them as pack instead of legacy objects
-
         r = self.repo.repo
         store = r.object_store
         new_objects = []
@@ -120,12 +118,12 @@ class GitCommitBuilder(CommitBuilder):
             tree[dest] = tree[src]
             del tree[src]
 
-
         for name in names:
             blob = Blob()
             blob.data = self.contents[name]
             new_objects.append((blob, name))
             tree.add(0555, os.path.basename(name), blob.id)
+
         new_objects.append((tree, ''))
         commit = Commit()
         if self.base_commit:
@@ -141,6 +139,7 @@ class GitCommitBuilder(CommitBuilder):
         new_objects.append((commit, ''))
         store.add_objects(new_objects)
         self.repo.repo.refs['HEAD'] = commit.id
+
 
 class GitRepository(Repository):
     CommitBuilder = GitCommitBuilder
@@ -184,8 +183,6 @@ class GitRepository(Repository):
         return GitRevision(self, self.repo.get_object(id))
 
 
-
-
 def walk_tree_object(repo, tree, path=''):
     for mode, name, sha in tree.entries():
         if stat.S_IFDIR & mode:
@@ -193,6 +190,7 @@ def walk_tree_object(repo, tree, path=''):
                 yield os.path.join(path, name), sha
         else:
             yield os.path.join(path, name), sha
+
 
 def walk_tree(repo, tree_id, path=''):
     if tree_id is None:
@@ -212,14 +210,10 @@ def diff_tree(repo, old, new):
     added = new_set - old_set
     removed = old_set - new_set
 
-    changed = set(name
-            for name, sha in new_sha.items()
-            if name not in added
-            and name not in removed
-            and old_sha[name] != sha)
+    changed = set(
+        name for name, sha in new_sha.items()
+        if (name not in added and
+            name not in removed and
+            old_sha[name] != sha)
+    )
     return added, removed, changed
-
-
-
-
-

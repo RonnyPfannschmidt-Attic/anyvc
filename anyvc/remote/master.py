@@ -11,17 +11,13 @@
 
 """
 from execnet import makegateway
-from os.path import join
-
-from anyvc.exc import NotFoundError
 from anyvc.util import cachedproperty
 from .object import RemoteCaller
-from anyvc.common.commit_builder import CommitBuilder, FileBuilder, RevisionBuilderPath
-from anyvc.common.repository import MemoryFile
-from anyvc.metadata import backends
+from anyvc.common.commit_builder import RevisionBuilderPath
 import time
 import datetime
 from py.path import local
+
 
 class RemoteCommit(object):
     def __init__(self, repo, id):
@@ -37,7 +33,7 @@ class RemoteCommit(object):
     def file_content(self, path):
         data = self.repo.commit_file_content(self.id, path)
         if data is None:
-            raise IOError('%r not found'%path)
+            raise IOError('%r not found' % path)
         return data
 
     @cachedproperty
@@ -66,7 +62,7 @@ class RemoteCommit(object):
 
 
 class RemoteRepository(RemoteCaller):
-    
+
     @cachedproperty
     def path(self):
         return local(self._call_remote('path'))
@@ -80,7 +76,7 @@ class RemoteRepository(RemoteCaller):
 
     def transaction(self, *k, **kw):
         t = kw.get('time')
-        if isinstance(t, datetime.datetime): #XXX: fragile
+        if isinstance(t, datetime.datetime):  # XXX: fragile
             t = time.mktime(t.timetuple())
             kw['time'] = t
         channel = self._call_remote('transaction', *k, **kw)
@@ -114,6 +110,7 @@ class RemoteTransaction(RemoteCaller):
     def __enter__(self):
         #XXX: take remote commit into account
         return RevisionBuilderPath(None, '', self)
+
     def __exit__(self, etype,  eval, tb):
         if etype is None:
             self.commit()
@@ -159,7 +156,7 @@ class RemoteBackend(object):
 
     def Workdir(self, path, **kw):
         kw['path'] = str(path)
-        if kw.get('source'): # might be none
+        if kw.get('source'):  # might be none
             kw['source'] = str(kw['source'])
         newchan = self._caller.open_workdir(**kw)
         return RemoteWorkdir(newchan)

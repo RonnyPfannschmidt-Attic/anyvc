@@ -5,12 +5,9 @@
     :copyright: 2007-2008 Ronny Pfannschmidt
     :license: LGPL2 or later
 """
-
-
-
-from anyvc.common.workdir import CommandBased, relative_to
-import re
+from anyvc.common.workdir import CommandBased
 from subprocess import call
+
 
 class Git(CommandBased):
     """
@@ -25,9 +22,6 @@ class Git(CommandBased):
         from .repo import GitRepository
         return GitRepository(workdir=self)
 
-    def setup(self):
-        pass #XXX: actually unneded?
-
     def create_from(self, source):
         call(['git', 'clone', str(source), self.path.strpath])
 
@@ -39,8 +33,9 @@ class Git(CommandBased):
 
     def get_commit_args(self, message, paths=(), **kw):
         if paths:
+            paths = list(self.process_paths(paths))
             # commit only for the supplied paths
-            return ['commit', '-m', message, '--'] + list(self.process_paths(paths))
+            return ['commit', '-m', message, '--'] + paths
         else:
             # commit all found changes
             # this also adds all files not tracked and not in gitignore
@@ -48,10 +43,10 @@ class Git(CommandBased):
             return ['commit', '-a', '-m', message]
 
     def get_revert_args(self, paths=(), recursive=False, **kw):
-        return ['checkout','HEAD'] + self.process_paths(paths)
+        return ['checkout', 'HEAD'] + self.process_paths(paths)
 
     def get_remove_args(self, paths=(), recursive=False, execute=False, **kw):
-        return ['rm'] +  self.process_paths(paths)
+        return ['rm'] + self.process_paths(paths)
 
     def get_rename_args(self, source, target):
         return ['mv', source, target]
@@ -62,17 +57,17 @@ class Git(CommandBased):
     def status_impl(self, *k, **kw):
         #XXX: OMG HELLISH FRAGILE SHIT
         if self.execute_command(['branch']).strip():
-            tree = set(self.execute_command([
-            'ls-tree', '-r', '--name-only', 'HEAD'
-            ]).splitlines())
+            tree = set(self.execute_command(
+                ['ls-tree', '-r', '--name-only', 'HEAD']
+            ).splitlines())
         else:
             tree = set()
 
         def ls_files(args):
-            files = self.execute_command([
-                    'ls-files' ] + [
-                    '-%s' % c for c in args
-                ]).splitlines()
+            files = self.execute_command(
+                ['ls-files'] +
+                ['-%s' % c for c in args]
+            ).splitlines()
 
             d = dict()
             for item in files:
@@ -103,5 +98,3 @@ class Git(CommandBased):
                 yield 'missing', name
             elif 'C' in w and 'H' in i:
                 yield 'modified', name
-
-

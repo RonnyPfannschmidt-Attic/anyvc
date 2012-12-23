@@ -15,5 +15,5 @@ apipkg.initpkg(__name__, {
         'clone': 'anyvc._workdir:clone',
         'checkout': 'anyvc._workdir:checkout',
         'open': 'anyvc._workdir:open',
-        },
-    })
+    },
+})

@@ -13,18 +13,20 @@ import os
 from functools import wraps
 
 from anyvc.common.workdir import WorkDir, StatedPath
-from ..exc import NotFoundError
+
+version_error = ImportError('HG version too old, '
+                            'please update to a release >= 1.3')
 
 try:
     import mercurial.util
     hgversion = mercurial.util.version()
     from mercurial.__version__ import version as hgversion
     if hgversion < '1.3':
-        raise ImportError('HG version too old, please update to a release >= 1.3')
+        raise version_error
 except AttributeError:
-    raise ImportError('HG version too old, please update to a release >= 1.3')
+    raise version_error
 
-from mercurial import ui as hgui, hg, commands, util, cmdutil
+from mercurial import ui as hgui, hg, commands, cmdutil
 from mercurial.match import match, always
 try:
     remoteui = cmdutil.remoteui
@@ -32,7 +34,6 @@ except AttributeError:
     remoteui = hg.remoteui
 
 __all__ = 'Mercurial',
-
 
 
 #XXX: this shouldn't work if used by the vc client
@@ -68,7 +69,7 @@ class Mercurial(WorkDir):
         """
         try:
             self.ui = hgui.ui(interactive=False, verbose=True, debug=True)
-        except TypeError: # hg >= 1.3 ui
+        except TypeError:  # hg >= 1.3 ui
             self.ui = hgui.ui()
             self.ui.setconfig('ui', 'interactive', 'off')
 
@@ -79,29 +80,31 @@ class Mercurial(WorkDir):
     def create(self):
         hg.repository(self.ui, self.path.strpath, create=True)
 
-    def setup(self):
-        pass #XXX unneded
-
     def create_from(self, source):
         if hasattr(hg, 'peer'):
-            hg.clone(remoteui(self.ui, {}), {},
-                    str(source), self.path.strpath)
+            hg.clone(
+                remoteui(self.ui, {}), {},
+                str(source), self.path.strpath)
         else:
-            hg.clone(remoteui(self.ui, {}),
-                    str(source), self.path.strpath)
+            hg.clone(
+                remoteui(self.ui, {}),
+                str(source), self.path.strpath)
 
     def status(self, paths=(), *k, **kw):
-        glob = '**' if kw.get('recursive') else '*'
+        #XXX: regursive kwargs
         #XXX: merce conflicts ?!
         names = (
-                'modified', 'added', 'removed',
-                'missing', 'unknown', 'ignored', 'clean',
-                )
+            'modified', 'added', 'removed',
+            'missing', 'unknown', 'ignored', 'clean',
+        )
 
         if paths:
         #XXX: investigate cwd arg
-            matcher = match(self.repo.root, self.repo.root, paths,
-                    default='relpath')
+            matcher = match(
+                self.repo.root, self.repo.root,
+                paths,
+                default='relpath',
+            )
         else:
             matcher = always(self.repo.root, self.repo.root)
 
@@ -115,8 +118,6 @@ class Mercurial(WorkDir):
             for file in files:
                 yield StatedPath(file, state, base=self.path)
 
-
-
     @grab_output
     def add(self, paths=()):
         commands.add(self.ui, self.repo, *self.joined(paths))
@@ -128,59 +129,60 @@ class Mercurial(WorkDir):
 
     @grab_output
     def commit(self, paths=(), message=None, user=None):
-        commands.commit(self.ui, self.repo,
+        commands.commit(
+            self.ui, self.repo,
             user=user,
             message=message,
             logfile=None,
             date=None,
-
             *self.joined(paths)
-            )
+        )
 
     @grab_output
     def remove(self, paths):
         #XXX: support for after ?
-        commands.remove(self.ui, self.repo,
-                after=False, # only hg 0.9.5 needs that explicit
-                force=False,
-                *self.joined(paths)
-                )
+        commands.remove(
+            self.ui, self.repo,
+            after=False,  # only hg 0.9.5 needs that explicit
+            force=False,
+            *self.joined(paths)
+        )
 
     @grab_output
-    def revert(self, paths, rev=None): #XXX: how to pass opts['all']?
+    def revert(self, paths, rev=None):
+        #XXX: how to pass opts['all']?
         if rev is None:
             parents = self.repo.parents()
-            if len(parents)!=1 and rev is None:
+            if len(parents) != 1 and rev is None:
                 #XXX: better exception type?
                 raise Exception(
-                        "can't revert on top of a merge without explicit rev")
+                    "can't revert on top of a merge without explicit rev")
             rev = parents[0].rev()
-        commands.revert(self.ui, self.repo,
-                date=None,
-                rev=rev,
-                no_backup=False,
-                *self.joined(paths))
+        commands.revert(
+            self.ui, self.repo,
+            date=None,
+            rev=rev,
+            no_backup=False,
+            *self.joined(paths))
 
     @grab_output
     def rename(self, source, target):
-        commands.rename(self.ui, self.repo,
-                after=False, # hg 0.9.5
-                *self.joined([source, target])
-                )
+        commands.rename(
+            self.ui, self.repo,
+            after=False,  # hg 0.9.5
+            *self.joined([source, target])
+        )
 
     @grab_output
     def diff(self, paths=(), rev=None):
         commands.diff(
-                self.ui,
-                self.repo,
-                rev=rev,
-                git=True,
-                *self.joined(paths))
-
+            self.ui,
+            self.repo,
+            rev=rev,
+            git=True,
+            *self.joined(paths))
 
     @grab_output
     def update(self, paths=None, revision=None):
         assert paths is None
         commands.update(self.ui, self.repo, rev=revision)
-
-

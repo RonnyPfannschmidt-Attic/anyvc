@@ -4,8 +4,8 @@
 
     convience tool make execnet channels remote objects
 """
-import pickle
 from py.path import local
+
 
 class RemoteCaller(object):
     def __init__(self, channel):
@@ -28,6 +28,7 @@ class RemoteCaller(object):
             return self._call_remote(name, *k, **kw)
         method.__name__ = name
         return method
+
 
 class RemoteHandler(object):
     def __init__(self, channel):
@@ -57,5 +58,3 @@ class RemoteHandler(object):
             self.channel.close(errortext)
         except:
             self.channel.close('unknown error')
-
-

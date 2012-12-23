@@ -7,15 +7,16 @@
 
 import logging
 
+
 def http_code_content(path):
     try:
         import urllib
         res = urllib.urlopen(path)
         return res.code, res.read()
-    except Exception as e: # diaper
+    except Exception as e:
+        # diaper
         logging.error('no data for path %s, error %s', path, e)
         return -1, ''
-
 
 
 class cachedproperty(object):
@@ -31,4 +32,3 @@ class cachedproperty(object):
             result = self.func(obj)
             setattr(obj, self.__name__, result)
             return result
-

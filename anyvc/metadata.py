@@ -9,19 +9,21 @@
       this module is subject to huge changes
 """
 
+
 def _(str):
-    return str #XXX: gettext
+    #XXX: gettext
+    return str
 
 state_descriptions = dict(
     #XXX: finish, validate
-    unknown = _("not known to the vcs"),
-    ignored = _("ignored by the vcs"),
-    added = _("added"),
-    clean = _("known by the vcs and unchanged"),
-    modified =_("changed in the workdir"),
-    missing = _("removed from the workdir, still recorded"),
-    removed = _("removed by deletion or renaming"),
-    conflicte = _("merge conflict")
+    unknown=_("not known to the vcs"),
+    ignored=_("ignored by the vcs"),
+    added=_("added"),
+    clean=_("known by the vcs and unchanged"),
+    modified=("changed in the workdir"),
+    missing=_("removed from the workdir, still recorded"),
+    removed=_("removed by deletion or renaming"),
+    conflicte=_("merge conflict")
 )
 
 aliases = {
@@ -38,9 +40,12 @@ backends = {
     'subversion': 'anyvc.subversion'
 }
 
-def get_backends(limit_to=None,features=None):
+
+def get_backends(limit_to=None, features=None):
     """
-    :param limit_to: optional list of backends to try, will use all if use is none
+    :param limit_to:
+        optional list of backends to try,
+        will use all if use is none
     :type limit_to: list of string or None
 
     a generator over all known backends

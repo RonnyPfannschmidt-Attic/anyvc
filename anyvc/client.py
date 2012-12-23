@@ -10,7 +10,9 @@
 """
 
 
-import os, sys, logging
+import os
+import sys
+import logging
 
 from optparse import OptionParser
 
@@ -37,7 +39,7 @@ def create_option_parser():
     parser.add_option('-a', '--list-all', dest='list_all',
                       action='store_true', help='List all files.')
     parser.add_option('-m', '--message', dest='commit_message',
-                     action='store', help='The commit message')
+                      action='store', help='The commit message')
     parser.add_option('-U', '--hide-unknown', dest='hide_unknown',
                       action='store_true', help='Hide unknown files')
     parser.add_option('-u', '--list-unchanged', dest='list_unchanged',
@@ -48,8 +50,8 @@ def create_option_parser():
                       action='store_true',
                       help='Only list files in the current working directory.')
     parser.add_option('-c', '--no-color', dest='no_color',
-                       action='store_true',
-                       help='Uncoloured terminal list output')
+                      action='store_true',
+                      help='Uncoloured terminal list output')
 
     # Miscellaneous options
     parser.add_option('-v', '--verbose', action="store_true", dest="verbose",
@@ -62,7 +64,10 @@ def setup_logger(verbose):
         level = logging.DEBUG
     else:
         level = logging.INFO
-    logging.basicConfig(level=level, stream=sys.stderr, format='%(levelname)s: %(message)s')
+    logging.basicConfig(
+        level=level,
+        stream=sys.stderr,
+        format='%(levelname)s: %(message)s')
 
 
 list_letters = {
@@ -90,9 +95,10 @@ list_colors = {
 def output_state(tw, st):
     output = list_letters.get(st.state, '*').ljust(2)
     color = list_colors.get(st.state)
-    kw = {color:True} if color else {}
+    kw = {color: True} if color else {}
     tw.write(output, bold=True, **kw)
     tw.line(st.relpath)
+
 
 def do_status(vc, opts, args):
     tw = TerminalWriter()
@@ -122,10 +128,10 @@ def do_diff(vc, opts, args):
     paths = tuple(args)
     diff = vc.diff(paths=paths).strip()
     for line in diff.splitlines():
-        kw=dict(
+        kw = dict(
             red=line[0] == '-',
             green=line[0] == '+',
-            bold=line.split(' ', 1)[0] in ('diff','+++', '---'),
+            bold=line.split(' ', 1)[0] in ('diff', '+++', '---'),
         )
         tw.line(line, **kw)
 
@@ -136,6 +142,7 @@ def do_commit(vc, opts, args):
         paths=args)
     sys.stdout.write(out)
     sys.stdout.flush()
+
 
 def do_add(vc, opts, args):
     out = vc.add(paths=args)
@@ -150,7 +157,8 @@ def do_push(vc, opts, args):
 
     if not repo.local:
         #XXX: better handling
-        print >> sys.stderr, "can't push from a non-local", repo.__class__.__name__
+        name = type(repo).__name__
+        print >> sys.stderr, "can't push from a non-local", name
         exit(1)
     location = args[0] if args else None
     print repo.push(location, opts.revision)
@@ -191,28 +199,26 @@ def main(argv=sys.argv):
 
     logging.debug('Found VC: %s' % vc)
 
-    pargs = args[:]
-    called = pargs.pop(0)
+    pargs = args[1:]
 
     try:
         command = pargs.pop(0)
     except IndexError:
         logging.error(_('You must provide a command.'))
-        logging.info(_('The available commands are: %(commands)s' %
-                        {'commands': '%s' % ', '.join(commands.keys())}))
+        logging.info(_('The available commands are: %(commands)s' % {
+            'commands': '%s' % ', '.join(commands.keys())}))
         parser.print_usage()
         return -1
 
     try:
         action = commands[command]
     except KeyError:
-        logging.error(_('The command "%(command)s" is not available.' %
-                        {'command': command}))
-        logging.info(_('The available commands are: %(commands)s' %
-                        {'commands': ', '.join(sorted(commands.keys()))}))
+        logging.error(_('The command "%(command)s" is not available.' % {
+            'command': command}))
+        logging.info(_('The available commands are: %(commands)s' % {
+            'commands': ', '.join(sorted(commands.keys()))}))
         return -1
 
     logging.debug('Calling %s' % command)
 
     return action(vc, opts, pargs)
-

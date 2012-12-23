@@ -7,7 +7,7 @@
         * 2008 by Ronny Pfannschmidt <Ronny.Pfannschmidt@gmx.de>
 """
 
-from anyvc.common.repository import Repository, Revision, join
+from anyvc.common.repository import Repository, Revision
 from anyvc.common.commit_builder import CommitBuilder
 from .workdir import grab_output
 from datetime import datetime
@@ -19,7 +19,7 @@ from ..exc import NotFoundError
 class MercurialRevision(Revision):
     def __init__(self, repo, rev):
         self.repo, self.rev = repo, rev
-    
+
     @property
     def id(self):
         return self.rev.hex()
@@ -34,8 +34,8 @@ class MercurialRevision(Revision):
 
     @property
     def parents(self):
-        return [MercurialRevision(self.repo, rev) for rev in self.rev.parents() if rev]
-
+        return [MercurialRevision(self.repo, rev)
+                for rev in self.rev.parents() if rev]
 
     @property
     def message(self):
@@ -45,7 +45,7 @@ class MercurialRevision(Revision):
         try:
             return self.rev[path].data()
         except LookupError:
-            raise IOError('%r not found'%path)
+            raise IOError('%r not found' % path)
 
     def get_changed_files(self):
         return self.rev.files()
@@ -53,14 +53,14 @@ class MercurialRevision(Revision):
     def isdir(self, path):
         entries = list(self.rev)
         if not path.endswith('/'):
-            path+='/'
+            path += '/'
 
         from bisect import bisect_right
         point = bisect_right(entries, path)
         if point >= len(entries):
             return False
         entry = entries[point]
-        return path!=entry and entry.startswith(path)
+        return path != entry and entry.startswith(path)
 
     def isfile(self, path):
         return path in self.rev
@@ -68,9 +68,11 @@ class MercurialRevision(Revision):
     def exists(self, path):
         return self.isfile(path) or self.isdir(path)
 
+
 class MercurialCommitBuilder(CommitBuilder):
     def commit(self):
         repo = self.repo.repo
+
         def get_file(repo, ctx, path):
             #XXX: copy sources
             #XXX: renames
@@ -88,14 +90,15 @@ class MercurialCommitBuilder(CommitBuilder):
             else:
                 data = self.contents[path]
                 copyed = False
+            #XXX: real flags
+            islink = False
+            isexec = False
 
-            islink = False #XXX
-            isexec = False #XXX
+            return context.memfilectx(path, data, islink,
+                                      isexec, copyed)
 
-
-            return context.memfilectx(path, data, islink, isexec, copyed)
-
-        rn = dict((k, v) for k, v in self.renames if self.base_commit.exists(k))
+        rn = dict((k, v) for k, v in self.renames
+                  if self.base_commit.exists(k))
         rrn = dict(reversed(x) for x in self.renames)
         #XXX: directory renames
 
@@ -108,14 +111,14 @@ class MercurialCommitBuilder(CommitBuilder):
         else:
             base = None
         ctx = context.memctx(
-                repo,
-                [base, None],
-                self.extra['message'],
-                sorted(files),
-                get_file,
-                user=self.author,
-                date="%(time_unix)d %(time_offset)s"%self.__dict__,
-                )
+            repo,
+            [base, None],
+            self.extra['message'],
+            sorted(files),
+            get_file,
+            user=self.author,
+            date="%(time_unix)d %(time_offset)s" % self.__dict__,
+        )
         repo.commitctx(ctx)
 
 
@@ -132,7 +135,8 @@ class MercurialRepository(Repository):
 
         elif path is not None:
             try:
-                repo = localrepo.localrepository(ui.ui(), str(path), create=create)
+                repo = localrepo.localrepository(ui.ui(), str(path),
+                                                 create=create)
             except error.RepoError:
                 raise NotFoundError('mercurial', path)
 

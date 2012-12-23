@@ -1,20 +1,13 @@
-"""
-    this is a series of functional tests
-    each begins at a given state and runs a series of actions,
-    asserting the workdir state between each
-"""
-
-
 # copyright 2008 by Ronny Pfannschmidt
 # license lgpl2 or later
 import py
 
-
 has_files = py.test.mark.files({
-        'test.py':'print "test"',
-        })
+    'test.py':  'print "test"',
+})
 
 commited = py.test.mark.commit
+
 
 @has_files
 def test_workdir_add(wd):
@@ -29,12 +22,13 @@ def test_workdir_add(wd):
     print wd.commit(paths=['test.py'], message='add test.py')
     wd.check_states(clean=['test.py'])
 
+
 def test_subdir_state_add(wd):
     """
     * add a file in a subdir
     """
     wd.put_files({
-        'subdir/test.py':'test',
+        'subdir/test.py': 'test',
     })
 
     print wd.add(paths=['subdir/test.py'])
@@ -55,7 +49,7 @@ def test_workdir_remove(wd):
     wd.check_states(removed=['test.py'])
     wd.commit(message='*')
 
-    py.test.raises(AssertionError,wd.check_states, clean=['test.py'])
+    py.test.raises(AssertionError, wd.check_states, clean=['test.py'])
     assert not wd.path.join('test.py').check()
 
 
@@ -93,8 +87,8 @@ def test_workdir_revert(wd):
     wd.check_states(clean=['test.py'])
 
     wd.put_files({
-        'test.py':'oooo'
-        })
+        'test.py': 'oooo'
+    })
 
     wd.check_states(modified=['test.py'])
 
@@ -111,7 +105,7 @@ def test_diff_all(wd):
     wd.add(paths=['test.py'])
     wd.commit(message='*')
     wd.put_files({
-        'test.py':'ooo'
+        'test.py': 'ooo'
     })
 
     diff = wd.diff()
@@ -141,8 +135,8 @@ def test_status_subdir_only(wd):
     * check status for the subdir only returning items of that subdir
     """
     wd.put_files({
-        'subdir/a.py':'foo\n',
-        })
+        'subdir/a.py': 'foo\n',
+    })
     wd.add(paths=['subdir/a.py'])
     wd.check_states(added=['subdir/a.py'])
 
@@ -150,8 +144,9 @@ def test_status_subdir_only(wd):
 
     wd.check_states(clean=['subdir/a.py'])
     wd.put_files({
-        'subdir/a.py':'bar\nfoo\n', #XXX: different size needed for hg status
-        })
+        #XXX: different size needed for hg status
+        'subdir/a.py': 'bar\nfoo\n',
+    })
 
     stats = list(wd.status(paths=['subdir']))
     assert any(s.relpath == 'subdir/a.py' for s in stats)
@@ -168,8 +163,6 @@ def test_workdir_open(wd, backend):
     import anyvc
     wd2 = anyvc.workdir.open(wd.path)
     assert backend.is_workdir(wd2.path)
-
-
 
 
 @has_files
@@ -193,4 +186,3 @@ def test_disallowed_paths(monkeypatch):
     monkeypatch.setenv('ANYVC_IGNORED_WORKDIRS', '~')
     dirs = _disallowd_workdirs()
     assert py.std.os.environ['HOME'] in dirs
-

@@ -12,42 +12,48 @@ example_remotes = {
 @py.test.mark.commit
 @py.test.mark.feature('wd:light')
 def test_checkout_local(repo, wd, mgr):
-    path = mgr.base/'checkout'
+    path = mgr.base.join('checkout')
 
     wd2 = anyvc.workdir.checkout(
         target=path,
         source=repo.path,
-        )
-    assert path.join('setup.py').check()
+    )
+    assert wd2.path.join('setup.py').check()
+
 
 @py.test.mark.files({'setup.py': 'pass'})
 @py.test.mark.commit
 @py.test.mark.feature('wd:heavy')
 def test_clone_local(wd, mgr):
 
-    path = mgr.base/'clone'
+    path = mgr.base.join('clone')
 
     wd2 = anyvc.workdir.clone(
         target=path,
         source=wd.path,
-        )
+    )
 
-    assert path.join('setup.py').check()
+    assert wd2.path.join('setup.py').check()
+
 
 @py.test.mark.feature('wd:heavy')
 def test_clone_remote(mgr):
 
-    path = mgr.base/'clone'
+    path = mgr.base.join('clone')
     wd = anyvc.workdir.clone(
         target=path,
         source=example_remotes[mgr.backend.name],
     )
+    assert wd.path == path
+
 
 @py.test.mark.feature('wd:light')
 def test_checkout_remote(backend, mgr):
 
-    path = mgr.base/'checkout'
+    path = mgr.base.join('checkout')
     wd = anyvc.workdir.checkout(
         target=path,
         source=example_remotes[mgr.backend.name],
     )
+
+    assert wd.path == path

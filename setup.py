@@ -1,16 +1,15 @@
 #!/usr/bin/python
 from __future__ import with_statement
 from setuptools import setup
-
-
-
 from setuptools.command.test import test
+
 
 class pytest(test):
     def finalize_options(self):
         test.finalize_options(self)
         self.test_args = []
         self.test_suite = True
+
     def run_tests(self):
         import pytest
         pytest.main([])
@@ -22,6 +21,7 @@ def read_readme():
         with open(fname) as f:
             result.append(f.read())
     return '\n'.join(result)
+
 
 setup(
     name='anyvc',
@@ -62,5 +62,5 @@ setup(
     classifiers=[
         'Intended Audience :: Developers',
     ],
-    cmdclass = {'test': pytest}
+    cmdclass={'test': pytest}
 )

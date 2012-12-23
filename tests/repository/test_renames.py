@@ -1,8 +1,8 @@
 from __future__ import with_statement
 import py
 
-def test_rename_simple(repo):
 
+def test_rename_simple(repo):
     with repo.transaction(message='create', author='test') as root:
         with root.join('test.txt').open('w') as f:
             f.write('test')
@@ -38,4 +38,3 @@ def test_rename_directory(repo):
     with repo.get_default_head() as root:
         assert not root.join('testdir/test.txt').exists()
         assert root.join('testdir2/test.txt').exists()
-

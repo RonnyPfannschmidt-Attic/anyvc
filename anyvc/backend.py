@@ -10,6 +10,7 @@
 import py
 from anyvc.util import cachedproperty
 
+
 class Backend(object):
     def __init__(self, name, module_name):
         self.name = name
@@ -50,7 +51,8 @@ class Backend(object):
         return self.module.required_tools
 
     def missing_tools(self):
-        return [ tool
+        return [
+            tool
             for tool in self.required_tools
             if not py.path.local.sysfind(tool)
         ]
@@ -66,7 +68,8 @@ class Backend(object):
             except ImportError:
                 pass
 
-        return [ module
+        return [
+            module
             for module in self.required_modules
             if not tryimport(module)
         ]

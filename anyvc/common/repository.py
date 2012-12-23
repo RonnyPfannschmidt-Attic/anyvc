@@ -13,17 +13,13 @@
         the repo apis are unstable and incomplete
 
 """
-from collections import defaultdict
-from os.path import join, dirname
-try:
-    from io import BytesIO as StringIO #XXX: epic mess
-except ImportError:
-    from StringIO import StringIO
+from os.path import join
+from py.io import BytesIO
 
 
-class MemoryFile(StringIO):
+class MemoryFile(BytesIO):
     def __init__(self, data='', path=None):
-        StringIO.__init__(self, data)
+        BytesIO.__init__(self, data)
         self.path = path
 
     def __enter__(self):
@@ -32,16 +28,17 @@ class MemoryFile(StringIO):
     def __exit__(self, et, ev, tb):
         pass
 
+
 class Revision(object):
 
-    def get_parent_diff(self): 
+    def get_parent_diff(self):
         from anyvc.diff import diff_for_commit
         return diff_for_commit(self)
 
-    def __enter__(self): 
-       return RevisionView(self, '/')
+    def __enter__(self):
+        return RevisionView(self, '/')
 
-    def __exit__(self, et, ev , tb):
+    def __exit__(self, et, ev, tb):
         pass
 
 
@@ -69,7 +66,6 @@ class RevisionView(object):
         return self.revision.exists(self.path)
 
 
-
 class Repository(object):
     """
     represents a repository
@@ -77,7 +73,7 @@ class Repository(object):
 
     local = True
 
-    def __init__(self,**extra):
+    def __init__(self, path, **extra):
         self.path = path
         self.extra = extra
 
@@ -94,17 +90,16 @@ class Repository(object):
         :param dest: the destination
         :param rev: the maximum revision to push, may be none for latest
         """
-        raise NotImplementedError("%r doesnt implement push"%self.__class__)
+        raise NotImplementedError(
+            "%r doesnt implement push" % self.__class__)
 
     def pull(self, source=None, rev=None):
         """
         counterpart to push
         """
-        raise NotImplementedError("%r doesnt implement pull"%self.__class__)
-
+        raise NotImplementedError(
+            "%r doesnt implement pull" % self.__class__)
 
     def transaction(self, **extra):
         # will be set by subclasses
         return self.CommitBuilder(self, self.get_default_head(), **extra)
-
-

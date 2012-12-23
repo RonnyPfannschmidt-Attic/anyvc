@@ -5,6 +5,7 @@ from __future__ import with_statement
 
 from anyvc.metadata import state_descriptions
 
+
 class WdWrap(object):
     """
     :param wd: the workdir to wrap
@@ -20,7 +21,6 @@ class WdWrap(object):
     def __getattr__(self, name):
         return getattr(self.__wd, name)
 
-
     def put_files(self, mapping):
         """
         :type mapping: dict of (filename, text content)
@@ -35,8 +35,9 @@ class WdWrap(object):
         """
         :arg files: a listing of filenames that shsould exist
         """
-        missing = [name for name in map(self.path.join, files) if not name.check()]
-        assert not missing, 'missing %s'%', '.join(missing)
+        missing = [name for name in map(self.path.join, files)
+                   if not name.check()]
+        assert not missing, 'missing %s' % ', '.join(missing)
         return not missing
 
     def delete_files(self, *relpaths):
@@ -70,11 +71,11 @@ class WdWrap(object):
             assert info.state in state_descriptions
             if info.relpath in mapping:
                 expected = mapping[info.relpath]
-                assert info.state==expected, "%s wanted %s but got %s"%(
-                        info.relpath,
-                        expected,
-                        info.state,
-                        )
+                assert info.state == expected, '%s wanted %s but got %s' % (
+                    info.relpath,
+                    expected,
+                    info.state,
+                )
                 used.add(info.relpath)
 
         untested = set(mapping) - used
@@ -83,7 +84,7 @@ class WdWrap(object):
         print 'used:', sorted(used)
         print 'missing?:', sorted(all - used)
         print 'untested:', sorted(untested)
-        assert not untested , 'not all excepted stated occured'
+        assert not untested, 'not all excepted stated occured'
 
 
 class VcsMan(object):
@@ -98,8 +99,8 @@ class VcsMan(object):
         self.xspec = xspec
         self.backend = backend
 
-    def __repr__(self): 
-        return '<VcsMan %(vc)s %(base)r>'%vars(self)
+    def __repr__(self):
+        return '<VcsMan %(vc)s %(base)r>' % vars(self)
 
     def create_wd(self, workdir, source=None):
         """
@@ -110,7 +111,7 @@ class VcsMan(object):
 
         create a workdir if `source` is given, use it as base
         """
-        path = self.base/workdir
+        path = self.base.join(workdir)
         source_path = getattr(source, 'path', None)
         wd = self.backend.Workdir(path, create=True, source=source_path)
         return WdWrap(wd)
@@ -121,5 +122,4 @@ class VcsMan(object):
 
         create a repository using the given name
         """
-        return self.backend.Repository(path=self.base/name, create=True)
-
+        return self.backend.Repository(path=self.base.join(name), create=True)

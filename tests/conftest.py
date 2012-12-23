@@ -1,23 +1,22 @@
 import py
 import pytest
-from tests.helpers import  VcsMan
+from tests.helpers import VcsMan
 import os
 
 from anyvc import metadata
 
 pytest_plugins = "doctest"
-
 test_in_interpreters = 'python2', 'python3', 'jython', 'pypy'
-
 
 
 def pytest_addoption(parser):
     g = parser.getgroup('anyvc')
     g.addoption("--local-remoting", action="store_true", default=False,
-               help='test via execnet remoting')
+                help='test via execnet remoting')
     g.addoption("--no-direct-api", action="store_true", default=False,
                 help='don\'t test the direct api')
     g.addoption("--vcs", action='store', default=None)
+
 
 def pytest_configure(config):
     vcs = config.getvalue('vcs')
@@ -31,17 +30,15 @@ def pytest_configure(config):
         else:
             raise KeyError(vcs, '%r not found' % vcs)
 
-
     os.environ['BZR_EMAIL'] = 'Test <test@example.com>'
 
 
 @pytest.fixture(scope='session', params=['direct', 'popen'])
 def spec(request):
-    if request.config.getvalue('no_direct_api') \
-       and request.param == 'direct':
+    direct = request.param == 'direct'
+    if request.config.getvalue('no_direct_api') and direct:
         pytest.skip('no direct api testing')
-    if not request.config.getvalue('local_remoting') \
-       and request.param != 'direct':
+    if not request.config.getvalue('local_remoting') and not direct:
         pytest.skip('no remote testing')
     from execnet.xspec import XSpec
     return XSpec(request.param)
@@ -54,6 +51,7 @@ def vcs(request):
         pytest.skip('%s not wanted for this test run' % request.param)
     return request.param
 
+
 @pytest.fixture(scope='session')
 def backend(vcs, spec):
     """
@@ -64,11 +62,12 @@ def backend(vcs, spec):
         spec = None
         return metadata.get_backend(vcs, spec)
 
+
 @pytest.fixture()
 def mgr(spec, backend, tmpdir, request):
     """
     create a preconfigured :class:`tests.helplers.VcsMan` instance
-    pass the currently tested backend 
+    pass the currently tested backend
     and create a tmpdir for the vcs/test combination
 
     auto-check for the vcs features and skip if necessary
@@ -80,9 +79,12 @@ def mgr(spec, backend, tmpdir, request):
         difference = required_features.difference(backend.features)
         print required_features
         if difference:
-            py.test.skip('%s lacks features %r' % (backend, sorted(difference)))
+            py.test.skip('%s lacks features %r' % (
+                backend,
+                sorted(difference)))
 
     return VcsMan(backend.name, tmpdir, spec, backend)
+
 
 @pytest.fixture()
 def repo(mgr):
@@ -90,6 +92,7 @@ def repo(mgr):
     create a repo below mgf called 'repo'
     """
     return mgr.make_repo('repo')
+
 
 @pytest.fixture()
 def wd(mgr, repo, request):
@@ -104,6 +107,7 @@ def wd(mgr, repo, request):
         wd = mgr.create_wd('wd')
     return wd
 
+
 @pytest.fixture(autouse=True)
 def prepared_files(request):
     print request, dir(request)
@@ -116,5 +120,3 @@ def prepared_files(request):
         if  hasattr(fp, 'commit'):
             wd.add(paths=list(files))
             wd.commit(message='initial commit')
-
-
