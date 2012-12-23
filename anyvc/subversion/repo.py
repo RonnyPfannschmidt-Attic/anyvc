@@ -102,12 +102,22 @@ class SvnCommitBuilder(CommitBuilder):
             file = root.add_file(target, join(self.repo.url, src), 1)
             file.close()
             root.delete_entry(src)
+        
+        def add_file(file):
+            parts = file.split('/')
+            for i in range(1, len(parts)):
+                try:
+                    root.add_directory('/'.join(parts[:i])).close()
+                except Exception as e:
+                    pass
+            try:
+                return root.add_file(file)
+            except Exception as e:
+                print e
+                return root.open_file(file)
 
         for file in self.contents:
-            try:
-                svnfile = root.add_file(file)
-            except Exception:
-                svnfile = root.open_file(file)
+            svnfile = add_file(file)
             txhandler = svnfile.apply_textdelta()
             f = StringIO(self.contents[file])
             delta.send_stream(f, txhandler)
