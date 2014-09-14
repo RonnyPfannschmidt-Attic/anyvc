@@ -1,0 +1,5 @@
+# for readthedocs
+hgdistver
+dulwich
+py
+mercurial
