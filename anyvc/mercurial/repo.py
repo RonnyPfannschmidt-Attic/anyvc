@@ -14,6 +14,17 @@ from datetime import datetime
 from mercurial import commands, localrepo, ui, context
 from mercurial import error, encoding
 from ..exc import NotFoundError
+import inspect
+
+
+# mercurial starting with 3.1 has the repo argument to memfilectx
+from mercurial import context
+if 'repo' in inspect.getargspec(context.memfilectx.__init__)[0]:
+    def memfilectx(repo, **kw):
+        return context.memfilectx(repo=repo, **kw)
+else:
+    def memfilectx(repo, **kw):
+        return context.memfilectx(**kw)
 
 
 class MercurialRevision(Revision):
@@ -86,16 +97,22 @@ class MercurialCommitBuilder(CommitBuilder):
                     data = self.contents[path]
                 else:
                     data = parent.data()
-                copyed = rrn[path]
+                copied = rrn[path]
             else:
                 data = self.contents[path]
-                copyed = False
+                copied = False
             #XXX: real flags
             islink = False
             isexec = False
 
-            return context.memfilectx(path, data, islink,
-                                      isexec, copyed)
+            return memfilectx(
+                repo=self.repo,
+                path=path,
+                data=data,
+                islink=islink,
+                isexec=isexec,
+                copied=copied,
+            )
 
         rn = dict((k, v) for k, v in self.renames
                   if self.base_commit.exists(k))
@@ -111,11 +128,11 @@ class MercurialCommitBuilder(CommitBuilder):
         else:
             base = None
         ctx = context.memctx(
-            repo,
-            [base, None],
-            self.extra['message'],
-            sorted(files),
-            get_file,
+            repo=repo,
+            parents=[base, None],
+            text=self.extra['message'],
+            files=sorted(files),
+            filectxfn=get_file,
             user=self.author,
             date="%(time_unix)d %(time_offset)s" % self.__dict__,
         )
