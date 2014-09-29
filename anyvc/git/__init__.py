@@ -23,7 +23,7 @@ def has_git_base_dirs(path):
 
 
 def is_workdir(path):
-    #XXX better check
+    # XXX better check
     git = path.join('.git')
     return git.check(dir=1) and has_git_base_dirs(git)
 
@@ -31,10 +31,10 @@ def is_workdir(path):
 def is_repository(path):
     if not isinstance(path, py.path.local):
         if path.startswith('git://'):
-            #XXX: check if true
+            # XXX: check if true
             return True
         elif 'github' in path:
-            #XXX more trouble probably
+            # XXX more trouble probably
             return True
         path = py.path.local(path)
     return has_git_base_dirs(path) or is_workdir(path)

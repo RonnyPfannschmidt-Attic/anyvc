@@ -36,8 +36,8 @@ except AttributeError:
 __all__ = 'Mercurial',
 
 
-#XXX: this shouldn't work if used by the vc client
-#     console output should be responsive
+# XXX: this shouldn't work if used by the vc client
+#      console output should be responsive
 def grab_output(func):
     """
     wraps a call to hg and grabs the output
@@ -91,15 +91,15 @@ class Mercurial(WorkDir):
                 str(source), self.path.strpath)
 
     def status(self, paths=(), *k, **kw):
-        #XXX: regursive kwargs
-        #XXX: merce conflicts ?!
+        # XXX: regursive kwargs
+        # XXX: merce conflicts ?!
         names = (
             'modified', 'added', 'removed',
             'missing', 'unknown', 'ignored', 'clean',
         )
 
         if paths:
-        #XXX: investigate cwd arg
+            # XXX: investigate cwd arg
             matcher = match(
                 self.repo.root, self.repo.root,
                 paths,
@@ -140,7 +140,7 @@ class Mercurial(WorkDir):
 
     @grab_output
     def remove(self, paths):
-        #XXX: support for after ?
+        # XXX: support for after ?
         commands.remove(
             self.ui, self.repo,
             after=False,  # only hg 0.9.5 needs that explicit
@@ -150,11 +150,11 @@ class Mercurial(WorkDir):
 
     @grab_output
     def revert(self, paths, rev=None):
-        #XXX: how to pass opts['all']?
+        # XXX: how to pass opts['all']?
         if rev is None:
             parents = self.repo.parents()
             if len(parents) != 1 and rev is None:
-                #XXX: better exception type?
+                # XXX: better exception type?
                 raise Exception(
                     "can't revert on top of a merge without explicit rev")
             rev = parents[0].rev()

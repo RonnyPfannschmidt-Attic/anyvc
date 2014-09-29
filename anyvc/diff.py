@@ -5,11 +5,11 @@
 """
 import difflib
 
-#XXX: those are a pile of hacks
+# XXX: those are a pile of hacks
 
 
 def diff_for_file(commit, file):
-    #XXX: propperly handle add/remove
+    # XXX: propperly handle add/remove
     try:
         new = commit.file_content(file).splitlines(True)
     except:  # XXX: ERRORS?!?!
@@ -25,8 +25,8 @@ def diff_for_file(commit, file):
     else:
         old = []
 
-    #XXX: propperly handle lack of tailing \n
-    #XXX: binaries ?!
+    # XXX: propperly handle lack of tailing \n
+    # XXX: binaries ?!
     return difflib.unified_diff(old, new, file, file)
 
 

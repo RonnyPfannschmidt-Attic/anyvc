@@ -1,5 +1,5 @@
 class NotFoundError(LookupError, ValueError):
-    #XXX: ValueError for backward compat, figure how to phase out later
+    # XXX: ValueError for backward compat, figure how to phase out later
     """raised if a repo/workdir cant be found"""
 
     def __init__(self, vc, path):

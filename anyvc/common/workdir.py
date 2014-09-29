@@ -156,7 +156,7 @@ class WorkDirWithParser(WorkDir):
 
             if rv is not None:
                 state, name = rv
-                #XXX: here renames get turned into ugly add/remove pairs
+                # XXX: here renames get turned into ugly add/remove pairs
                 if state is None:
                     old, new = name
                     yield StatedPath(old, 'removed', self.path)
@@ -243,7 +243,7 @@ class CommandBased(WorkDirWithParser):
     common code + default method implementations
     for subprocess based vcs's
     """
-    #TODO: set up the missing actions
+    # TODO: set up the missing actions
 
     def execute_command(self, args, result_type=str, **kw):
         if not args:

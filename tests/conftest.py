@@ -96,7 +96,7 @@ def repo(mgr):
 
 @pytest.fixture()
 def wd(mgr, repo, request):
-    #XXX: repo only needed when light backends
+    # XXX: repo only needed when light backends
     """
     create a workdir below mgr called 'wd'
     if the feature "wd:heavy" is not supported use repo as help
@@ -116,6 +116,6 @@ def prepared_files(request):
         files = fp.files.args[0]
         wd.put_files(files)
         assert wd.has_files(*files)
-        if  hasattr(fp, 'commit'):
+        if hasattr(fp, 'commit'):
             wd.add(paths=list(files))
             wd.commit(message='initial commit')

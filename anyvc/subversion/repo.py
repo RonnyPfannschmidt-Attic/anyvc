@@ -23,13 +23,13 @@ from datetime import datetime
 
 class SubversionRevision(Revision):
     def __init__(self, repo, id):
-        #XXX: branch subdirs
+        # XXX: branch subdirs
         self.repo, self.id = repo, id
 
     @property
     def parents(self):
-        #XXX: ignore irelevant revisions (no local change)
-        #XXX: use mergeinfo to figure additional parents
+        # XXX: ignore irelevant revisions (no local change)
+        # XXX: use mergeinfo to figure additional parents
         if self.id == 1:  # rev 0 is the repo creation
             return []
         return [SubversionRevision(self.repo, self.id - 1)]
@@ -39,7 +39,8 @@ class SubversionRevision(Revision):
             target = StringIO()
             self.repo.ra.get_file(path.lstrip('/'), target, self.id)
             return target.getvalue()
-        except:  # XXX: bad bad
+        except:
+            # XXX: bad bad
             raise IOError('%r not found' % path)
 
     def path_info(self, path):
@@ -68,7 +69,7 @@ class SubversionRevision(Revision):
         files = []
 
         def callback(paths, rev, props, childs=None):
-            #XXX: take branch path into account?
+            # XXX: take branch path into account?
             files.extend(paths)
 
         self.repo.ra.get_log(
@@ -87,8 +88,25 @@ class SubversionRevision(Revision):
     def time(self):
         date_str = self.prop('svn:date')
         timestamp = time_from_cstring(date_str)
-        #XXX: subertpy uses a magic factor of 1000000
+        # XXX: subertpy uses a magic factor of 1000000
         return datetime.fromtimestamp(float(timestamp) / 1000000)
+
+
+def _add_file(root, file):
+    parts = file.split('/')
+    for i in range(1, len(parts)):
+        try:
+            root.add_directory('/'.join(parts[:i])).close()
+        except SubversionException as e:
+            pass
+        if e.args[-1] != 160020:
+            raise
+    try:
+        return root.add_file(file)
+    except SubversionException as e:
+        if e.args[-1] != 160020:
+            raise
+        return root.open_file(file)
 
 
 class SvnCommitBuilder(CommitBuilder):
@@ -97,39 +115,23 @@ class SvnCommitBuilder(CommitBuilder):
                           auth=Auth([get_username_provider()]))
         editor = ra.get_commit_editor({
             'svn:log': self.extra['message'],
-            #XXX: subertpy uses a magic factor of 1000000
-            #XXX: subversion cant set a commit date on commit, sucker
-            #'svn:date':time_to_cstring(self.time_unix*1000000),
+            # XXX: subertpy uses a magic factor of 1000000
+            # XXX: subversion cant set a commit date on commit, sucker
+            # 'svn:date':time_to_cstring(self.time_unix*1000000),
         })
 
         root = editor.open_root()
 
         for src, target in self.renames:
-            #XXX: directories
+            # XXX: directories
             src = src.lstrip('/')
             target = target.lstrip('/')
             file = root.add_file(target, join(self.repo.url, src), 1)
             file.close()
             root.delete_entry(src)
 
-        def add_file(file):
-            parts = file.split('/')
-            for i in range(1, len(parts)):
-                try:
-                    root.add_directory('/'.join(parts[:i])).close()
-                except SubversionException as e:
-                    pass
-                if e.args[-1] != 160020:
-                    raise
-            try:
-                return root.add_file(file)
-            except SubversionException as e:
-                if e.args[-1] != 160020:
-                    raise
-                return root.open_file(file)
-
         for file in self.contents:
-            svnfile = add_file(file)
+            svnfile = _add_file(root, file)
             txhandler = svnfile.apply_textdelta()
             f = StringIO(self.contents[file])
             delta.send_stream(f, txhandler)
@@ -143,7 +145,7 @@ class SubversionRepository(Repository):
     CommitBuilder = SvnCommitBuilder
 
     def __init__(self, path, create=False):
-        #XXX: correct paths
+        # XXX: correct paths
         if create:
             repos.create(path.strpath)
         self.path = path
@@ -154,7 +156,7 @@ class SubversionRepository(Repository):
         return self.ra.get_latest_revnum()
 
     def get_default_head(self):
-        #XXX: correct paths !!!, grab trunk
+        # XXX: correct paths !!!, grab trunk
         last = len(self)
         if last == 0:
             return

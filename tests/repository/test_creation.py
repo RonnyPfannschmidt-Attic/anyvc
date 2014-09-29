@@ -18,5 +18,5 @@ def test_repo_default_head(wd):
         wd.commit(message=message)
         head = repo.get_default_head()
         print repr(head.message), repr(message)
-        #XXX: how to propperly normalize them
+        # XXX: how to propperly normalize them
         assert head.message.strip() == message.strip()

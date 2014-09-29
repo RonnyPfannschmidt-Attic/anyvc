@@ -55,7 +55,7 @@ class Git(CommandBased):
         return item
 
     def status_impl(self, *k, **kw):
-        #XXX: OMG HELLISH FRAGILE SHIT
+        # XXX: OMG HELLISH FRAGILE SHIT
         if self.execute_command(['branch']).strip():
             tree = set(self.execute_command(
                 ['ls-tree', '-r', '--name-only', 'HEAD']
@@ -84,7 +84,7 @@ class Git(CommandBased):
             it = name in tree
             w = wd.get(name, [])
             i = index.get(name, [])
-            #XXX: factor into parse_status_item
+            # XXX: factor into parse_status_item
             if '?' in w:
                 yield 'unknown', name
             elif 'H' in i and not w and not it:

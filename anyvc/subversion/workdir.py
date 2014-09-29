@@ -3,7 +3,7 @@ from subprocess import call
 
 
 class SubVersion(CommandBased):
-    #XXX: disabled
+    # XXX: disabled
     cmd = "svn"
     detect_subdir = ".svn/props"
     # no local repo
@@ -13,7 +13,7 @@ class SubVersion(CommandBased):
         raise NotImplementedError('no havy workdirs')
 
     def get_status_args(self, recursive, paths, **kw):
-        #TODO: figure a good way to deal with changes in external
+        # TODO: figure a good way to deal with changes in external
         # (maybe use the svn python api to do that)
         ret = ["st", "--no-ignore", "--ignore-externals", "--verbose"]
         if not recursive:
@@ -59,5 +59,5 @@ class SubVersion(CommandBased):
             # this is the path of the repo
             # normalize to ''
             file = ''
-        #TODO: handle paths with whitespace if ppl fall in that one
+        # TODO: handle paths with whitespace if ppl fall in that one
         return self.state_map[state], file

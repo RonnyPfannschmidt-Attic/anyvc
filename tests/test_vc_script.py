@@ -10,8 +10,8 @@ def test_diff(wd):
     def remote(channel, cwd):
         import os
         import anyvc
-        #XXX to cause the imports in case of relatives
-        #    this should get fixed in execnet
+        # XXX to cause the imports in case of relatives
+        #     this should get fixed in execnet
         anyvc.workdir.open(cwd)
         import anyvc.client
         os.chdir(cwd)

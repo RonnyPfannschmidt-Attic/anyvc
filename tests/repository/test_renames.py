@@ -11,7 +11,7 @@ def test_rename_simple(repo):
         assert root.join('test.txt').exists()
 
     with repo.transaction(message='rename', author='test') as root:
-        #XXX: check if relative names are ok for rename in the fs api
+        # XXX: check if relative names are ok for rename in the fs api
         root.join('test.txt').rename('test_renamed.txt')
 
     with repo.get_default_head() as root:
@@ -32,7 +32,7 @@ def test_rename_directory(repo):
         assert root.join('testdir/test.txt').exists()
 
     with repo.transaction(message='rename', author='test') as root:
-        #XXX: check if relative names are ok for rename in the fs api
+        # XXX: check if relative names are ok for rename in the fs api
         root.join('testdir').rename('testdir2')
 
     with repo.get_default_head() as root:

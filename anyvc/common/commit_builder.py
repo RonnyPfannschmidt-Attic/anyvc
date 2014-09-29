@@ -16,7 +16,7 @@ from anyvc.common.repository import MemoryFile
 
 
 class CommitBuilder(object):
-    #XXX: ugly and inflexible
+    # XXX: ugly and inflexible
     def __init__(self, repo, base_commit,
                  time=None, local_time=True,
                  author=None, **extra):
@@ -35,15 +35,6 @@ class CommitBuilder(object):
         timetuple = time.timetuple()
 
         self.time_unix = unixtime.mktime(timetuple)
-        # timetuple[8] is the daylight saving flag
-        # its -1 for normal datetimes
-        # XXX: the current logic is flawed cause it only thinks about localtime
-        # XXX: should it be extended to properly deal
-        #      with user defined timezones via pytz/dateutil?
-        #if timetuple[8] == 1 and unixtime.daylight:
-        #    self.time_offset = unixtime.altzone
-        #else:
-        #XXX: ignores daylight saving
         self.time_offset = unixtime.timezone
 
     def write(self, path, content):
@@ -61,7 +52,7 @@ class CommitBuilder(object):
         pass
 
     def mkdir(self, path):
-        #XXX: only relevant for vcs's that care
+        # XXX: only relevant for vcs's that care
         pass
 
     def rename(self, source, dest):
@@ -95,7 +86,7 @@ class RevisionBuilderPath(object):
         new = self.parent().join(new_name)
         assert self.path != '/' and new_name != '/'
         self.builder.rename(self.path, new.path)
-        #XXX: shoould self.path change?
+        # XXX: should self.path change?
 
     def parent(self):
         return RevisionBuilderPath(
@@ -110,11 +101,11 @@ class RevisionBuilderPath(object):
             self.builder)
 
     def open(self,  mode='r'):
-        #implement in terms of read/write
+        # implement in terms of read/write
         if mode == 'r':
             raise NotImplementedError
         elif mode == 'w':
-            #XXX: test and implement all flavors of reopening
+            # XXX: test and implement all flavors of reopening
             return FileBuilder(path=self)
 
     def write(self, data):

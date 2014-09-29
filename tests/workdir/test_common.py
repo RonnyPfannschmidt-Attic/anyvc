@@ -144,7 +144,7 @@ def test_status_subdir_only(wd):
 
     wd.check_states(clean=['subdir/a.py'])
     wd.put_files({
-        #XXX: different size needed for hg status
+        # XXX: different size needed for hg status
         'subdir/a.py': 'bar\nfoo\n',
     })
 

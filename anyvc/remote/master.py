@@ -96,7 +96,7 @@ class RemoteWorkdir(RemoteCaller):
 
     @property
     def repository(self):
-        #XXX: this one shouldnt be
+        # XXX: this one shouldnt be
         channel = self._call_remote('get_local_repo')
         if channel is not None:
             return RemoteRepository(channel)
@@ -108,7 +108,7 @@ class RemoteWorkdir(RemoteCaller):
 
 class RemoteTransaction(RemoteCaller):
     def __enter__(self):
-        #XXX: take remote commit into account
+        # XXX: take remote commit into account
         return RevisionBuilderPath(None, '', self)
 
     def __exit__(self, etype,  eval, tb):
@@ -135,7 +135,7 @@ class RemoteBackend(object):
         self.active = True
 
     def stop(self):
-        #XXX: propperly shutdown the slave?
+        # XXX: propperly shutdown the slave?
         self._channel.close()
         self.gateway.exit()
         self.active = False

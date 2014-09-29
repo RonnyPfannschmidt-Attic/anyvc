@@ -82,13 +82,13 @@ list_letters = {
 
 # XXX: todo / steal color coding from pygments terminal writer
 list_colors = {
-    #'clean': '',
+    # 'clean': '',
     'unknown': 'purple',
     'modified': 'red',
     'added': 'blue',
     'removed': 'blue',
     'deleted': 'yellow',
-    #'ignored': 'grey',
+    # 'ignored': 'grey',
 }
 
 
@@ -100,8 +100,7 @@ def output_state(tw, st):
     tw.line(st.relpath)
 
 
-def do_status(vc, opts, args):
-    tw = TerminalWriter()
+def _hidden_states(opts):
 
     hidden_states = []
 
@@ -115,6 +114,12 @@ def do_status(vc, opts, args):
 
         if opts.hide_unknown:
             hidden_states.append('unknown')
+    return hidden_states
+
+
+def do_status(vc, opts, args):
+    tw = TerminalWriter()
+    hidden_states = _hidden_states(opts)
 
     for st in vc.status(recursive=not opts.list_nonrecursive):
         if st.state not in hidden_states:
@@ -156,7 +161,7 @@ def do_push(vc, opts, args):
         print >> sys.stderr, "cant find local repo to push from"
 
     if not repo.local:
-        #XXX: better handling
+        # XXX: better handling
         name = type(repo).__name__
         print >> sys.stderr, "can't push from a non-local", name
         exit(1)
@@ -165,7 +170,7 @@ def do_push(vc, opts, args):
 
 
 # The available commands
-#XXX: needs a better abstraction
+# XXX: needs a better abstraction
 commands = {
     'add': do_add,
     'status': do_status,

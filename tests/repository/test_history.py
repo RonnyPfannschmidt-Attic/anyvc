@@ -55,7 +55,7 @@ def test_create_commit_at_time(mgr, repo):
 
     with repo.transaction(
             message='test',
-            #XXX: author should be optional
+            # XXX: author should be optional
             author='test',
             time=datetime(2000, 1, 1, 10, 0, 0)) as root:
         with root.join('test.txt').open('w') as f:

@@ -132,7 +132,7 @@ class WorkdirHandler(RemoteHandler):
         return self.workdir.rename(**kw)
 
     def get_local_repo(self):
-        #XXX: this one shouldnt be
+        # XXX: this one shouldnt be
         repo = self.workdir.repository
         if repo is not None:
             channel = self.newchannel()

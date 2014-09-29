@@ -16,9 +16,7 @@ from mercurial import error, encoding
 from ..exc import NotFoundError
 import inspect
 
-
 # mercurial starting with 3.1 has the repo argument to memfilectx
-from mercurial import context
 if 'repo' in inspect.getargspec(context.memfilectx.__init__)[0]:
     def memfilectx(repo, **kw):
         return context.memfilectx(repo=repo, **kw)
@@ -85,9 +83,9 @@ class MercurialCommitBuilder(CommitBuilder):
         repo = self.repo.repo
 
         def get_file(repo, ctx, path):
-            #XXX: copy sources
-            #XXX: renames
-            #XXX: deletes
+            # XXX: copy sources
+            # XXX: renames
+            # XXX: deletes
             if path in rn and path not in self.contents:
                 raise IOError()
             if path in rrn:
@@ -101,7 +99,7 @@ class MercurialCommitBuilder(CommitBuilder):
             else:
                 data = self.contents[path]
                 copied = False
-            #XXX: real flags
+            # XXX: real flags
             islink = False
             isexec = False
 
@@ -117,7 +115,7 @@ class MercurialCommitBuilder(CommitBuilder):
         rn = dict((k, v) for k, v in self.renames
                   if self.base_commit.exists(k))
         rrn = dict(reversed(x) for x in self.renames)
-        #XXX: directory renames
+        # XXX: directory renames
 
         files = set(self.contents)
         files.update(rn.keys())
@@ -145,7 +143,7 @@ class MercurialRepository(Repository):
     def __init__(self, path=None, workdir=None, create=False):
         self.path = path
         self.workdir = workdir
-        #XXX: path only handling
+        # XXX: path only handling
         if workdir is not None:
             self.repo = workdir.repo
             self.ui = self.repo.ui

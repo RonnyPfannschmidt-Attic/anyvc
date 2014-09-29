@@ -10,12 +10,12 @@
 """
 
 
-def _(str):
-    #XXX: gettext
-    return str
+def _(s):
+    # XXX: gettext
+    return s
 
 state_descriptions = dict(
-    #XXX: finish, validate
+    # XXX: finish, validate
     unknown=_("not known to the vcs"),
     ignored=_("ignored by the vcs"),
     added=_("added"),

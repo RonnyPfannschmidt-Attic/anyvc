@@ -34,7 +34,7 @@ class GitRevision(Revision):
 
     @property
     def time(self):
-        #XXX distinct author and commiters?
+        # XXX distinct author and commiters?
         return datetime.fromtimestamp(self.commit.author_time)
 
     @property
@@ -54,7 +54,7 @@ class GitRevision(Revision):
 
     def file_content(self, path):
         try:
-            #XXX: highly incorrect, should walk and check the type
+            # XXX: highly incorrect, should walk and check the type
             blob = self.resolve(path)
             assert blob.__class__ is Blob
             return blob.data
@@ -80,7 +80,7 @@ class GitRevision(Revision):
             old = self.parents[0].commit.tree
         else:
             old = None
-        #XXX: bad code
+        # XXX: bad code
         added, removed, changed = diff_tree(self.repo.repo, old, new)
         return sorted(added | removed | changed)
 
@@ -88,10 +88,10 @@ class GitRevision(Revision):
 class GitCommitBuilder(CommitBuilder):
 
     def commit(self):
-        #XXX: evidence for the rest of
+        # XXX: evidence for the rest of
         # this functions is supposed not to exist
         # yes, its that
-        #XXX: generate all objects at once and
+        # XXX: generate all objects at once and
         #     add them as pack instead of legacy objects
         r = self.repo.repo
         store = r.object_store
@@ -151,7 +151,7 @@ class GitRepository(Repository):
         else:
             self.path = path
         if create:
-            #XXX: fragile
+            # XXX: fragile
             path.ensure(dir=1)
             self.repo = Repo.init(path.strpath)
         else:
@@ -162,15 +162,15 @@ class GitRepository(Repository):
                 raise NotFoundError('git', self.path)
 
     def __len__(self):
-        #XXX: fragile
+        # XXX: fragile
         head = self.get_default_head()
         if head is None:
             return 0
         return len(self.repo.revision_history(head.id))
 
     def push(self):
-        #XXX: hell, figure if the remote is empty, push master in that case
-        #XXX: use dulwich?
+        # XXX: hell, figure if the remote is empty, push master in that case
+        # XXX: use dulwich?
         subprocess.check_call(['git', 'push', '--all'], cwd=self.path)
 
     def get_default_head(self):
@@ -201,7 +201,7 @@ def walk_tree(repo, tree_id, path=''):
 
 
 def diff_tree(repo, old, new):
-    #XXX: bad code
+    # XXX: bad code
     new_sha = dict(walk_tree(repo, new))
     old_sha = dict(walk_tree(repo, old))
     new_set = set(new_sha)

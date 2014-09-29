@@ -54,7 +54,7 @@ def clone(source, target):
     """
     create a heavy checkout/clone of the given source
     """
-    #XXX: remote support
+    # XXX: remote support
     for backend in get_backends(features=['wd:heavy']):
         if backend.is_repository(source):
             return backend.Workdir(target, create=True, source=source)
@@ -64,9 +64,9 @@ def checkout(source, target):
     """
     create a light checkout of the given source
     """
-    #XXX: remote support
+    # XXX: remote support
     for backend in get_backends(features=['wd:light']):
         if backend.is_repository(source):
-            #XXX: there should be an actual argument
-            #     to keep heavy and light apart
+            # XXX: there should be an actual argument
+            #      to keep heavy and light apart
             return backend.Workdir(target, create=True, source=source)

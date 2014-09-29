@@ -20,7 +20,7 @@ class RemoteCaller(object):
         data = (name, k, kw)
         self.channel.send(data)
         result = self.channel.receive()
-        #XXX: again a job for py.execnet
+        # XXX: again a job for py.execnet
         return result
 
     def __getattr__(self, name):
@@ -49,7 +49,7 @@ class RemoteHandler(object):
             result = method(*k, **kw)
             self.channel.send(result)
         except Exception:
-            #XXX: py.execnet should pass callback exceptions
+            # XXX: py.execnet should pass callback exceptions
             import traceback
             import sys
             excinfo = sys.exc_info()
