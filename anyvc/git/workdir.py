@@ -52,7 +52,20 @@ class Git(CommandBased):
         return ['mv', source, target]
 
     def parse_status_item(self, item, cache):
-        return item
+        name, it, w, i = item
+        if '?' in w:
+            return 'unknown', name
+        elif 'H' in i and not w and not it:
+            return 'added', name
+        elif 'H' in i and not w and it:
+            return 'clean', name
+        elif not w and not i and it:
+            return 'removed', name
+
+        elif 'C' in w and 'R' in i:
+            return 'missing', name
+        elif 'C' in w and 'H' in i:
+            return 'modified', name
 
     def status_impl(self, *k, **kw):
         # XXX: OMG HELLISH FRAGILE SHIT
@@ -84,17 +97,4 @@ class Git(CommandBased):
             it = name in tree
             w = wd.get(name, [])
             i = index.get(name, [])
-            # XXX: factor into parse_status_item
-            if '?' in w:
-                yield 'unknown', name
-            elif 'H' in i and not w and not it:
-                yield 'added', name
-            elif 'H' in i and not w and it:
-                yield 'clean', name
-            elif not w and not i and it:
-                yield 'removed', name
-
-            elif 'C' in w and 'R' in i:
-                yield 'missing', name
-            elif 'C' in w and 'H' in i:
-                yield 'modified', name
+            yield name, it, w, i
