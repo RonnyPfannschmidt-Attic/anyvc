@@ -14,6 +14,9 @@ from functools import wraps
 
 from anyvc.common.workdir import WorkDir, StatedPath
 
+from mercurial import ui, hg, commands
+from mercurial.match import match, always
+
 version_error = ImportError('HG version too old, '
                             'please update to a release >= 1.3')
 
@@ -21,13 +24,10 @@ try:
     import mercurial.util
     hgversion = mercurial.util.version()
     from mercurial.__version__ import version as hgversion
-    if hgversion < '2.6':
+    if hgversion < '3.1':
         raise version_error
 except AttributeError:
     raise version_error
-
-from mercurial import ui, hg, commands, cmdutil
-from mercurial.match import match, always
 
 
 __all__ = 'Mercurial',
