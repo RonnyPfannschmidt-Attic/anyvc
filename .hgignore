@@ -4,7 +4,8 @@
 \.tox/
 \.env/
 \.cache/
-docs/build
+docs/build/
+.*\.egg/
 ^build/
 ^(deb_)?dist
 ^MANIFEST
