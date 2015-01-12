@@ -21,17 +21,14 @@ try:
     import mercurial.util
     hgversion = mercurial.util.version()
     from mercurial.__version__ import version as hgversion
-    if hgversion < '1.3':
+    if hgversion < '2.6':
         raise version_error
 except AttributeError:
     raise version_error
 
-from mercurial import ui as hgui, hg, commands, cmdutil
+from mercurial import ui, hg, commands, cmdutil
 from mercurial.match import match, always
-try:
-    remoteui = cmdutil.remoteui
-except AttributeError:
-    remoteui = hg.remoteui
+
 
 __all__ = 'Mercurial',
 
@@ -67,11 +64,8 @@ class Mercurial(WorkDir):
         Get a repo for a given path.
         If `create` is true, a new repo is created.
         """
-        try:
-            self.ui = hgui.ui(interactive=False, verbose=True, debug=True)
-        except TypeError:  # hg >= 1.3 ui
-            self.ui = hgui.ui()
-            self.ui.setconfig('ui', 'interactive', 'off')
+        self.ui = ui.ui()
+        self.ui.setconfig('ui', 'interactive', 'off')
 
         super(Mercurial, self).__init__(path, create, source)
         self.repo = hg.repository(self.ui, path.strpath)
@@ -81,14 +75,9 @@ class Mercurial(WorkDir):
         hg.repository(self.ui, self.path.strpath, create=True)
 
     def create_from(self, source):
-        if hasattr(hg, 'peer'):
-            hg.clone(
-                remoteui(self.ui, {}), {},
-                str(source), self.path.strpath)
-        else:
-            hg.clone(
-                remoteui(self.ui, {}),
-                str(source), self.path.strpath)
+        hg.clone(
+            hg.remoteui(self.ui, {}), {},
+            str(source), self.path.strpath)
 
     def status(self, paths=(), *k, **kw):
         # XXX: regursive kwargs
