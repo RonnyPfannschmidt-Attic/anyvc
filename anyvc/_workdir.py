@@ -14,15 +14,7 @@
 import warnings
 
 from .metadata import get_backends
-import os
 from py.path import local
-
-
-def _disallowd_workdirs():
-    return set(
-        local(os.path.expanduser(x))
-        for x in os.environ.get(
-            'ANYVC_IGNORED_WORKDIRS', '').split(os.pathsep))
 
 
 def open(path):
@@ -36,14 +28,9 @@ def open(path):
     It uses the backend metadata to find the correct backend and
     won't import unnecessary backends to keep the import time low
     """
-    dont_try = _disallowd_workdirs()
     for part in local(path).parts(reverse=True):
-        if part in dont_try:
-            continue
-
         applying = [backend for backend in get_backends()
                     if backend.is_workdir(part)]
-
         if applying:
             if len(applying) > 1:
                 warnings.warn('found more than one backend below %s' % part)

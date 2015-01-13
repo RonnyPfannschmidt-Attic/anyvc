@@ -1,74 +1,30 @@
 # -*- coding: utf-8 -*-
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 """
     Command line client for anyvc.
 
-    :license: LGPL2 or later
-    :copyright:
-        * (c) 2008 Ali Afshar <aafshar@gmail.com>
-        * (c) 2008 Ronny Pfannschmidt <Ronny.Pfannschmidt@gmx.de>
+    :license: GPL2 or later
 """
-
-
+from __future__ import unicode_literals
 import os
-import sys
-import logging
-
-from optparse import OptionParser
-
-from py.io import TerminalWriter
-
-# XXX Translations
-_ = lambda s: s
-
+import click
 from . import workdir
 
 
-def create_option_parser():
-    usage = "usage: %prog [options] <command> [args ...]"
+@click.group()
+@click.option('-d', '--working-directory',
+              default=os.getcwd,
 
-    parser = OptionParser(usage)
+              help='The working directory')
+@click.pass_context
+def cli(ctx, working_directory):
+    repo = ctx.obj = workdir.open(working_directory)
+    if repo is None:
+        click.secho('missing repo in %s' % working_directory,
+                    err=True, bold=True)
+        raise click.Abort()
 
-    # General options
-    parser.add_option('-d', '--working-directory', dest='working_directory',
-                      help='The working directory')
-    parser.add_option('-r', '--revision', dest='revision',
-                      help='The revision id')
-
-    # List options
-    parser.add_option('-a', '--list-all', dest='list_all',
-                      action='store_true', help='List all files.')
-    parser.add_option('-m', '--message', dest='commit_message',
-                      action='store', help='The commit message')
-    parser.add_option('-U', '--hide-unknown', dest='hide_unknown',
-                      action='store_true', help='Hide unknown files')
-    parser.add_option('-u', '--list-unchanged', dest='list_unchanged',
-                      action='store_true', help='List unchanged files.')
-    parser.add_option('-i', '--list-ignored', dest='list_ignored',
-                      action='store_true', help='List ignored files.')
-    parser.add_option('-n', '--list-nonrecursive', dest='list_nonrecursive',
-                      action='store_true',
-                      help='Only list files in the current working directory.')
-    parser.add_option('-c', '--no-color', dest='no_color',
-                      action='store_true',
-                      help='Uncoloured terminal list output')
-
-    # Miscellaneous options
-    parser.add_option('-v', '--verbose', action="store_true", dest="verbose",
-                      help='Show debugging information')
-    return parser
-
-
-def setup_logger(verbose):
-    if verbose:
-        level = logging.DEBUG
-    else:
-        level = logging.INFO
-    logging.basicConfig(
-        level=level,
-        stream=sys.stderr,
-        format='%(levelname)s: %(message)s')
-
+with_paths = click.argument('paths', type=click.Path(exists=True), nargs=-1)
+with_revision = click.option('-r', '--revision', default=None)
 
 list_letters = {
     'clean': '-',
@@ -80,7 +36,6 @@ list_letters = {
     'ignored': 'I',
 }
 
-# XXX: todo / steal color coding from pygments terminal writer
 list_colors = {
     # 'clean': '',
     'unknown': 'purple',
@@ -88,142 +43,72 @@ list_colors = {
     'added': 'blue',
     'removed': 'blue',
     'deleted': 'yellow',
-    # 'ignored': 'grey',
+    'ignored': 'black',
 }
 
 
-def output_state(tw, st):
+def output_state(st, hidden_states):
+    if st.state in hidden_states:
+        return
     output = list_letters.get(st.state, '*').ljust(2)
     color = list_colors.get(st.state)
-    kw = {color: True} if color else {}
-    tw.write(output, bold=True, **kw)
-    tw.line(st.relpath)
+    click.secho(output + st.relpath, bold=True, fg=color)
 
 
-def _hidden_states(opts):
+@cli.command()
+@click.pass_obj
+@click.option('--list-all', '-a')
+@with_paths
+def status(vc, list_all, paths):
+    hidden_states = () if list_all else ('clean', 'ignored', 'unknown')
 
-    hidden_states = []
-
-    if not opts.list_all:
-
-        if not opts.list_unchanged:
-            hidden_states.append('clean')
-
-        if not opts.list_ignored:
-            hidden_states.append('ignored')
-
-        if opts.hide_unknown:
-            hidden_states.append('unknown')
-    return hidden_states
+    for st in vc.status(recursive=True):
+        output_state(st, hidden_states)
 
 
-def do_status(vc, opts, args):
-    tw = TerminalWriter()
-    hidden_states = _hidden_states(opts)
-
-    for st in vc.status(recursive=not opts.list_nonrecursive):
-        if st.state not in hidden_states:
-            output_state(tw, st)
-
-    return 0
-
-
-def do_diff(vc, opts, args):
-    tw = TerminalWriter()
-    paths = tuple(args)
+@cli.command()
+@click.pass_obj
+@with_paths
+def diff(vc, paths):
     diff = vc.diff(paths=paths).strip()
     for line in diff.splitlines():
-        kw = dict(
-            red=line[0] == '-',
-            green=line[0] == '+',
-            bold=line.split(' ', 1)[0] in ('diff', '+++', '---'),
-        )
-        tw.line(line, **kw)
+        colors = {'-': 'red', '+': 'green'}
+        click.secho(line, fg=colors.get(line[0]),
+                    bold=line[4:] in ('diff', '+++', '---'))
 
 
-def do_commit(vc, opts, args):
+@cli.command()
+@click.option('--message', '-m', default=None)
+@click.pass_obj
+@with_paths
+def commit(vc, message, paths):
     out = vc.commit(
-        message=opts.commit_message,
-        paths=args)
-    sys.stdout.write(out)
-    sys.stdout.flush()
+        message=message,
+        paths=paths)
+    click.echo(out.stip())
 
 
-def do_add(vc, opts, args):
-    out = vc.add(paths=args)
-    sys.stdout.write(out)
-    sys.stdout.flush()
+@cli.command()
+@click.pass_obj
+@with_paths
+def do_add(vc, paths):
+    out = vc.add(paths=paths)
+    click.echo(out.stip())
 
 
-def do_push(vc, opts, args):
+@cli.command()
+@click.argument('location', default=None)
+@with_revision
+@click.pass_obj
+def do_push(vc, location, revision):
     repo = vc.repository
     if repo is None:
-        print >> sys.stderr, "cant find local repo to push from"
+        click.echo("cant find local repo to push from", err=True)
 
     if not repo.local:
         # XXX: better handling
         name = type(repo).__name__
-        print >> sys.stderr, "can't push from a non-local", name
-        exit(1)
-    location = args[0] if args else None
-    print repo.push(location, opts.revision)
-
-
-# The available commands
-# XXX: needs a better abstraction
-commands = {
-    'add': do_add,
-    'status': do_status,
-    'st': do_status,
-    'diff': do_diff,
-    'commit': do_commit,
-    'ci': do_commit,
-    'push': do_push,
-}
-
-
-def main(argv=sys.argv):
-    parser = create_option_parser()
-    opts, args = parser.parse_args(argv)
-
-    setup_logger(opts.verbose)
-
-    if opts.working_directory is None:
-        cwd = os.getcwd()
-    else:
-        cwd = opts.working_directory
-
-    logging.debug('Using working directory: %s' % cwd)
-
-    vc = workdir.open(cwd)
-
-    if vc is None:
-        logging.error(_('Cannot detect version control system in %(cwd)s' %
-                        {'cwd': cwd}))
-        return -1
-
-    logging.debug('Found VC: %s' % vc)
-
-    pargs = args[1:]
-
-    try:
-        command = pargs.pop(0)
-    except IndexError:
-        logging.error(_('You must provide a command.'))
-        logging.info(_('The available commands are: %(commands)s' % {
-            'commands': '%s' % ', '.join(commands.keys())}))
-        parser.print_usage()
-        return -1
-
-    try:
-        action = commands[command]
-    except KeyError:
-        logging.error(_('The command "%(command)s" is not available.' % {
-            'command': command}))
-        logging.info(_('The available commands are: %(commands)s' % {
-            'commands': ', '.join(sorted(commands.keys()))}))
-        return -1
-
-    logging.debug('Calling %s' % command)
-
-    return action(vc, opts, pargs)
+        click.echo("can't push from a non-local %s" % name, err=True)
+        raise click.Abort()
+    out = repo.push(location, revision)
+    click.echo(out.stip())

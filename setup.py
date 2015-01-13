@@ -1,18 +1,6 @@
 #!/usr/bin/python
 from __future__ import with_statement
 from setuptools import setup
-from setuptools.command.test import test
-
-
-class pytest(test):
-    def finalize_options(self):
-        test.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        pytest.main([])
 
 
 def read_readme():
@@ -39,6 +27,8 @@ setup(
         'hgdistver',
     ],
     install_requires=[
+        'click>=3.0',
+        'colorama',
         'apipkg',
         'py>=1.3',
     ],
@@ -48,10 +38,12 @@ setup(
         'subversion': ['subvertpy'],
         'remoting': ['execnet'],
     },
+    entry_points='''
+        [console_scripts]
+        vc = anyvc.client:cli
+    ''',
 
-    scripts=[
-        'bin/vc',
-    ],
+
     description='Library to access any version control system.',
     license='GNU GPL2 (or later) as published by the FSF',
     url='http://www.bitbucket.org/RonnyPfannschmidt/anyvc/',
@@ -62,5 +54,4 @@ setup(
     classifiers=[
         'Intended Audience :: Developers',
     ],
-    cmdclass={'test': pytest}
 )

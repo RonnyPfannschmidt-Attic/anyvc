@@ -14,15 +14,6 @@ from datetime import datetime
 from mercurial import commands, localrepo, ui, context
 from mercurial import error, encoding
 from ..exc import NotFoundError
-import inspect
-
-# mercurial starting with 3.1 has the repo argument to memfilectx
-if 'repo' in inspect.getargspec(context.memfilectx.__init__)[0]:
-    def memfilectx(repo, **kw):
-        return context.memfilectx(repo=repo, **kw)
-else:
-    def memfilectx(repo, **kw):
-        return context.memfilectx(**kw)
 
 
 class MercurialRevision(Revision):
@@ -103,7 +94,7 @@ class MercurialCommitBuilder(CommitBuilder):
             islink = False
             isexec = False
 
-            return memfilectx(
+            return context.memfilectx(
                 repo=self.repo,
                 path=path,
                 data=data,
