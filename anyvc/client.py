@@ -91,16 +91,16 @@ def commit(vc, message, paths):
 @cli.command()
 @click.pass_obj
 @with_paths
-def do_add(vc, paths):
+def add(vc, paths):
     out = vc.add(paths=paths)
     click.echo(out)
 
 
 @cli.command()
-@click.argument('location', default=None)
+@click.argument('location', default=None, required=False)
 @with_revision
 @click.pass_obj
-def do_push(vc, location, revision):
+def push(vc, location, revision):
     repo = vc.repository
     if repo is None:
         click.echo("cant find local repo to push from", err=True)
