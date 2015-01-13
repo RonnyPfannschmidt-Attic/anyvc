@@ -44,7 +44,7 @@ def grab_output(func):
         self.repo.ui.pushbuffer()
         try:
             func(self, *k, **kw)
-            return self.repo.ui.popbuffer()
+            return self.repo.ui.popbuffer().strip()
         except Exception, e:
             e.hg_output = self.repo.ui.popbuffer()
             raise

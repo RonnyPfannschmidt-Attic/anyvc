@@ -70,7 +70,7 @@ def status(vc, list_all, paths):
 @click.pass_obj
 @with_paths
 def diff(vc, paths):
-    diff = vc.diff(paths=paths).strip()
+    diff = vc.diff(paths=paths)
     for line in diff.splitlines():
         colors = {'-': 'red', '+': 'green'}
         click.secho(line, fg=colors.get(line[0]),
@@ -85,7 +85,7 @@ def commit(vc, message, paths):
     out = vc.commit(
         message=message,
         paths=paths)
-    click.echo(out.stip())
+    click.echo(out)
 
 
 @cli.command()
@@ -93,7 +93,7 @@ def commit(vc, message, paths):
 @with_paths
 def do_add(vc, paths):
     out = vc.add(paths=paths)
-    click.echo(out.stip())
+    click.echo(out)
 
 
 @cli.command()
@@ -111,4 +111,4 @@ def do_push(vc, location, revision):
         click.echo("can't push from a non-local %s" % name, err=True)
         raise click.Abort()
     out = repo.push(location, revision)
-    click.echo(out.stip())
+    click.echo(out)
