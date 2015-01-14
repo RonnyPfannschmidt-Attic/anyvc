@@ -15,9 +15,13 @@ from . import workdir
               default=os.getcwd,
 
               help='The working directory')
+@click.option('--ignored_workdirs',
+              envvar='ANYVC_IGNORED_WORKDIRS',
+              type=click.Path(), multiple=True)
 @click.pass_context
-def cli(ctx, working_directory):
-    repo = ctx.obj = workdir.open(working_directory)
+def cli(ctx, working_directory, ignored_workdirs):
+
+    repo = ctx.obj = workdir.open(working_directory, dont_try=ignored_workdirs)
     if repo is None:
         click.secho('missing repo in %s' % working_directory,
                     err=True, bold=True)

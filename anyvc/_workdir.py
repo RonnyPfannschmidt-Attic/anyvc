@@ -17,7 +17,7 @@ from .metadata import get_backends
 from py.path import local
 
 
-def open(path):
+def open(path, dont_try=()):
     """
     :param path:
         a local path to the worktree
@@ -28,7 +28,11 @@ def open(path):
     It uses the backend metadata to find the correct backend and
     won't import unnecessary backends to keep the import time low
     """
+    dont_try = [local(x) for x in dont_try]
+
     for part in local(path).parts(reverse=True):
+        if part in dont_try:
+            break
         applying = [backend for backend in get_backends()
                     if backend.is_workdir(part)]
         if applying:
