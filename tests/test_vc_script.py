@@ -1,21 +1,16 @@
-import py
-import execnet
+import pytest
+from click.testing import CliRunner
+from anyvc.client import cli
 
 
-@py.test.mark.files({'setup.py': 'pass'})
-@py.test.mark.commited
+@pytest.mark.files({'setup.py': 'pass'})
+@pytest.mark.commited
 def test_diff(wd):
-    gw = execnet.makegateway()
 
-    def remote(channel, cwd):
-        import os
-        import anyvc
-        # XXX to cause the imports in case of relatives
-        #     this should get fixed in execnet
-        anyvc.workdir.open(cwd)
-        import anyvc.client
-        os.chdir(cwd)
-        channel.send(anyvc.client.main(['vc', 'diff']))
+    runner = CliRunner()
+    res = runner.invoke(cli, [
+        '-d', str(wd),
+        'diff',
+    ])
 
-    ch = gw.remote_exec(remote, cwd=wd.path.strpath)
-    ch.receive()
+    assert res
