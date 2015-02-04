@@ -42,7 +42,7 @@ list_letters = {
 
 list_colors = {
     # 'clean': '',
-    'unknown': 'purple',
+    'unknown': 'magenta',
     'modified': 'red',
     'added': 'blue',
     'removed': 'blue',

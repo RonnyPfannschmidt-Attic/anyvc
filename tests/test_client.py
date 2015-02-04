@@ -13,7 +13,4 @@ class MockState:
 
 @py.test.mark.parametrize('state', items, ids=items)
 def test_output_state(state):
-    tw = py.io.TerminalWriter()
-    tw.hasmarkup = True
-
-    output_state(tw, MockState(state))
+    output_state(MockState(state), [])
