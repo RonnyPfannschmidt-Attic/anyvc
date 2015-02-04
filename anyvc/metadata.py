@@ -27,7 +27,6 @@ state_descriptions = dict(
 )
 
 aliases = {
-    'svn': 'subversion',
     'hg': 'mercurial',
 }
 
@@ -37,7 +36,6 @@ aliases = {
 backends = {
     'mercurial': 'anyvc.mercurial',
     'git': 'anyvc.git',
-    'subversion': 'anyvc.subversion'
 }
 
 

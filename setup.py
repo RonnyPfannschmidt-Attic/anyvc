@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from __future__ import with_statement
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read_readme():
@@ -13,16 +13,7 @@ def read_readme():
 
 setup(
     name='anyvc',
-    packages=[
-        'anyvc',
-        'anyvc.common',
-        'anyvc.remote',
-
-        # backends
-        'anyvc.mercurial',
-        'anyvc.git',
-        'anyvc.subversion',
-    ],
+    packages=find_packages(),
     setup_requires=[
         'hgdistver',
     ],
@@ -35,7 +26,6 @@ setup(
     extras_require={
         'mercurial': ['mercurial'],
         'git': ['dulwich'],
-        'subversion': ['subvertpy'],
         'remoting': ['execnet'],
     },
     entry_points='''
