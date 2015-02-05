@@ -167,14 +167,13 @@ def test_workdir_open(wd, backend):
 
 @has_files
 @commited
-def test_workdir_open_honors_ANYVC_IGNORED_WORKDIRS(monkeypatch, wd):
+def test_workdir_open_dont_try(monkeypatch, wd):
     """
     check that :func:`anyvc.workdir.open` honors `ANYVC_IGNORED_WORKDIRS`
     """
     import anyvc
     assert anyvc.workdir.open(wd.path) is not None
-    monkeypatch.setenv('ANYVC_IGNORED_WORKDIRS', wd.path)
-    assert anyvc.workdir.open(wd.path) is None
+    assert anyvc.workdir.open(wd.path, dont_try=[wd.path]) is None
 
 
 @pytest.mark.xfail(reason='mess')
