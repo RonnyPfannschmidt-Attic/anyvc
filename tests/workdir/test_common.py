@@ -174,15 +174,3 @@ def test_workdir_open_dont_try(monkeypatch, wd):
     import anyvc
     assert anyvc.workdir.open(wd.path) is not None
     assert anyvc.workdir.open(wd.path, dont_try=[wd.path]) is None
-
-
-@pytest.mark.xfail(reason='mess')
-def test_disallowed_paths(monkeypatch):
-    from anyvc._workdir import _disallowd_workdirs
-    monkeypatch.setenv('ANYVC_IGNORED_WORKDIRS', '/a:/b')
-    dirs = _disallowd_workdirs()
-    assert '/a' in dirs
-    assert '/b' in dirs
-    monkeypatch.setenv('ANYVC_IGNORED_WORKDIRS', '~')
-    dirs = _disallowd_workdirs()
-    assert py.std.os.environ['HOME'] in dirs
