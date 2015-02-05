@@ -6,15 +6,10 @@ import os
 from anyvc import metadata
 
 pytest_plugins = "doctest"
-test_in_interpreters = 'python2', 'python3', 'jython', 'pypy'
 
 
 def pytest_addoption(parser):
     g = parser.getgroup('anyvc')
-    g.addoption("--local-remoting", action="store_true", default=False,
-                help='test via execnet remoting')
-    g.addoption("--no-direct-api", action="store_true", default=False,
-                help='don\'t test the direct api')
     g.addoption("--vcs", action='store', default=None)
 
 
@@ -33,17 +28,6 @@ def pytest_configure(config):
     os.environ['BZR_EMAIL'] = 'Test <test@example.com>'
 
 
-@pytest.fixture(scope='session', params=['direct', 'popen'])
-def spec(request):
-    direct = request.param == 'direct'
-    if request.config.getvalue('no_direct_api') and direct:
-        pytest.skip('no direct api testing')
-    if not request.config.getvalue('local_remoting') and not direct:
-        pytest.skip('no remote testing')
-    from execnet.xspec import XSpec
-    return XSpec(request.param)
-
-
 @pytest.fixture(scope='session', params=metadata.backends)
 def vcs(request):
     wanted = request.config.getvalue('vcs')
@@ -53,18 +37,16 @@ def vcs(request):
 
 
 @pytest.fixture(scope='session')
-def backend(vcs, spec):
+def backend(vcs):
     """
     create a cached backend instance that is used the whole session
     makes instanciating backend cheap
     """
-    if spec.direct:
-        spec = None
-        return metadata.get_backend(vcs, spec)
+    return metadata.get_backend(vcs)
 
 
 @pytest.fixture()
-def mgr(spec, backend, tmpdir, request):
+def mgr(backend, tmpdir, request):
     """
     create a preconfigured :class:`tests.helplers.VcsMan` instance
     pass the currently tested backend
@@ -83,7 +65,7 @@ def mgr(spec, backend, tmpdir, request):
                 backend,
                 sorted(difference)))
 
-    return VcsMan(backend.name, tmpdir, spec, backend)
+    return VcsMan(backend.name, tmpdir, backend)
 
 
 @pytest.fixture()

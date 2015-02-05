@@ -27,7 +27,7 @@ class StatedPath(object):
         self.path = dirname(name)
         self.name = basename(name)
         self.base = base
-        self.state = intern(state)
+        self.state = state
         if base is not None:
             self.abspath = local(base).join(name)
         else:

@@ -49,7 +49,7 @@ def test_workdir_remove(wd):
     wd.check_states(removed=['test.py'])
     wd.commit(message='*')
 
-    py.test.raises(AssertionError, wd.check_states, clean=['test.py'])
+    pytest.raises(AssertionError, wd.check_states, clean=['test.py'])
     assert not wd.path.join('test.py').check()
 
 

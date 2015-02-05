@@ -1,17 +1,11 @@
-import py
+import pytest
 from anyvc.client import style_state, list_colors
+from anyvc.common.workdir import StatedPath
 
 items = list(list_colors)
 
 
-class MockState:
-    relpath = '.'
-
-    def __init__(self, state, path='.'):
-        self.state = state
-
-
-@py.test.mark.parametrize('state', items, ids=items)
+@pytest.mark.parametrize('state', items, ids=items)
 def test_output_state(state):
-    styled = style_state(MockState(state), [])
-    assert state.relpath
+    styled = style_state(StatedPath('.', state), [])
+    assert '.' in styled

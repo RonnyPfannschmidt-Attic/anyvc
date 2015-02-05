@@ -92,11 +92,9 @@ class VcsMan(object):
     utility class to manage the creation of repositories and workdirs
     inside of a specific path (usually the tmpdir funcarg of a test)
     """
-    def __init__(self, vc, base, xspec, backend):
-        self.remote = not xspec.direct
+    def __init__(self, vc, base, backend):
         self.vc = vc
         self.base = base.ensure(dir=True)
-        self.xspec = xspec
         self.backend = backend
 
     def __repr__(self):
