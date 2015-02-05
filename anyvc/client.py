@@ -51,12 +51,12 @@ list_colors = {
 }
 
 
-def output_state(st, hidden_states):
+def style_state(st, hidden_states):
     if st.state in hidden_states:
         return
     output = list_letters.get(st.state, '*').ljust(2)
     color = list_colors.get(st.state)
-    click.secho(output + st.relpath, bold=True, fg=color)
+    return click.style(output + st.relpath, bold=True, fg=color)
 
 
 @cli.command()
@@ -67,7 +67,7 @@ def status(vc, list_all, paths):
     hidden_states = () if list_all else ('clean', 'ignored', 'unknown')
 
     for st in vc.status(recursive=True):
-        output_state(st, hidden_states)
+        click.echo(style_state(st, hidden_states))
 
 
 @cli.command()

@@ -1,12 +1,12 @@
 # copyright 2008 by Ronny Pfannschmidt
 # license lgpl2 or later
-import py
+import pytest
 
-has_files = py.test.mark.files({
+has_files = pytest.mark.files({
     'test.py':  'print "test"',
 })
 
-commited = py.test.mark.commit
+commited = pytest.mark.commit
 
 
 @has_files
