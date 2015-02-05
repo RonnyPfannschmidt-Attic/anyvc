@@ -17,14 +17,13 @@ from anyvc.common.workdir import WorkDir, StatedPath
 from mercurial import ui, hg, commands
 from mercurial.match import match, always
 
-version_error = ImportError('HG version too old, '
-                            'please update to a release >= 1.3')
+version_error = ImportError(
+    'HG version too old, please update to a release >= 3.1')
 
 try:
     import mercurial.util
     hgversion = mercurial.util.version()
-    from mercurial.__version__ import version as hgversion
-    if hgversion < '3.1':
+    if hgversion.split('.') < ['3', '1']:
         raise version_error
 except AttributeError:
     raise version_error
