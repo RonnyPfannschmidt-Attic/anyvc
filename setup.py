@@ -36,7 +36,7 @@ setup(
 
     description='Library to access any version control system.',
     license='GNU GPL2 (or later) as published by the FSF',
-    url='http://www.bitbucket.org/RonnyPfannschmidt/anyvc/',
+    url='https://github.com/RonnyPfannschmidt-Attic/anyvc',
     author='Ronny Pfannschmidt',
     author_email='Ronny.Pfannschmidt@gmx.de',
     long_description=read_readme(),
